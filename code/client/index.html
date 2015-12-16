@@ -1,0 +1,178 @@
+<!DOCTYPE html>
+<html lang="en" ng-app= "awApp">
+    <head>
+        <meta charset="utf-8">
+
+        <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+
+        <title>Animal Welfare Assessment Grid</title>
+        <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate" />
+        <meta http-equiv="Pragma" content="no-cache" />
+        <meta http-equiv="Expires" content="0" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <link rel="stylesheet" href="lib/css/bootstrap.css">
+        <link rel="stylesheet" href="lib/css/dashboard.css">
+        <link rel="stylesheet" href="lib/css/datepicker3.css">
+        <link rel="stylesheet" href="lib/css/bootstrap.icon-large.min.css">
+        <link rel="stylesheet" href="lib/css/select2.css">
+        <link rel="stylesheet" href="lib/css/select2-bootstrap.css">
+        <link rel="stylesheet" href="lib/css/radar-chart.min.css">
+        <link rel="stylesheet" href="lib/css/offcanvas.css">
+        <link rel="stylesheet" href="css/aw.css">
+        <link rel="stylesheet" href="lib/css/ng-table.min.css">
+        <!--[if lt IE 9]>
+        <script src="lib/js/html5shiv.js"></script>
+        <![endif]-->
+        <script src="lib/js/jquery-1.9.1.min.js"></script>
+        <script src="lib/js/jquery.jsonp-2.4.0.min.js"></script>
+        <script src="js/common/global-config.js"></script>
+    </head>
+    <body>
+        <div class="navbar navbar-inverse navbar-fixed-top" role="navigation">
+            <div class="container-fluid">
+                <div class="navbar-header">
+                    <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
+                        <span class="sr-only">Toggle navigation</span>
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                    </button>
+                    <a class="navbar-brand" href="#/main">Animal Welfare Assessment Grid</a>
+                </div>
+                <div class="navbar-collapse collapse" ng-controller="IndexMenuCtrl">
+                    <ul class="nav navbar-nav navbar-right">
+                        <li id="logoutMenuEntry" class="hidden" ng-controller="IndexLoginDetailsCtrl as loginDetailsCtrl">
+                            <a onclick="logout()">{{message}}</a>
+                        </li>
+                        <li ng-class="{ active: isActive('/about')}">
+                            <a href="#/about">About</a>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+        <div class="container-fluid">
+            <div class="row  row-offcanvas row-offcanvas-left">
+                <div class="col-xs-6 col-sm-3 sidebar-offcanvas" id="sidebar" role="navigation">
+                    <div class="list-group" ng-controller="IndexMenuCtrl">
+                        <ul class="nav nav-pills nav-stacked">
+                            <li ng-class="{ active: isActive('/new-assessment')}">
+                                <a href="#/new-assessment">New Animal Assessment</a>
+                            </li>
+                            <li ng-class="{ active: isActive('/existing-assessment')}">
+                                <a href="#/existing-assessment">Existing Animal Assessment</a>
+                            </li>
+                            <li ng-class="{ active: isActive('/graphs')}">
+                                <a href="#/graphs">Graphs</a>
+                            </li>
+                        </ul>
+                        <ul class="nav nav-pills nav-stacked">
+                            <li ng-class="{ active: isActive('/manage-animals')}">
+                                <a href="#/manage-animals">Manage Animals</a>
+                            </li>
+                            <li ng-class="{ active: isActive('/manage-study-study-groups')}">
+                                <a href="#/manage-study-study-groups">Manage Studies/Study Groups</a>
+                            </li>
+                            <li ng-class="{ active: isActive('/manage-species')}">
+                                <a href="#/manage-species">Manage Species</a>
+                            </li>
+                            <li ng-class="{ active: isActive('/manage-reasons')}">
+                                <a href="#/manage-reasons">Manage Reasons</a>
+                            </li>
+                            <li ng-class="{ active: isActive('/manage-housing')}">
+                                <a href="#/manage-housing">Manage Housing</a>
+                            </li>
+                            <li ng-class="{ active: isActive('/manage-sources')}">
+                                <a href="#/manage-sources">Manage Sources</a>
+                            </li>
+                            <li ng-class="{ active: isActive('/manage-scales')}">
+                                <a href="#/manage-scales">Manage Scales</a>
+                            </li>
+                            <li ng-class="{ active: isActive('/manage-factors')}">
+                                <a href="#/manage-factors">Manage Factors</a>
+                            </li>
+                            <li ng-class="{ active: isActive('/manage-parameters')}">
+                                <a href="#/manage-parameters">Manage Parameters</a>
+                            </li>
+                            <li ng-class="{ active: isActive('/manage-templates')}">
+                                <a href="#/manage-templates">Manage Templates</a>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+                <p class="pull-left visible-xs">
+                    <button type="button" class="btn btn-primary btn-md" data-toggle="offcanvas">
+                        Menu
+                    </button>
+                </p>
+                <div class="col-xs-12 col-sm-9" ng-view>
+                    <script src="js/common/check-authentication.js"></script>
+                </div>
+            </div>
+        </div>
+        <script src="js/common/logout.js"></script>
+    </body>
+    <script src="lib/js/offcanvas.js"></script>
+    <script src="lib/js/bootstrap.js"></script>
+    <script src="lib/js/d3.min.js"></script>
+    <script src="lib/js/radar-chart.js"></script>
+    <script src="lib/js/angular.min.js"></script>
+    <script src="lib/js/angular-route.js"></script>
+    <!-- When this is included, some input boxes don't appear every time a page is loaded. Make sure to inject the ngAnimate module into awApp.js -->
+    <!--<script src="lib/js/angular-animate.js"></script>-->
+    <script src="lib/js/tabs.js"></script>
+    <script src="lib/js/select2.js"></script>
+    <script src="lib/js/bootstrap-datepicker.js"></script>
+    <script src="lib/js/ui-bootstrap-tpls-0.11.0.min.js"></script>
+    <script src="lib/js/ng-table.min.js"></script>
+    <script src="lib/js/line-chart.min.js"></script>
+    <script src="js/common/awCommonDirectives.js"></script>
+    <script src="js/index/indexControllers.js"></script>
+    <script src="js/assessment-form/assessmentFormControllers.js"></script>
+    <script src="js/assessment-form/existingAssessmentControllers.js"></script>
+    <script src="js/graphs/graphsController.js"></script>
+    <script src="js/manage/manageSourceControllers.js"></script>
+    <script src="js/manage/manageAnimalControllers.js"></script>
+    <script src="js/manage/manageSpeciesControllers.js"></script>
+    <script src="js/manage/manageStudyControllers.js"></script>
+    <script src="js/manage/manageStudyGroupControllers.js"></script>
+    <script src="js/manage/manageScaleControllers.js"></script>
+    <script src="js/manage/manageReasonControllers.js"></script>
+    <script src="js/manage/manageHousingControllers.js"></script>
+    <script src="js/manage/manageFactorControllers.js"></script>
+    <script src="js/manage/manageParameterControllers.js"></script>
+    <script src="js/manage/manageTemplateControllers.js"></script>
+    <script src="js/manage/manageStudyStudyGroupAccordionControllers.js"></script>
+    <script src="js/about/aboutControllers.js"></script>
+    <script src="js/common/formServices.js"></script>
+    <script src="js/common/select2utils.js"></script>
+    <script src="js/common/numberUtils.js"></script>
+    <script src="js/common/dateUtils.js"></script>
+    <script src="js/common/checkboxUtils.js"></script>
+    <script src="js/common/filterUtils.js"></script>
+    <script src="js/common/graphUtils.js"></script>
+    <script src="js/common/pagingUtils.js"></script>
+    <script src="js/services/logonServices.js"></script>
+    <script src="js/services/animalServices.js"></script>
+    <script src="js/services/factorServices.js"></script>
+    <script src="js/services/reasonServices.js"></script>
+    <script src="js/services/housingServices.js"></script>
+    <script src="js/services/userServices.js"></script>
+    <script src="js/services/assessmentServices.js"></script>
+    <script src="js/services/sexServices.js"></script>
+    <script src="js/services/speciesServices.js"></script>
+    <script src="js/services/sourceServices.js"></script>
+    <script src="js/services/templateServices.js"></script>
+    <script src="js/services/studyServices.js"></script>
+    <script src="js/services/scaleServices.js"></script>
+    <script src="js/services/parameterServices.js"></script>
+    <script src="js/services/studyGroupServices.js"></script>
+    <script src="js/services/tableServices.js"></script>
+    <script src="js/services/graphDrawServices.js"></script>
+    <script src="js/common/dataServices.js"></script>
+    <script src="js/common/entityServices.js"></script>
+    <script src="js/common/formatServices.js"></script>
+    <script src="js/common/awFilters.js"></script>
+    <script src="js/common/appConfig.js"></script>
+    <script src="js/common/awApp.js"></script>
+</html>

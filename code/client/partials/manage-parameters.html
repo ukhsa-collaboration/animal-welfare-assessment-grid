@@ -1,0 +1,57 @@
+<h1 class="page-header text-center">Parameter Management</h1>
+<div class="container-fluid" ng-controller="MngmtParameterManagementCtrl as parameterMngmtCtrl">
+    <form name="parameterManagementForm" class="form-horizontal">
+        <div class="form-group" ng-controller="MngmtParameterSelectionCtrl as parameterCtrl">
+            <label for="{{parameterCtrl.selectId}}" class="col-xs-3 control-label">Parameter name: </label>
+            <div class="col-xs-7">
+                <aw-search-select2 class="form-control" elem-id="{{parameterCtrl.selectId}}" controller="parameterCtrl"></aw-search-select2>
+            </div>
+            <div ng-click="parameterMngmtCtrl.startUpdate()" ng-hide="parameterMngmtCtrl.isNewParameter">
+                <button type="button" class="btn btn-default btn-sm">
+                    <i class="glyphicon glyphicon-edit"></i>
+                </button>
+            </div>           
+        </div>
+        <div class="form-group" ng-controller="MngmtParameterSelectionUpdateCtrl as parameterUpdateCtrl" ng-show="parameterMngmtCtrl.isUpdatingParameter">
+            <label for="{{parameterUpdateCtrl.selectId}}" class="col-xs-3 control-label">Update parameter name: </label>
+            <div class="col-xs-7">
+                <aw-select2 elem-id="{{parameterUpdateCtrl.selectId}}" controller="parameterUpdateCtrl"></aw-select2>
+            </div>
+            <div ng-click="parameterMngmtCtrl.cancelUpdate()">
+                <button type="button" class="btn btn-default btn-sm">
+                    <i class="glyphicon glyphicon-remove"></i>
+                </button>
+            </div>
+        </div>
+        <div class="form-group">
+            <div class="col-xs-12">
+                <aw-success-display success="parameterMngmtCtrl.isSuccess"></aw-success-display>
+            </div>
+        </div>
+        <div class="form-group">
+            <div class="col-xs-12">
+                <aw-error-display errors="parameterMngmtCtrl.errors"></aw-error-display>
+            </div>
+        </div>
+        <div class="row">
+            <hr />
+        </div>
+        <div class="row">
+            <div class="col-xs-6" ng-show="parameterMngmtCtrl.isNewParameter">
+                <button type="button" class="btn btn-success btn-sm pull-right" ng-click="parameterMngmtCtrl.submitParameter()">
+                Create
+                </button>
+            </div>
+            <div class="col-xs-6" ng-hide="parameterMngmtCtrl.isNewParameter">
+                <button type="button" class="btn btn-primary btn-sm pull-right" ng-click="parameterMngmtCtrl.updateParameter()">
+                Update
+                </button>
+            </div>
+            <div class="col-xs-6">
+                <button type="button" class="btn btn-danger btn-sm" ng-click="parameterMngmtCtrl.clearParameter()">
+                Clear
+                </button>
+            </div>
+        </div>
+    </form>
+</div>

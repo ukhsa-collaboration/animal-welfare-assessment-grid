@@ -1,0 +1,57 @@
+<h1 class="page-header text-center">Reason Management</h1>
+<div class="container-fluid" ng-controller="MngmtReasonManagementCtrl as reasonMngmtCtrl">
+    <form name="reasonManagementForm" class="form-horizontal">
+        <div class="form-group" ng-controller="MngmtReasonSelectionCtrl as reasonCtrl">
+            <label for="{{reasonCtrl.selectId}}" class="col-xs-3 control-label">Reason name: </label>
+            <div class="col-xs-7">
+                <aw-search-select2 class="form-control" elem-id="{{reasonCtrl.selectId}}" controller="reasonCtrl"></aw-search-select2>
+            </div>
+            <div ng-click="reasonMngmtCtrl.startUpdate()" ng-hide="reasonMngmtCtrl.isNewReason">
+                <button type="button" class="btn btn-default btn-sm">
+                    <i class="glyphicon glyphicon-edit"></i>
+                </button>
+            </div>
+        </div>
+        <div class="form-group" ng-controller="MngmtReasonSelectionUpdateCtrl as reasonUpdateCtrl" ng-show="reasonMngmtCtrl.isUpdatingReason">
+            <label for="{{reasonUpdateCtrl.selectId}}" class="col-xs-3 control-label">Update reason name: </label>
+            <div class="col-xs-7">
+                <aw-select2 elem-id="{{reasonUpdateCtrl.selectId}}" controller="reasonUpdateCtrl"></aw-select2>
+            </div>
+            <div ng-click="reasonMngmtCtrl.cancelUpdate()">
+                <button type="button" class="btn btn-default btn-sm">
+                    <i class="glyphicon glyphicon-remove"></i>
+                </button>
+            </div>            
+        </div>        
+        <div class="form-group">
+            <div class="col-xs-12">
+                <aw-success-display success="reasonMngmtCtrl.isSuccess"></aw-success-display>
+            </div>
+        </div>
+        <div class="form-group">
+            <div class="col-xs-12">
+                <aw-error-display errors="reasonMngmtCtrl.errors"></aw-error-display>
+            </div>
+        </div>
+        <div class="row">
+            <hr />
+        </div>
+        <div class="row">
+            <div class="col-xs-6" ng-show="reasonMngmtCtrl.isNewReason">
+                <button type="button" class="btn btn-success btn-sm pull-right" ng-click="reasonMngmtCtrl.submitReason()">
+                Create
+                </button>
+            </div>
+            <div class="col-xs-6" ng-hide="reasonMngmtCtrl.isNewReason">
+                <button type="button" class="btn btn-primary btn-sm pull-right" ng-click="reasonMngmtCtrl.updateReason()">
+                Update
+                </button>
+            </div>
+            <div class="col-xs-6">
+                <button type="button" class="btn btn-danger btn-sm" ng-click="reasonMngmtCtrl.clearReason()">
+                Clear
+                </button>
+            </div>
+        </div>
+    </form>
+</div>

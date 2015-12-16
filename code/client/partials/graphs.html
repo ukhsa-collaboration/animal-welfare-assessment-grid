@@ -1,0 +1,112 @@
+<h1 class="page-header text-center">Graphs</h1>
+<div class="container-fluid" ng-controller="GraphMainController as graphMainCtrl">
+   <accordion close-others="false">
+      <accordion-group is-open="accordionStatus.dataSelection">
+         <accordion-heading>
+            Data Selection
+            <span ng-show="animalAssessmentTimeLineData.length > 0"> ({{animalAssessmentTimeLineData.length}} result(s) for {{animal.animalNumber}} between {{dateFrom | date:'EEE dd MMM yyyy'}} and {{dateTo | date:'EEE dd MMM yyyy'}})
+            </span>
+            <i class="pull-right glyphicon" ng-class="{'glyphicon-chevron-down': accordionStatus.dataSelection, 'glyphicon-chevron-right': !accordionStatus.dataSelection}"></i>
+         </accordion-heading>
+         <form name="graphsForm" class="form-horizontal">
+            <div class="form-group" ng-controller="AnimalSelectionController as animalSelectionCtrl">
+               <label for="{{animalSelectionCtrl.selectId}}" class="col-xs-6 col-md-2 control-label">Animal number: </label>
+               <div class="col-xs-6 col-md-4">
+                  <aw-search-select2 elem-id="{{animalSelectionCtrl.selectId}}" controller="animalSelectionCtrl"></aw-search-select2>
+               </div>
+            </div>
+            <div class="form-group" ng-controller="DateFromSelectionController as dateFromCtrl">
+               <label for="{{dateFromCtrl.dateFromId}}" class="col-xs-6 col-md-2 control-label">Date from: </label>
+               <div class="col-xs-6 col-sm-6 col-md-4">
+                  <aw-date-picker elem-id="{{dateFromCtrl.dateFromId}}" today-highlight="false" controller="dateFromCtrl"></aw-date-picker>
+               </div>
+            </div>
+            <div class="form-group" ng-controller="DateToSelectionController as dateToCtrl">
+               <label for="{{dateToCtrl.dateToId}}" class="col-xs-6 col-md-2 control-label">Date to: </label>
+               <div class="col-xs-6 col-sm-6 col-md-4">
+                  <aw-date-picker elem-id="{{dateToCtrl.dateToId}}" today-highlight="false" controller="dateToCtrl"></aw-date-picker>
+               </div>
+            </div>
+            <div class="form-group" ng-controller="DateToSelectionController as dateToCtrl">
+               <div class="col-xs-12 col-sm-12 col-md-6">
+                  <button class="btn btn-small btn-success pull-right" ng-click="getTimeLineData()">Submit</button>
+               </div>
+            </div>
+            <div class="form-group">
+               <div class="col-xs-12">
+                  <aw-error-display errors="graphMainCtrl.errors"></aw-error-display>
+               </div>
+            </div>
+         </form>
+      </accordion-group>
+      <accordion-group is-open="accordionStatus.timeLine">
+         <accordion-heading>
+            Assessment Timeline
+            <span ng-show="animalAssessmentRadarChartData.length > 0"> (Assessment selected for {{animalAssessmentTimeLineSelected.animal.animalNumber}} on {{animalAssessmentTimeLineSelected.assessmentDate | date:'EEE dd MMM yyyy'}})
+            </span>
+            <i class="pull-right glyphicon" ng-class="{'glyphicon-chevron-down': accordionStatus.timeLine, 'glyphicon-chevron-right': !accordionStatus.timeLine}"></i>
+         </accordion-heading>
+         <div ng-show="!animalAssessmentTimeLineData.length > 0"><span class="glyphicon glyphicon-info-sign pull-left" style="padding-right: 4px"></span>No assessment timeline data available. Make sure you have selected a valid animal and date range from the "Data Selection" panel above.</div>
+         <div ng-show="animalAssessmentTimeLineData.length > 0">            
+            <aw-line-graph data="animalAssessmentTimeLineData" click="timeLineClickCallback" hover="timeLineHoverCallback" refresh="accordionStatus.timeLine"></aw-line-graph>
+         </div>
+      </accordion-group>
+      <accordion-group is-open="accordionStatus.radarChart">  
+         <accordion-heading>
+            Parameter Radar Chart
+            <i class="pull-right glyphicon" ng-class="{'glyphicon-chevron-down': accordionStatus.radarChart, 'glyphicon-chevron-right': !accordionStatus.radarChart}"></i>
+         </accordion-heading>
+         <div ng-show="!animalAssessmentRadarChartData.length > 0"><span class="glyphicon glyphicon-info-sign pull-left" style="padding-right: 4px"></span>No assessment radar chart data available. Make sure you have selected a graph point from the "Assessment Timeline" panel above.</div>
+         <div class="row" ng-show="animalAssessmentRadarChartData.length > 0">
+            <div class="col-md-6">
+               <h4 class="text-center">Parameter breakdown</h4>
+               <strong>Animal number : </strong> {{animalAssessmentTimeLineSelected.animal.animalNumber}} <br/>
+               <strong>Assessment date : </strong> {{animalAssessmentTimeLineSelected.assessmentDate | date:'EEE dd MMM yyyy'}} <br/>
+               <strong>Assessment reason : </strong> {{animalAssessmentTimeLineSelected.assessmentReason}} <br />
+               <strong>Cumulative welfare assessment score : </strong> {{getCumulativeWelfareAssessmentScore(animalAssessmentTimeLineSelected) | number :2}} <br/>
+               <strong>Average parameter score : </strong> {{getParametersAverageScore(animalAssessmentTimeLineSelected) | number :2}} <br/>
+               <aw-radar-chart data="animalAssessmentRadarChartData" click="radarChartClickCallback" hover="" refresh="accordionStatus.radarChart"></aw-radar-chart>
+            </div>
+            <div class="col-md-6">
+                  <h4 class="text-center">Factor breakdown</h4>
+                  <div ng-hide="assessmentParametersSelected.length > 0">
+                     <span class="glyphicon glyphicon-info-sign pull-left" style="padding-right: 4px"></span>You have not selected any factors. Click on a graph point to display factors and factor scores for a parameter.
+                  </div>
+                  <accordion close-others="false">
+                  <accordion-group ng-repeat="parameter in assessmentParametersSelected" is-open="true">
+                     <accordion-heading>
+                        {{parameter.parameterName}}
+                        <span>(Factors for assessment on {{animalAssessmentTimeLineSelected.assessmentDate | date:'EEE dd MMM yyyy'}})</span>
+                        <i class="pull-right glyphicon glyphicon-remove" ng-click="removeParameter(parameter)"></i>
+                     </accordion-heading>
+                     <table class="table table-striped">
+                        <thead>
+                           <tr style="background-clip: green">
+                              <th class="text-center"><strong>Factor name</strong></th>
+                              <th class="text-center"><strong>Factor score</strong></th>
+                           </tr>
+                        </thead>
+                        <tbody>
+                           <tr ng-repeat="factor in parameter.parameterFactors | orderAbc:'factorName'">
+                              <td class="col-xs-10">{{factor.factorName}}</td>
+                              <td class="text-center">{{factor.factorScore}}</td>
+                           </tr>
+                        </tbody>
+                        <thead ng-show="parameter.parameterComment">
+                           <tr>
+                              <th class="text-center"><strong>Comment(s)</strong></th>
+                           </tr>
+                        </thead>
+                        <tbody ng-show="parameter.parameterComment">
+                           <tr>
+                              <td>{{parameter.parameterComment}}</td>
+                           </tr>
+                        </tbody>
+                     </table>
+                  </accordion-group>
+               </accordion>
+            </div>
+         </div>
+      </accordion-group>
+   </accordion>
+</div>

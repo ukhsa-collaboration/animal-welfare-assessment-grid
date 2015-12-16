@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<persistence version="2.1"
+	xmlns="http://xmlns.jcp.org/xml/ns/persistence" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://xmlns.jcp.org/xml/ns/persistence http://xmlns.jcp.org/xml/ns/persistence/persistence_2_1.xsd">
+	<persistence-unit name="aw">
+		<provider>org.eclipse.persistence.jpa.PersistenceProvider</provider>
+		<jta-data-source>jdbc/awDatabase</jta-data-source>
+		<class>uk.gov.phe.erdst.sc.awag.datamodel.AnimalHousing</class>
+		<class>uk.gov.phe.erdst.sc.awag.datamodel.AssessmentReason</class>
+		<class>uk.gov.phe.erdst.sc.awag.datamodel.Assessment</class>
+		<class>uk.gov.phe.erdst.sc.awag.datamodel.Sex</class>
+		<class>uk.gov.phe.erdst.sc.awag.datamodel.Source</class>
+		<class>uk.gov.phe.erdst.sc.awag.datamodel.Species</class>
+		<class>uk.gov.phe.erdst.sc.awag.datamodel.Study</class>
+		<class>uk.gov.phe.erdst.sc.awag.datamodel.User</class>
+		<class>uk.gov.phe.erdst.sc.awag.datamodel.AssessmentScore</class>
+		<class>uk.gov.phe.erdst.sc.awag.datamodel.ParameterScore</class>
+		<class>uk.gov.phe.erdst.sc.awag.datamodel.FactorScored</class>
+		<class>uk.gov.phe.erdst.sc.awag.datamodel.StudyGroup</class>
+		<class>uk.gov.phe.erdst.sc.awag.datamodel.Animal</class>
+		<class>uk.gov.phe.erdst.sc.awag.datamodel.AssessmentTemplate</class>
+		<class>uk.gov.phe.erdst.sc.awag.datamodel.AssessmentTemplateParameterFactor</class>
+		<class>uk.gov.phe.erdst.sc.awag.datamodel.AssessmentTemplateParameterFactorPK</class>
+		<class>uk.gov.phe.erdst.sc.awag.datamodel.Factor</class>
+		<class>uk.gov.phe.erdst.sc.awag.datamodel.Parameter</class>
+		<class>uk.gov.phe.erdst.sc.awag.datamodel.Scale</class>
+		<properties>
+			<property name="javax.persistence.target-database" value="PostgreSQL" />
+			<property name="eclipselink.jdbc.batch-writing" value="JDBC" />
+		<!--
+			<property name="eclipselink.ddl-generation" value="drop-and-create-tables"/>
+			<property name="eclipselink.ddl-generation" value="none" />
+			<property name="eclipselink.ddl-generation.output-mode" value="both" />
+			<property name="eclipselink.logging.level" value="FINEST" />
+		-->
+		</properties>
+	</persistence-unit>
+</persistence>

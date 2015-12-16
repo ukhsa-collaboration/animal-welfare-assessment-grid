@@ -1,0 +1,123 @@
+<div class="container-fluid">
+    <div ng-controller="ExistAssessFormMainCtrl as mainCtrl">
+        {{mainCtrl.text}}
+        <h1 class="page-header text-center">Existing Animal Assessment</h1>
+        <div ng-controller="ExistAssessFormAccordionCtrl as accordionCtrl">
+            <accordion close-others="false">
+                <accordion-group is-open="accordionCtrl.accordionStatus.isSearchOpen">
+                    <accordion-heading>
+                        Search for asssessments <i class="pull-right glyphicon" ng-class="{'glyphicon-chevron-down': accordionCtrl.accordionStatus.isSearchOpen, 'glyphicon-chevron-right': !accordionCtrl.accordionStatus.isSearchOpen}"></i>
+                    </accordion-heading>
+                    <div ng-controller="ExistAssessFormSearchCtrl as searchCtrl">
+                        <div>
+                            <div class="form-group row" ng-controller="ExistAssessFormAnimalSelectionCtrl as searchAnimalSelectionCtrl">
+                                <label class="col-xs-12 col-md-3" for="{{searchAnimalSelectionCtrl.selectId}}">Animal number: </label>
+                                <div class="col-xs-12 col-md-9">
+                                    <aw-search-select2 elem-id="{{searchAnimalSelectionCtrl.selectId}}" controller="searchAnimalSelectionCtrl"></aw-search-select2>
+                                </div>
+                            </div>
+                            <div class="form-group row" ng-controller="ExistAssessFormDateFromSelectionCtrl as searchDateFromCtrl">
+                                <label class="col-xs-12 col-md-3" for="{{searchDateFromCtrl.selectId}}">Date from: </label>
+                                <div class="col-xs-12 col-md-9">
+                                    <aw-date-picker elem-id="{{searchDateFromCtrl.selectId}}" today-highlight="false" controller="searchDateFromCtrl"></aw-date-picker>
+                                </div>
+                            </div>
+                            <div class="form-group row" ng-controller="ExistAssessFormDateToSelectionCtrl as searchDateToCtrl">
+                                <label class="col-xs-12 col-md-3" for="{{searchDateToCtrl.selectId}}">Date to: </label>
+                                <div class="col-xs-12 col-md-9">
+                                    <aw-date-picker elem-id="{{searchDateToCtrl.selectId}}" today-highlight="false" controller="searchDateToCtrl"></aw-date-picker>
+                                </div>
+                            </div>
+                            <div class="form-group row" ng-controller="ExistAssessFormUserSelectionCtrl as searchUserCtrl">
+                                <label class="col-xs-12 col-md-3" for="{{searchUserCtrl.selectId}}">User: </label>
+                                <div class="col-xs-12 col-md-9">
+                                    <aw-search-select2 elem-id="{{searchUserCtrl.selectId}}" controller="searchUserCtrl"></aw-search-select2>
+                                </div>
+                            </div>
+                            <div class="form-group row" ng-controller="ExistAssessFormReasonSelectionCtrl as searchReasonCtrl">
+                                <label class="col-xs-12 col-md-3" for="{{searchReasonCtrl.selectId}}">Reason: </label>
+                                <div class="col-xs-12 col-md-9">
+                                    <aw-search-select2 elem-id="{{searchReasonCtrl.selectId}}" controller="searchReasonCtrl"></aw-search-select2>
+                                </div>
+                            </div>
+                            <div class="form-group row" ng-controller="ExistAssessFormStudySelectionCtrl as searchStudyCtrl">
+                                <label class="col-xs-12 col-md-3" for="{{searchStudyCtrl.selectId}}">Study: </label>
+                                <div class="col-xs-12 col-md-9">
+                                    <aw-search-select2 elem-id="{{searchStudyCtrl.selectId}}" controller="searchStudyCtrl"></aw-search-select2>
+                                </div>
+                            </div>
+                            <div class="form-group row" ng-controller="ExistAssessFormIsCompleteSelectionCtrl as searchIsCompleteCtrl">
+                                <label class="col-xs-12 col-md-3" for="{{searchIsCompleteCtrl.selectId}}">Is assessment complete?</label>
+                                <div class="col-xs-12 col-md-9">
+                                    <aw-select2 elem-id="{{searchIsCompleteCtrl.selectId}}" controller="searchIsCompleteCtrl"></aw-select2>
+                                </div>
+                            </div>
+                        </div>
+                        <div>
+                            <aw-error-display errors="searchCtrl.errors"></aw-error-display>
+                        </div>
+                        <div class="row" ng-hide="searchCtrl.isCriteriaSpecified">
+                            <div class="bg-info" style="margin-bottom:1em;">
+                                <span class="glyphicon glyphicon-info-sign pull-left" style="padding-right: 4px"></span>
+                                <p>If no search criteria are specified, the search will return all assessments.</p>
+                            </div>
+                        </div>
+                        <div class="row spacer">
+                            <div class="col-xs-6 center-block">
+                                <button type="button" class="btn btn-success btn-lg center-block" ng-click="searchCtrl.onSearchClick()">
+                                    Search
+                                </button>
+                            </div>
+                            <div class="col-xs-6 center-block">
+                                <button type="button" class="btn btn-danger btn-lg center-block" ng-click="searchCtrl.clearCriteria()">
+                                    Clear
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </accordion-group>
+                <accordion-group is-open="accordionCtrl.accordionStatus.isResultsOpen">
+                    <accordion-heading>
+                        Search results <i class="pull-right glyphicon" ng-class="{'glyphicon-chevron-down': accordionCtrl.accordionStatus.isResultsOpen, 'glyphicon-chevron-right': !accordionCtrl.accordionStatus.isResultsOpen}"></i>
+                    </accordion-heading>
+                    <div ng-controller="ExistAssessFormResultsCtrl as resultsCtrl">
+                        <div class="row">
+                            <div ng-show="resultsCtrl.availableAssessments != 0" style="margin-left:1em;">
+                                <h4>Found: {{resultsCtrl.availableAssessments}} assessments</h4>
+                            </div>
+                        </div>
+                        <div ng-show="mainCtrl.resultsDirty" class="row">
+                            <div class="bg-info" style="margin-bottom:1em;">
+                                <span class="glyphicon glyphicon-info-sign pull-left" style="padding-right: 4px"></span>
+                                <p>You have submitted an assessment but it still may be shown here as incomplete. To update the table, please run the search again.</p>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <table ng-table="resultsCtrl.tableParams" class="table table-condensed table-bordered">
+                                <tr ng-repeat="assessment in $data" ng-click="resultsCtrl.assessmentSelected(assessment)" class="clickable"
+ng-class="{'bg-primary' : awHover, 'bg-warning' : !assessment.isComplete && !awHover, 'bg-success' : assessment.isComplete && !awHover}" ng-mouseenter="awHover = true" ng-mouseleave="awHover = false">
+                                    <td data-title="'Date'">{{assessment.assessmentDate | date:'dd-MM-yyyy'}}</td>
+                                    <td data-title="'Animal'">{{assessment.animal.animalNumber}}</td>
+                                    <td data-title="'Reason'">{{assessment.assessmentReason | specifiedUnspecified}}</td>
+                                    <td data-title="'Performed By'">{{assessment.performedBy | specifiedUnspecified }}</td>
+                                    <td data-title="'Is complete?'">{{assessment.isComplete | yesNo | uppercase}}</td>
+                                </tr>
+                            </table>
+                        </div>
+                    </div>
+                </accordion-group>
+                <accordion-group is-open="accordionCtrl.accordionStatus.isAssessmentOpen">
+                    <accordion-heading>
+                        Selected assessment <i class="pull-right glyphicon" ng-class="{'glyphicon-chevron-down': accordionCtrl.accordionStatus.isAssessmentOpen, 'glyphicon-chevron-right': !accordionCtrl.accordionStatus.isAssessmentOpen}"></i>
+                    </accordion-heading>
+                    <div>
+                        <aw-animal-assessment-form ng-attr-parent-ctrl="mainCtrl"></aw-animal-assessment-form>
+                    </div>
+                </accordion-group>
+            </accordion>
+            <div>
+                <aw-error-display errors="mainCtrl.getAssessmentErrors"></aw-error-display>
+            </div>
+        </div>
+    </div>
+</div>

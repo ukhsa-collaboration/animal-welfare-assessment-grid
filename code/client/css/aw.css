@@ -1,0 +1,68 @@
+.axis path, .axis line {
+    fill: none;
+    stroke: black;
+}
+
+.line {
+    fill: none;
+    stroke: #2077B4;
+    stroke-width: 2px;
+}
+
+.tick text {
+    font-size: 12px;
+}
+
+.tick line {
+    opacity: 0.2;
+}
+
+.dataLabel {
+    opacity: 1;
+}
+
+.dataLabelHidden {
+    opacity: 0;
+}
+
+.pointCircle {
+    fill : #2077B4;
+    cursor: pointer;
+}
+
+.pointCircle:hover {
+    fill : #FF4D4D;
+    cursor: pointer;
+}
+
+.assessment-form#btns-panel {
+    margin-top: 1em;
+}
+
+.big-checkbox {
+    width: 20px;
+    height: 20px;
+}
+
+.clickable {
+  cursor: pointer;
+}
+
+/**
+  Animate CSS for success
+**/
+/*
+.success-animate.ng-hide,
+.success-animate.ng-hide-remove {
+  transition: opacity 350ms;
+}
+
+.success-animate.ng-hide-add-active,
+.success-animate.ng-hide-remove {
+  opacity: 0;
+}
+
+.success-adnimate.ng-hide-remove-active {
+  opacity: 1;
+}
+*/

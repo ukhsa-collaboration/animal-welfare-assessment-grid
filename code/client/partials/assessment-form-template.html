@@ -1,0 +1,189 @@
+<div class="container-fluid" ng-controller="AssessFormAnimalSelectionCtrl as animalCtrl">
+    <form name="assessmentForm">
+        <div class="row">
+            <div class="col-xs-12 col-sm-3">
+                <h4>Animal:</h4>
+            </div>
+            <div class="col-xs-12 col-sm-9">
+                <aw-search-select2 elem-id="{{animalCtrl.selectId}}" controller="animalCtrl"></aw-search-select2>
+            </div>
+        </div>
+        <div class="row" ng-show="animalCtrl.showAnimalChangingMsg">
+            <div class="col-sm-offset-3 col-sm-9">
+                <h5>Please wait, comparing animal templates...</h5>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-xs-12 col-sm-3">
+                <h4>Study:</h4>
+            </div>
+            <div class="col-xs-12 col-sm-9">
+                <h5>{{ animalCtrl.studyNumber }}</h5>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-sm-3">
+                <h4>Species:</h4>
+            </div>
+            <div class="col-sm-9">
+                <h5>{{ animalCtrl.animal.speciesName }}</h5>
+            </div>
+        </div>
+
+        <div class="row">
+            <hr />
+        </div>
+
+        <div class="row">
+            <div class="col-sm-3">
+                <h4>Assessment reason:</h4>
+            </div>
+            <div ng-controller="AssessFormReasonSelectionCtrl as reasonCtrl">
+                <div class="col-sm-9">
+                    <aw-search-select2 elem-id="{{reasonCtrl.selectId}}" controller="reasonCtrl"></aw-search-select2>
+                </div>
+                <div class="col-sm-9">
+                    <aw-error-display errors="reasonCtrl.errors"></aw-error-display>
+                </div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-sm-3">
+                <h4>Assessment date:</h4>
+            </div>
+            <div class="col-sm-9" ng-controller="AssessFormDateSelectionCtrl as dateCtrl">
+                <aw-date-picker elem-id="{{dateCtrl.id}}" controller="dateCtrl"></aw-date-picker>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-sm-3">
+                <h4>Animal housing:</h4>
+            </div>
+            <div ng-controller="AssessFormHousingSelectionCtrl as housingCtrl">
+                <div class="col-sm-9">
+                    <aw-search-select2 elem-id="{{housingCtrl.selectId}}" controller="housingCtrl"></aw-search-select2>
+                </div>
+                <div class="col-sm-9">
+                    <aw-error-display errors="housingCtrl.errors"></aw-error-display>
+                </div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-sm-3">
+                <h4>Performed by:</h4>
+            </div>
+            <div ng-controller="AssessFormUserSelectionCtrl as userCtrl">
+                <div class="col-sm-9">
+                    <aw-search-select2 elem-id="{{userCtrl.selectId}}" controller="userCtrl"></aw-search-select2>
+                </div>
+                <div class="col-sm-9">
+                    <aw-error-display errors="userCtrl.errors"></aw-error-display>
+                </div>
+            </div>
+        </div>
+
+        <div ng-controller="AssessFormPreviousAssessmentCtrl as prevAssessmentCtrl">
+            <div class="row">
+                <div class="col-sm-3">
+                    <h4>Previous assessment date:</h4>
+                </div>
+                <div class="col-sm-9">
+                    <h5>{{prevAssessmentCtrl.date | date:'dd-MM-yyyy'}}</h5>
+                </div>
+            </div>
+            <div class="row" ng-hide="prevAssessmentCtrl.isComplete">
+                <div class="col-sm-9 col-sm-offset-3">
+                    <h4 class="bg-warning">Note: previous assessment is not complete</h4>
+                </div>
+            </div>
+            <div class="row">
+               <div class="col-sm-3">
+                   <h4>Previous assessment scores:</h4>
+               </div>
+               <div class="col-sm-9 table-responsive">
+                  <table class="table table-bordered table-condensed table-hover">
+                      <thead>
+                        <tr>
+                            <th>Name</th>
+                            <th>Average</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                          <tr ng-repeat="score in prevAssessmentCtrl.scores | orderBy:'name'">
+                            <td>{{score.name}}</td><td>{{score.avgScore | number:2}}</td>
+                          </tr>
+                      </tbody>
+                  </table>
+                </div>
+            </div>
+        </div>
+        <div class="row spacer">
+            <div class="col-xs-12 col-sm-12 col-md-12">
+                <tabset>
+                    <tab ng-repeat="parameter in animalCtrl.assessmentTemplate.templateParameters | orderBy:'parameterName'" heading="{{parameter.parameterName}}" ng-controller="AssessFormParametersCtrl as parametersCtrl">
+                        <div class="row" ng-repeat="factor in parameter.parameterFactors" ng-controller="AssessFormFactorsCtrl as factorsCtrl">
+                            <div class="col-xs-6 col-sm-6 col-md-4">
+                                <ul class="list-unstyled">
+                                    <li>
+                                        <h4>{{factor.factorName}}</h4>
+                                    </li>
+                                </ul>
+                            </div>
+                            <div class="col-xs-6 col-sm-6 col-md-4" ng-init="factorsCtrl.init(factor, factorsCtrl.score, factorsCtrl.isIgnored)">
+                                <ul class="list-unstyled">
+                                    <li>
+                                        <rating ng-model="factorsCtrl.score" readonly="animalCtrl.isInExistingCompleteMode || animalCtrl.isLockedInputs" max="animalCtrl.assessmentTemplate.templateScale.scaleMax" state-on="'glyphicon-stop'" state-off="'glyphicon-unchecked'" ng-click="factorsCtrl.onFactorScored(factor, factorsCtrl.score, factorsCtrl.isIgnored)"></rating><b>(<i>Score:</i> {{factorsCtrl.score}})</b>
+                                    </li>
+                                </ul>
+                            </div>
+                            <div class="col-xs-6 col-sm-6 col-md-4">
+                                <div class="checkbox">
+                                    <label>
+                                        <input type="checkbox" ng-model="factorsCtrl.isIgnored" ng-change="factorsCtrl.onFactorIgnore(factor, factorsCtrl.score, factorsCtrl.isIgnored)" ng-disabled="animalCtrl.isInExistingCompleteMode || animalCtrl.isLockedInputs">
+                                        Ignore</label>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="row" >
+                            <div class="col-xs-12" ng-controller="AssessFormCommentCtrl as commentCtrl">
+                                <textarea class="form-control" rows="4" cols="50" ng-attr-placeholder="Comment for parameter: {{parameter.parameterName}}" ng-model="commentCtrl.comment" ng-change="commentCtrl.onComment(parameter.parameterId)" ng-disabled="animalCtrl.isInExistingCompleteMode || animalCtrl.isLockedInputs"></textarea>
+                            </div>
+                        </div>
+                        <div class="row" >
+                            <div class="col-xs-12">
+                                <h4>Average score for parameter: {{ parameter.parameterName }} is {{animalCtrl.parameterAverages[parameter.parameterId]| number:2}}</h4>
+                            </div>
+                        </div>
+                    </tab>
+                </tabset>
+
+            </div>
+        </div>
+
+        <div class="row">
+            <aw-success-display success="animalCtrl.isSuccess"></aw-success-display>
+            <aw-error-display errors="animalCtrl.errors"></aw-error-display>
+        </div>
+
+        <div ng-show="!animalCtrl.isInExistingCompleteMode">
+            <div class="row assessment-form" id="btns-panel">
+                <div class="col-xs-4 col-sm-4 col-md-4 center-block">
+                    <button type="button" class="btn btn-success btn-lg center-block" ng-click="animalCtrl.submitAssessment()">
+                        Submit
+                    </button>
+                </div>
+                <div class="col-xs-4 col-sm-4 col-md-4 center-block">
+                    <button type="button" class="btn btn-primary btn-lg center-block" ng-click="animalCtrl.saveAssessment()">
+                        Save
+                    </button>
+                </div>
+                <div class="col-xs-4 col-sm-4 col-md-4 center-block">
+                    <button type="button" class="btn btn-danger btn-lg center-block" ng-click="animalCtrl.clearForm()">
+                        Clear
+                    </button>
+                </div>
+            </div>
+        </div>
+    </form>
+</div>

@@ -1,0 +1,2 @@
+Place the postgresql driver jar here if you want to run the build with container-based tests.
+Of course, you can also change the pom.xml to point to a different location where the jar is stored.

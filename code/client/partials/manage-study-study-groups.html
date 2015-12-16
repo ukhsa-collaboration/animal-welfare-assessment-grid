@@ -1,0 +1,143 @@
+<h1 class="page-header text-center">Study/Study group management</h1>
+<div class="container-fluid" ng-controller="StudyStudyGroupAccordianCtrl as accordianCtrl">
+    <accordion close-others="false">
+    	<accordion-group is-open="accordianCtrl.accordionStatus.isStudyGroupAnimalsOpen">
+    		<accordion-heading>
+    			Study group management
+    			<i class="pull-right glyphicon" ng-class="{'glyphicon-chevron-down': accordianCtrl.accordionStatus.isStudyGroupAnimalsOpen, 'glyphicon-chevron-right': !accordianCtrl.accordionStatus.isStudyGroupAnimalsOpen}"></i>
+    		</accordion-heading>
+    		<div ng-controller="MngmtStudyGroupManagementCtrl as studyGroupMngmtCtrl">
+    			<form name="studyGroupManagementForm" class="form-horizontal">
+					<div class="form-group" ng-controller="MngmtStudyGroupSelectionCtrl as studyGroupCtrl">
+            			<label for="{{studyGroupCtrl.selectId}}" class="col-xs-3 control-label">Study group name: </label>
+            			<div class="col-xs-7">
+                			<aw-search-select2 class="form-control" elem-id="{{studyGroupCtrl.selectId}}" controller="studyGroupCtrl"></aw-search-select2>
+            			</div>
+            			<div ng-click="studyGroupMngmtCtrl.startUpdate()" ng-show="studyGroupMngmtCtrl.isExistingStudyGroup">
+            				<button type="button" class="btn btn-default btn-sm">
+               					<i class="glyphicon glyphicon-edit"></i>
+            				</button>
+            			</div>
+        			</div>
+        			<div class="form-group" ng-controller="MngmtStudyGroupSelectionUpdateCtrl as studyGroupUpdateCtrl" ng-show="studyGroupMngmtCtrl.isUpdatingStudyGroup">
+            			<label for="{{studyGroupUpdateCtrl.selectId}}" class="col-xs-3 control-label">Update study group: </label>
+            			<div class="col-xs-7">
+                			<aw-select2 elem-id="{{studyGroupUpdateCtrl.selectId}}" controller="studyGroupUpdateCtrl"></aw-select2>
+            			</div>
+
+            			<div ng-click="studyGroupMngmtCtrl.cancelUpdate()">
+            				<button type="button" class="btn btn-default btn-sm">
+                				<i class="glyphicon glyphicon-remove"></i>
+            				</button>
+            			</div>
+        			</div>
+        			<div class="form-group" ng-controller="MngmtStudyGroupAnimalsCtrl as studyGroupAnimalsCtrl"> 
+            			<label for="{{studyGroupAnimalsCtrl.selectId}}" class="col-xs-3 control-label">Study group animals: </label>
+            			<div class="col-xs-7">
+                			<aw-search-select2 elem-id="{{studyGroupAnimalsCtrl.selectId}}" controller="studyGroupAnimalsCtrl"></aw-search-select2>
+            			</div>
+        			</div>
+
+        			<div class="form-group">
+            			<div class="col-xs-12" style="padding-left: 30px; padding-right: 30px; padding-top: 20px">
+            				<aw-error-display errors="studyGroupMngmtCtrl.errors"></aw-error-display>
+            				<aw-success-display success="studyGroupMngmtCtrl.isSuccess"></aw-success-display>
+            			</div>
+        			</div>
+					<div class="row">
+						<div ng-if="!studyGroupMngmtCtrl.isExistingStudyGroup">
+							<div class="col-xs-offset-6 col-xs-2">
+                    			<button type="button" class="btn btn-success btn-lg" ng-click="studyGroupMngmtCtrl.submitStudyGroup()">
+                        			Submit
+                    			</button>
+                			</div>
+						</div>
+						<div ng-if="studyGroupMngmtCtrl.isExistingStudyGroup">
+							<div class="col-xs-offset-6 col-xs-2">
+                    			<button type="button" class="btn btn-primary btn-lg" ng-click="studyGroupMngmtCtrl.updateStudyGroup()">
+                        			Update
+                    			</button>
+                			</div>
+						</div>
+                		<div class="col-xs-2">
+                    		<button type="button" class="btn btn-danger btn-lg" ng-click="studyGroupMngmtCtrl.clearStudyGroup()">
+                        		Clear
+                    		</button>
+                		</div>
+            		</div>
+        		</form>
+    		</div>
+    	</accordion-group>
+    	<accordion-group is-open="accordianCtrl.accordionStatus.isStudyStudyGroupsOpen">
+    		<accordion-heading>
+    			Study management
+    			<i class="pull-right glyphicon" ng-class="{'glyphicon-chevron-down': accordianCtrl.accordionStatus.isStudyStudyGroupsOpen, 'glyphicon-chevron-right': !accordianCtrl.accordionStatus.isStudyStudyGroupsOpen}"></i>
+    		</accordion-heading>
+    		<div ng-controller="MngmtStudyManagementCtrl as studyMngmtCtrl">
+    			<form name="studyGroupManagementForm" class="form-horizontal">
+					<div class="form-group" ng-controller="MngmtStudySelectionCtrl as studyCtrl">
+            			<label for="{{studyCtrl.selectId}}" class="col-xs-3 control-label">Study name: </label>
+            			<div class="col-xs-7">
+                			<aw-search-select2 class="form-control" elem-id="{{studyCtrl.selectId}}" controller="studyCtrl"></aw-search-select2>
+            			</div>
+            			<div ng-click="studyMngmtCtrl.startUpdate()" ng-show="studyMngmtCtrl.isExistingStudy">
+            				<button type="button" class="btn btn-default btn-sm">
+               					<i class="glyphicon glyphicon-edit"></i>
+            				</button>
+            			</div>
+        			</div>
+        			<div class="form-group" ng-controller="MngmtStudySelectionUpdateCtrl as studyUpdateCtrl" ng-show="studyMngmtCtrl.isUpdatingStudy">
+            			<label for="{{studyUpdateCtrl.selectId}}" class="col-xs-3 control-label">Update study: </label>
+            			<div class="col-xs-7">
+                			<aw-select2 elem-id="{{studyUpdateCtrl.selectId}}" controller="studyUpdateCtrl"></aw-select2>
+            			</div>
+
+            			<div ng-click="studyMngmtCtrl.cancelUpdate()">
+            				<button type="button" class="btn btn-default btn-sm">
+                				<i class="glyphicon glyphicon-remove"></i>
+            				</button>
+            			</div>
+        			</div>
+        			<div class="form-group" ng-controller="MngmtStudyStudyGroupCtrl as studyStudyGroupCtrl"> 
+            			<label for="{{studyStudyGroupCtrl.selectId}}" class="col-xs-3 control-label">Study study groups: </label>
+            			<div class="col-xs-7">
+                			<aw-search-select2 elem-id="{{studyStudyGroupCtrl.selectId}}" controller="studyStudyGroupCtrl"></aw-search-select2>
+            			</div>
+        			</div>
+        			<div class="form-group">
+        				<label class="col-xs-3 control-label">Open study: </label>
+            			<input class="col-xs-offset-6 big-checkbox" type="checkbox" ng-model="studyMngmtCtrl.study.isStudyOpen">					
+        			</div>
+					<div class="form-group">
+            			<div class="col-xs-12" style="padding-left: 30px; padding-right: 30px; padding-top: 20px">
+            				<aw-error-display errors="studyMngmtCtrl.errors"></aw-error-display>
+            				<aw-success-display success="studyMngmtCtrl.isSuccess"></aw-success-display>
+            			</div>
+        			</div>
+					<div class="row">
+						<div ng-if="!studyMngmtCtrl.isExistingStudy">
+							<div class="col-xs-offset-6 col-xs-2">
+                    			<button type="button" class="btn btn-success btn-lg" ng-click="studyMngmtCtrl.submitStudy()">
+                        			Submit
+                    			</button>
+                			</div>
+						</div>
+						<div ng-if="studyMngmtCtrl.isExistingStudy">
+							<div class="col-xs-offset-6 col-xs-2">
+                    			<button type="button" class="btn btn-primary btn-lg" ng-click="studyMngmtCtrl.updateStudy()">
+                        			Update
+                    			</button>
+                			</div>
+						</div>
+                		<div class="col-xs-2">
+                    		<button type="button" class="btn btn-danger btn-lg" ng-click="studyMngmtCtrl.clearStudy()">
+                        		Clear
+                    		</button>
+                		</div>
+
+            		</div>
+        		</form>
+    		</div>
+    	</accordion-group>
+    </accordion>
+</div>

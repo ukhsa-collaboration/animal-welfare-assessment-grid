@@ -1,0 +1,72 @@
+<h1 class="page-header text-center">Scale Management</h1>
+<div class="container-fluid" ng-controller="MngmtScaleManagementCtrl as scaleMngmtCtrl">
+    <form name="scaleManagementForm" class="form-horizontal">
+        <div class="form-group" ng-controller="MngmtScaleSelectionCtrl as scaleCtrl">
+            <label for="{{scaleCtrl.selectId}}" class="col-xs-3 control-label">Scale name: </label>
+            <div class="col-xs-7">
+                <aw-search-select2 class="form-control" elem-id="{{scaleCtrl.selectId}}" controller="scaleCtrl"></aw-search-select2>
+            </div>
+            <div ng-click="scaleMngmtCtrl.startUpdate()" ng-hide="scaleMngmtCtrl.isNewScale">
+                <button type="button" class="btn btn-default btn-sm">
+                    <i class="glyphicon glyphicon-edit"></i>
+                </button>
+            </div>
+        </div>
+        <div class="form-group" ng-controller="MngmtScaleSelectionUpdateCtrl as scaleUpdateCtrl" ng-show="scaleMngmtCtrl.isUpdatingScale">
+            <label for="{{scaleUpdateCtrl.selectId}}" class="col-xs-3 control-label">Update scale name: </label>
+            <div class="col-xs-7">
+                <aw-select2 elem-id="{{scaleUpdateCtrl.selectId}}" controller="scaleUpdateCtrl"></aw-select2>
+            </div>
+            <div ng-click="scaleMngmtCtrl.cancelUpdate()">
+                <button type="button" class="btn btn-default btn-sm">
+                    <i class="glyphicon glyphicon-remove"></i>
+                </button>
+            </div>
+        </div>
+        <div class="form-group">
+            <label class="col-xs-3 control-label" for="scaleMin">Scale min: </label>
+            <div class="col-xs-7">
+                <input type="text" class="form-control" id="scaleMin" placeholder="Enter a minimum scale value..." ng-model="scaleMngmtCtrl.scale.scaleMin">
+            </div>
+        </div>
+        <div class="form-group">
+            <label class="col-xs-3 control-label" for="scaleMax">Scale max:</label>
+            <div class="col-xs-7">
+                <input type="text" class="form-control" id="scaleMax" placeholder="Enter a maximum scale value..." ng-model="scaleMngmtCtrl.scale.scaleMax">
+            </div>
+        </div>
+        <div class="form-group">
+            <div class="col-xs-12">
+                <aw-success-display success="scaleMngmtCtrl.isSuccess"></aw-success-display>
+            </div>
+        </div>
+
+        <div class="form-group">
+            <div class="col-xs-12">
+                <aw-error-display errors="scaleMngmtCtrl.errors"></aw-error-display>
+            </div>
+        </div>
+
+        <div class="row">
+            <hr />
+        </div>
+        <div class="row">
+
+        <div class="col-xs-6" ng-show="scaleMngmtCtrl.isNewScale">
+                <button type="button" class="btn btn-success btn-sm pull-right" ng-click="scaleMngmtCtrl.submitScale()">
+                Create
+                </button>
+            </div>
+            <div class="col-xs-6" ng-hide="scaleMngmtCtrl.isNewScale">
+                <button type="button" class="btn btn-primary btn-sm pull-right" ng-click="scaleMngmtCtrl.updateScale()">
+                Update
+                </button>
+            </div>
+            <div class="col-xs-6">
+                <button type="button" class="btn btn-danger btn-sm" ng-click="scaleMngmtCtrl.clearScale()">
+                Clear
+                </button>
+            </div>            
+        </div>
+    </form>
+</div>

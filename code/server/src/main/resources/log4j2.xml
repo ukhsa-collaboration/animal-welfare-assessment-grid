@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Configuration>
+	<Properties>
+		<Property name="pattern">%d [%-10t] %-5p %c.%M.%L - %m%n</Property>
+		<Property name="log-file-name">aw.log</Property>
+		<Property name="rolling-log-file-name">logs/aw.log</Property>
+		<Property name="rolling-log-file-pattern">aw-%i.log</Property>
+		<Property name="rolling-log-file-size-limit">10 MB</Property>
+	</Properties>
+	<Appenders>
+		<Console name="STDOUT" target="SYSTEM_OUT">
+			<PatternLayout pattern="${pattern}" />
+		</Console>
+		<!-- <File name="LOGFILE" fileName="${log-file-name}" append="false"> <PatternLayout 
+			pattern="${pattern}"/> </File> -->
+		<RollingFile name="LOGFILEROLLING" fileName="${rolling-log-file-name}"
+			filePattern="${rolling-log-file-pattern}">
+			<PatternLayout pattern="${pattern}" />
+			<Policies>
+				<SizeBasedTriggeringPolicy size="${rolling-log-file-size-limit}" />
+			</Policies>
+		</RollingFile>
+	</Appenders>
+	<Loggers>
+		<Root level="debug">
+			<AppenderRef ref="LOGFILEROLLING" />
+		</Root>
+	</Loggers>
+</Configuration>

@@ -1,0 +1,11 @@
+Execute from Postgresql bin directory
+
+The following sequence assumes the 'awdatabase' database exists.
+
+Backup:
+pg_dump.exe -h localhost -U postgres --clean -E UTF-8 -F plain awdatabase > c:\db-bck\your-db-backup.sql
+
+
+Restore:
+psql.exe -U postgres awdatabase < c:\db-bck\your-db-backup.sql
+

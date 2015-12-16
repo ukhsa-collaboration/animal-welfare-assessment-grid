@@ -1,0 +1,57 @@
+<h1 class="page-header text-center">Species Management</h1>
+<div class="container-fluid" ng-controller="MngmtSpeciesManagementCtrl as speciesMngmtCtrl">
+    <form name="speciesManagementForm" class="form-horizontal">
+        <div class="form-group" ng-controller="MngmtSpeciesSelectionCtrl as speciesCtrl">
+            <label for="{{speciesCtrl.selectId}}" class="col-xs-3 control-label">Species name: </label>
+            <div class="col-xs-7">
+                <aw-search-select2 class="form-control" elem-id="{{speciesCtrl.selectId}}" controller="speciesCtrl"></aw-search-select2>
+            </div>
+            <div ng-click="speciesMngmtCtrl.startUpdate()" ng-hide="speciesMngmtCtrl.isNewSpecies">
+                <button type="button" class="btn btn-default btn-sm">
+                    <i class="glyphicon glyphicon-edit"></i>
+                </button>
+            </div>
+        </div>
+        <div class="form-group" ng-controller="MngmtSpeciesSelectionUpdateCtrl as speciesUpdateCtrl" ng-show="speciesMngmtCtrl.isUpdatingSpecies">
+            <label for="{{speciesUpdateCtrl.selectId}}" class="col-xs-3 control-label">Update species name: </label>
+            <div class="col-xs-7">
+                <aw-select2 elem-id="{{speciesUpdateCtrl.selectId}}" controller="speciesUpdateCtrl"></aw-select2>
+            </div>
+            <div ng-click="speciesMngmtCtrl.cancelUpdate()">
+                <button type="button" class="btn btn-default btn-sm">
+                    <i class="glyphicon glyphicon-remove"></i>
+                </button>
+            </div>
+        </div>
+        <div class="form-group">
+            <div class="col-xs-12">
+                <aw-success-display success="speciesMngmtCtrl.isSuccess"></aw-success-display>
+            </div>
+        </div>
+        <div class="form-group">
+            <div class="col-xs-12">
+                <aw-error-display errors="speciesMngmtCtrl.errors"></aw-error-display>
+            </div>
+        </div>
+        <div class="row">
+            <hr />
+        </div>
+        <div class="row">
+            <div class="col-xs-6" ng-show="speciesMngmtCtrl.isNewSpecies">
+                <button type="button" class="btn btn-success btn-sm pull-right" ng-click="speciesMngmtCtrl.submitSpecies()">
+                Create
+                </button>
+            </div>
+            <div class="col-xs-6" ng-hide="speciesMngmtCtrl.isNewSpecies">
+                <button type="button" class="btn btn-primary btn-sm pull-right" ng-click="speciesMngmtCtrl.updateSpecies()">
+                Update
+                </button>
+            </div>
+            <div class="col-xs-6">
+                <button type="button" class="btn btn-danger btn-sm" ng-click="speciesMngmtCtrl.clearSpecies()">
+                Clear
+                </button>
+            </div>
+        </div>
+    </form>
+</div>
