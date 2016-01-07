@@ -9,141 +9,126 @@ SET standard_conforming_strings = on;
 SET check_function_bodies = false;
 SET client_min_messages = warning;
 
-SET search_path = public, pg_catalog;
+SET search_path = awag_schema, pg_catalog;
 
-ALTER TABLE ONLY public.parameter_score_factor_scored DROP CONSTRAINT parameter_score_factor_scored_mscoringfactorsscored_mid;
-ALTER TABLE ONLY public.study_study_group DROP CONSTRAINT fk_study_study_group_study_mid;
-ALTER TABLE ONLY public.study_study_group DROP CONSTRAINT fk_study_study_group_mgroups_mid;
-ALTER TABLE ONLY public.study_group_animal DROP CONSTRAINT fk_study_group_animal_studygroup_mid;
-ALTER TABLE ONLY public.study_group_animal DROP CONSTRAINT fk_study_group_animal_manimals_mid;
-ALTER TABLE ONLY public.parameter_score DROP CONSTRAINT fk_parameter_score_mparameterscored_mid;
-ALTER TABLE ONLY public.parameter_score_factor_scored DROP CONSTRAINT fk_parameter_score_factor_scored_parameterscore_mid;
-ALTER TABLE ONLY public.factor_scored DROP CONSTRAINT fk_factor_scored_mscoringfactor_mid;
-ALTER TABLE ONLY public.assessment_template_parameter_factor DROP CONSTRAINT fk_assessment_template_parameter_factor_parameter_id;
-ALTER TABLE ONLY public.assessment_template_parameter_factor DROP CONSTRAINT fk_assessment_template_parameter_factor_factor_id;
-ALTER TABLE ONLY public.assessment_template_parameter_factor DROP CONSTRAINT fk_assessment_template_parameter_factor_assessment_template_id;
-ALTER TABLE ONLY public.assessment_template DROP CONSTRAINT fk_assessment_template_mscale_mid;
-ALTER TABLE ONLY public.assessment_score_parameter_score DROP CONSTRAINT fk_assessment_score_parameter_score_mparametersscored_mid;
-ALTER TABLE ONLY public.assessment_score_parameter_score DROP CONSTRAINT fk_assessment_score_parameter_score_assessmentscore_mid;
-ALTER TABLE ONLY public.assessment DROP CONSTRAINT fk_assessment_mstudy_mid;
-ALTER TABLE ONLY public.assessment DROP CONSTRAINT fk_assessment_mscore_mid;
-ALTER TABLE ONLY public.assessment DROP CONSTRAINT fk_assessment_mreason_mid;
-ALTER TABLE ONLY public.assessment DROP CONSTRAINT fk_assessment_mperformedby_mid;
-ALTER TABLE ONLY public.assessment DROP CONSTRAINT fk_assessment_manimalhousing_mid;
-ALTER TABLE ONLY public.assessment DROP CONSTRAINT fk_assessment_manimal_mid;
-ALTER TABLE ONLY public.animal DROP CONSTRAINT fk_animal_mspecies_mid;
-ALTER TABLE ONLY public.animal DROP CONSTRAINT fk_animal_msource_mid;
-ALTER TABLE ONLY public.animal DROP CONSTRAINT fk_animal_msex_mid;
-ALTER TABLE ONLY public.animal DROP CONSTRAINT fk_animal_mfather_mid;
-ALTER TABLE ONLY public.animal DROP CONSTRAINT fk_animal_mdam_mid;
-ALTER TABLE ONLY public.animal DROP CONSTRAINT fk_animal_massessmenttemplate_mid;
-DROP INDEX public.users_lower_mname_unique;
-DROP INDEX public.study_lower_mstudynumber_unique;
-DROP INDEX public.study_group_lower_mstudygroupnumber_unique;
-DROP INDEX public.species_lower_mname_unique;
-DROP INDEX public.source_lower_mname_unique;
-DROP INDEX public.scale_lower_mname_unique;
-DROP INDEX public.reason_lower_mname_unique;
-DROP INDEX public.parameter_lower_mname_unique;
-DROP INDEX public.housing_lower_mname_unique;
-DROP INDEX public.factor_lower_mname_unique;
-DROP INDEX public.assessment_template_lower_mname_unique;
-DROP INDEX public.assessment_reason_lower_mname_unique;
-DROP INDEX public.animal_lower_manimalnumber_unique;
-DROP INDEX public.animal_housing_lower_mname_unique;
-ALTER TABLE ONLY public.users DROP CONSTRAINT users_pkey;
-ALTER TABLE ONLY public.users DROP CONSTRAINT users_mname_key;
-ALTER TABLE ONLY public.study_study_group DROP CONSTRAINT study_study_group_pkey;
-ALTER TABLE ONLY public.study DROP CONSTRAINT study_pkey;
-ALTER TABLE ONLY public.study DROP CONSTRAINT study_mstudynumber_key;
-ALTER TABLE ONLY public.study_group DROP CONSTRAINT study_group_pkey;
-ALTER TABLE ONLY public.study_group_animal DROP CONSTRAINT study_group_animal_pkey;
-ALTER TABLE ONLY public.species DROP CONSTRAINT species_pkey;
-ALTER TABLE ONLY public.species DROP CONSTRAINT species_mname_key;
-ALTER TABLE ONLY public.source DROP CONSTRAINT source_pkey;
-ALTER TABLE ONLY public.source DROP CONSTRAINT source_mname_key;
-ALTER TABLE ONLY public.sex DROP CONSTRAINT sex_pkey;
-ALTER TABLE ONLY public.sequence DROP CONSTRAINT sequence_pkey;
-ALTER TABLE ONLY public.scale DROP CONSTRAINT scale_pkey;
-ALTER TABLE ONLY public.parameter_score DROP CONSTRAINT parameter_score_pkey;
-ALTER TABLE ONLY public.parameter_score_factor_scored DROP CONSTRAINT parameter_score_factor_scored_pkey;
-ALTER TABLE ONLY public.parameter DROP CONSTRAINT parameter_pkey;
-ALTER TABLE ONLY public.factor_scored DROP CONSTRAINT factor_scored_pkey;
-ALTER TABLE ONLY public.factor DROP CONSTRAINT factor_pkey;
-ALTER TABLE ONLY public.assessment_template DROP CONSTRAINT assessment_template_pkey;
-ALTER TABLE ONLY public.assessment_template_parameter_factor DROP CONSTRAINT assessment_template_parameter_factor_pkey;
-ALTER TABLE ONLY public.assessment_score DROP CONSTRAINT assessment_score_pkey;
-ALTER TABLE ONLY public.assessment_score_parameter_score DROP CONSTRAINT assessment_score_parameter_score_pkey;
-ALTER TABLE ONLY public.assessment_reason DROP CONSTRAINT assessment_reason_pkey;
-ALTER TABLE ONLY public.assessment_reason DROP CONSTRAINT assessment_reason_mname_key;
-ALTER TABLE ONLY public.assessment DROP CONSTRAINT assessment_pkey;
-ALTER TABLE ONLY public.animal DROP CONSTRAINT animal_pkey;
-ALTER TABLE ONLY public.animal DROP CONSTRAINT animal_manimalnumber_key;
-ALTER TABLE ONLY public.animal_housing DROP CONSTRAINT animal_housing_pkey;
-ALTER TABLE ONLY public.animal_housing DROP CONSTRAINT animal_housing_mname_key;
-DROP TABLE public.users;
-DROP TABLE public.study_study_group;
-DROP TABLE public.study_group_animal;
-DROP TABLE public.study_group;
-DROP TABLE public.study;
-DROP TABLE public.species;
-DROP TABLE public.source;
-DROP TABLE public.sex;
-DROP TABLE public.sequence;
-DROP TABLE public.scale;
-DROP TABLE public.parameter_score_factor_scored;
-DROP TABLE public.parameter_score;
-DROP TABLE public.parameter;
-DROP TABLE public.factor_scored;
-DROP TABLE public.factor;
-DROP TABLE public.assessment_template_parameter_factor;
-DROP TABLE public.assessment_template;
-DROP TABLE public.assessment_score_parameter_score;
-DROP TABLE public.assessment_score;
-DROP TABLE public.assessment_reason;
-DROP TABLE public.assessment;
-DROP TABLE public.animal_housing;
-DROP TABLE public.animal;
-DROP EXTENSION plpgsql;
-DROP SCHEMA public;
+ALTER TABLE ONLY awag_schema.parameter_score_factor_scored DROP CONSTRAINT parameter_score_factor_scored_mscoringfactorsscored_mid;
+ALTER TABLE ONLY awag_schema.study_study_group DROP CONSTRAINT fk_study_study_group_study_mid;
+ALTER TABLE ONLY awag_schema.study_study_group DROP CONSTRAINT fk_study_study_group_mgroups_mid;
+ALTER TABLE ONLY awag_schema.study_group_animal DROP CONSTRAINT fk_study_group_animal_studygroup_mid;
+ALTER TABLE ONLY awag_schema.study_group_animal DROP CONSTRAINT fk_study_group_animal_manimals_mid;
+ALTER TABLE ONLY awag_schema.parameter_score DROP CONSTRAINT fk_parameter_score_mparameterscored_mid;
+ALTER TABLE ONLY awag_schema.parameter_score_factor_scored DROP CONSTRAINT fk_parameter_score_factor_scored_parameterscore_mid;
+ALTER TABLE ONLY awag_schema.factor_scored DROP CONSTRAINT fk_factor_scored_mscoringfactor_mid;
+ALTER TABLE ONLY awag_schema.assessment_template_parameter_factor DROP CONSTRAINT fk_assessment_template_parameter_factor_parameter_id;
+ALTER TABLE ONLY awag_schema.assessment_template_parameter_factor DROP CONSTRAINT fk_assessment_template_parameter_factor_factor_id;
+ALTER TABLE ONLY awag_schema.assessment_template_parameter_factor DROP CONSTRAINT fk_assessment_template_parameter_factor_assessment_template_id;
+ALTER TABLE ONLY awag_schema.assessment_template DROP CONSTRAINT fk_assessment_template_mscale_mid;
+ALTER TABLE ONLY awag_schema.assessment_score_parameter_score DROP CONSTRAINT fk_assessment_score_parameter_score_mparametersscored_mid;
+ALTER TABLE ONLY awag_schema.assessment_score_parameter_score DROP CONSTRAINT fk_assessment_score_parameter_score_assessmentscore_mid;
+ALTER TABLE ONLY awag_schema.assessment DROP CONSTRAINT fk_assessment_mstudy_mid;
+ALTER TABLE ONLY awag_schema.assessment DROP CONSTRAINT fk_assessment_mscore_mid;
+ALTER TABLE ONLY awag_schema.assessment DROP CONSTRAINT fk_assessment_mreason_mid;
+ALTER TABLE ONLY awag_schema.assessment DROP CONSTRAINT fk_assessment_mperformedby_mid;
+ALTER TABLE ONLY awag_schema.assessment DROP CONSTRAINT fk_assessment_manimalhousing_mid;
+ALTER TABLE ONLY awag_schema.assessment DROP CONSTRAINT fk_assessment_manimal_mid;
+ALTER TABLE ONLY awag_schema.animal DROP CONSTRAINT fk_animal_mspecies_mid;
+ALTER TABLE ONLY awag_schema.animal DROP CONSTRAINT fk_animal_msource_mid;
+ALTER TABLE ONLY awag_schema.animal DROP CONSTRAINT fk_animal_msex_mid;
+ALTER TABLE ONLY awag_schema.animal DROP CONSTRAINT fk_animal_mfather_mid;
+ALTER TABLE ONLY awag_schema.animal DROP CONSTRAINT fk_animal_mdam_mid;
+ALTER TABLE ONLY awag_schema.animal DROP CONSTRAINT fk_animal_massessmenttemplate_mid;
+DROP INDEX awag_schema.users_lower_mname_unique;
+DROP INDEX awag_schema.study_lower_mstudynumber_unique;
+DROP INDEX awag_schema.study_group_lower_mstudygroupnumber_unique;
+DROP INDEX awag_schema.species_lower_mname_unique;
+DROP INDEX awag_schema.source_lower_mname_unique;
+DROP INDEX awag_schema.scale_lower_mname_unique;
+DROP INDEX awag_schema.reason_lower_mname_unique;
+DROP INDEX awag_schema.parameter_lower_mname_unique;
+DROP INDEX awag_schema.housing_lower_mname_unique;
+DROP INDEX awag_schema.factor_lower_mname_unique;
+DROP INDEX awag_schema.assessment_template_lower_mname_unique;
+DROP INDEX awag_schema.assessment_reason_lower_mname_unique;
+DROP INDEX awag_schema.animal_lower_manimalnumber_unique;
+DROP INDEX awag_schema.animal_housing_lower_mname_unique;
+ALTER TABLE ONLY awag_schema.users DROP CONSTRAINT users_pkey;
+ALTER TABLE ONLY awag_schema.users DROP CONSTRAINT users_mname_key;
+ALTER TABLE ONLY awag_schema.study_study_group DROP CONSTRAINT study_study_group_pkey;
+ALTER TABLE ONLY awag_schema.study DROP CONSTRAINT study_pkey;
+ALTER TABLE ONLY awag_schema.study DROP CONSTRAINT study_mstudynumber_key;
+ALTER TABLE ONLY awag_schema.study_group DROP CONSTRAINT study_group_pkey;
+ALTER TABLE ONLY awag_schema.study_group_animal DROP CONSTRAINT study_group_animal_pkey;
+ALTER TABLE ONLY awag_schema.species DROP CONSTRAINT species_pkey;
+ALTER TABLE ONLY awag_schema.species DROP CONSTRAINT species_mname_key;
+ALTER TABLE ONLY awag_schema.source DROP CONSTRAINT source_pkey;
+ALTER TABLE ONLY awag_schema.source DROP CONSTRAINT source_mname_key;
+ALTER TABLE ONLY awag_schema.sex DROP CONSTRAINT sex_pkey;
+ALTER TABLE ONLY awag_schema.sequence DROP CONSTRAINT sequence_pkey;
+ALTER TABLE ONLY awag_schema.scale DROP CONSTRAINT scale_pkey;
+ALTER TABLE ONLY awag_schema.parameter_score DROP CONSTRAINT parameter_score_pkey;
+ALTER TABLE ONLY awag_schema.parameter_score_factor_scored DROP CONSTRAINT parameter_score_factor_scored_pkey;
+ALTER TABLE ONLY awag_schema.parameter DROP CONSTRAINT parameter_pkey;
+ALTER TABLE ONLY awag_schema.factor_scored DROP CONSTRAINT factor_scored_pkey;
+ALTER TABLE ONLY awag_schema.factor DROP CONSTRAINT factor_pkey;
+ALTER TABLE ONLY awag_schema.assessment_template DROP CONSTRAINT assessment_template_pkey;
+ALTER TABLE ONLY awag_schema.assessment_template_parameter_factor DROP CONSTRAINT assessment_template_parameter_factor_pkey;
+ALTER TABLE ONLY awag_schema.assessment_score DROP CONSTRAINT assessment_score_pkey;
+ALTER TABLE ONLY awag_schema.assessment_score_parameter_score DROP CONSTRAINT assessment_score_parameter_score_pkey;
+ALTER TABLE ONLY awag_schema.assessment_reason DROP CONSTRAINT assessment_reason_pkey;
+ALTER TABLE ONLY awag_schema.assessment_reason DROP CONSTRAINT assessment_reason_mname_key;
+ALTER TABLE ONLY awag_schema.assessment DROP CONSTRAINT assessment_pkey;
+ALTER TABLE ONLY awag_schema.animal DROP CONSTRAINT animal_pkey;
+ALTER TABLE ONLY awag_schema.animal DROP CONSTRAINT animal_manimalnumber_key;
+ALTER TABLE ONLY awag_schema.animal_housing DROP CONSTRAINT animal_housing_pkey;
+ALTER TABLE ONLY awag_schema.animal_housing DROP CONSTRAINT animal_housing_mname_key;
+DROP TABLE awag_schema.users;
+DROP TABLE awag_schema.study_study_group;
+DROP TABLE awag_schema.study_group_animal;
+DROP TABLE awag_schema.study_group;
+DROP TABLE awag_schema.study;
+DROP TABLE awag_schema.species;
+DROP TABLE awag_schema.source;
+DROP TABLE awag_schema.sex;
+DROP TABLE awag_schema.sequence;
+DROP TABLE awag_schema.scale;
+DROP TABLE awag_schema.parameter_score_factor_scored;
+DROP TABLE awag_schema.parameter_score;
+DROP TABLE awag_schema.parameter;
+DROP TABLE awag_schema.factor_scored;
+DROP TABLE awag_schema.factor;
+DROP TABLE awag_schema.assessment_template_parameter_factor;
+DROP TABLE awag_schema.assessment_template;
+DROP TABLE awag_schema.assessment_score_parameter_score;
+DROP TABLE awag_schema.assessment_score;
+DROP TABLE awag_schema.assessment_reason;
+DROP TABLE awag_schema.assessment;
+DROP TABLE awag_schema.animal_housing;
+DROP TABLE awag_schema.animal;
+DROP SCHEMA awag_schema;
 --
--- Name: public; Type: SCHEMA; Schema: -; Owner: postgres
---
-
-CREATE SCHEMA public;
-
-
-ALTER SCHEMA public OWNER TO postgres;
-
---
--- Name: SCHEMA public; Type: COMMENT; Schema: -; Owner: postgres
+-- Name: awag_schema; Type: SCHEMA; Schema: -; Owner: awag
 --
 
-COMMENT ON SCHEMA public IS 'standard public schema';
+CREATE SCHEMA awag_schema;
 
 
---
--- Name: plpgsql; Type: EXTENSION; Schema: -; Owner: 
---
-
-CREATE EXTENSION IF NOT EXISTS plpgsql WITH SCHEMA pg_catalog;
-
+ALTER SCHEMA awag_schema OWNER TO awag;
 
 --
--- Name: EXTENSION plpgsql; Type: COMMENT; Schema: -; Owner: 
+-- Name: SCHEMA awag_schema; Type: COMMENT; Schema: -; Owner: awag
 --
 
-COMMENT ON EXTENSION plpgsql IS 'PL/pgSQL procedural language';
+COMMENT ON SCHEMA awag_schema IS 'awag application schema';
 
 
-SET search_path = public, pg_catalog;
+SET search_path = awag_schema, pg_catalog;
 
 SET default_tablespace = '';
 
 SET default_with_oids = false;
 
 --
--- Name: animal; Type: TABLE; Schema: public; Owner: postgres; Tablespace: 
+-- Name: animal; Type: TABLE; Schema: awag_schema; Owner: awag; Tablespace: 
 --
 
 CREATE TABLE animal (
@@ -162,10 +147,10 @@ CREATE TABLE animal (
 );
 
 
-ALTER TABLE public.animal OWNER TO postgres;
+ALTER TABLE awag_schema.animal OWNER TO awag;
 
 --
--- Name: animal_housing; Type: TABLE; Schema: public; Owner: postgres; Tablespace: 
+-- Name: animal_housing; Type: TABLE; Schema: awag_schema; Owner: awag; Tablespace: 
 --
 
 CREATE TABLE animal_housing (
@@ -174,16 +159,16 @@ CREATE TABLE animal_housing (
 );
 
 
-ALTER TABLE public.animal_housing OWNER TO postgres;
+ALTER TABLE awag_schema.animal_housing OWNER TO awag;
 
 --
--- Name: assessment; Type: TABLE; Schema: public; Owner: postgres; Tablespace: 
+-- Name: assessment; Type: TABLE; Schema: awag_schema; Owner: awag; Tablespace: 
 --
 
 CREATE TABLE assessment (
     mid bigint NOT NULL,
     mdate character varying(255),
-	miscomplete boolean,
+    miscomplete boolean,
     manimal_mid bigint,
     manimalhousing_mid bigint,
     mperformedby_mid bigint,
@@ -193,10 +178,10 @@ CREATE TABLE assessment (
 );
 
 
-ALTER TABLE public.assessment OWNER TO postgres;
+ALTER TABLE awag_schema.assessment OWNER TO awag;
 
 --
--- Name: assessment_reason; Type: TABLE; Schema: public; Owner: postgres; Tablespace: 
+-- Name: assessment_reason; Type: TABLE; Schema: awag_schema; Owner: awag; Tablespace: 
 --
 
 CREATE TABLE assessment_reason (
@@ -205,10 +190,10 @@ CREATE TABLE assessment_reason (
 );
 
 
-ALTER TABLE public.assessment_reason OWNER TO postgres;
+ALTER TABLE awag_schema.assessment_reason OWNER TO awag;
 
 --
--- Name: assessment_score; Type: TABLE; Schema: public; Owner: postgres; Tablespace: 
+-- Name: assessment_score; Type: TABLE; Schema: awag_schema; Owner: awag; Tablespace: 
 --
 
 CREATE TABLE assessment_score (
@@ -216,10 +201,10 @@ CREATE TABLE assessment_score (
 );
 
 
-ALTER TABLE public.assessment_score OWNER TO postgres;
+ALTER TABLE awag_schema.assessment_score OWNER TO awag;
 
 --
--- Name: assessment_score_parameter_score; Type: TABLE; Schema: public; Owner: postgres; Tablespace: 
+-- Name: assessment_score_parameter_score; Type: TABLE; Schema: awag_schema; Owner: awag; Tablespace: 
 --
 
 CREATE TABLE assessment_score_parameter_score (
@@ -228,10 +213,10 @@ CREATE TABLE assessment_score_parameter_score (
 );
 
 
-ALTER TABLE public.assessment_score_parameter_score OWNER TO postgres;
+ALTER TABLE awag_schema.assessment_score_parameter_score OWNER TO awag;
 
 --
--- Name: assessment_template; Type: TABLE; Schema: public; Owner: postgres; Tablespace: 
+-- Name: assessment_template; Type: TABLE; Schema: awag_schema; Owner: awag; Tablespace: 
 --
 
 CREATE TABLE assessment_template (
@@ -241,10 +226,10 @@ CREATE TABLE assessment_template (
 );
 
 
-ALTER TABLE public.assessment_template OWNER TO postgres;
+ALTER TABLE awag_schema.assessment_template OWNER TO awag;
 
 --
--- Name: assessment_template_parameter_factor; Type: TABLE; Schema: public; Owner: postgres; Tablespace: 
+-- Name: assessment_template_parameter_factor; Type: TABLE; Schema: awag_schema; Owner: awag; Tablespace: 
 --
 
 CREATE TABLE assessment_template_parameter_factor (
@@ -254,10 +239,10 @@ CREATE TABLE assessment_template_parameter_factor (
 );
 
 
-ALTER TABLE public.assessment_template_parameter_factor OWNER TO postgres;
+ALTER TABLE awag_schema.assessment_template_parameter_factor OWNER TO awag;
 
 --
--- Name: factor; Type: TABLE; Schema: public; Owner: postgres; Tablespace: 
+-- Name: factor; Type: TABLE; Schema: awag_schema; Owner: awag; Tablespace: 
 --
 
 CREATE TABLE factor (
@@ -266,10 +251,10 @@ CREATE TABLE factor (
 );
 
 
-ALTER TABLE public.factor OWNER TO postgres;
+ALTER TABLE awag_schema.factor OWNER TO awag;
 
 --
--- Name: factor_scored; Type: TABLE; Schema: public; Owner: postgres; Tablespace: 
+-- Name: factor_scored; Type: TABLE; Schema: awag_schema; Owner: awag; Tablespace: 
 --
 
 CREATE TABLE factor_scored (
@@ -280,10 +265,10 @@ CREATE TABLE factor_scored (
 );
 
 
-ALTER TABLE public.factor_scored OWNER TO postgres;
+ALTER TABLE awag_schema.factor_scored OWNER TO awag;
 
 --
--- Name: parameter; Type: TABLE; Schema: public; Owner: postgres; Tablespace: 
+-- Name: parameter; Type: TABLE; Schema: awag_schema; Owner: awag; Tablespace: 
 --
 
 CREATE TABLE parameter (
@@ -292,10 +277,10 @@ CREATE TABLE parameter (
 );
 
 
-ALTER TABLE public.parameter OWNER TO postgres;
+ALTER TABLE awag_schema.parameter OWNER TO awag;
 
 --
--- Name: parameter_score; Type: TABLE; Schema: public; Owner: postgres; Tablespace: 
+-- Name: parameter_score; Type: TABLE; Schema: awag_schema; Owner: awag; Tablespace: 
 --
 
 CREATE TABLE parameter_score (
@@ -306,10 +291,10 @@ CREATE TABLE parameter_score (
 );
 
 
-ALTER TABLE public.parameter_score OWNER TO postgres;
+ALTER TABLE awag_schema.parameter_score OWNER TO awag;
 
 --
--- Name: parameter_score_factor_scored; Type: TABLE; Schema: public; Owner: postgres; Tablespace: 
+-- Name: parameter_score_factor_scored; Type: TABLE; Schema: awag_schema; Owner: awag; Tablespace: 
 --
 
 CREATE TABLE parameter_score_factor_scored (
@@ -318,10 +303,10 @@ CREATE TABLE parameter_score_factor_scored (
 );
 
 
-ALTER TABLE public.parameter_score_factor_scored OWNER TO postgres;
+ALTER TABLE awag_schema.parameter_score_factor_scored OWNER TO awag;
 
 --
--- Name: scale; Type: TABLE; Schema: public; Owner: postgres; Tablespace: 
+-- Name: scale; Type: TABLE; Schema: awag_schema; Owner: awag; Tablespace: 
 --
 
 CREATE TABLE scale (
@@ -332,10 +317,10 @@ CREATE TABLE scale (
 );
 
 
-ALTER TABLE public.scale OWNER TO postgres;
+ALTER TABLE awag_schema.scale OWNER TO awag;
 
 --
--- Name: sequence; Type: TABLE; Schema: public; Owner: postgres; Tablespace: 
+-- Name: sequence; Type: TABLE; Schema: awag_schema; Owner: awag; Tablespace: 
 --
 
 CREATE TABLE sequence (
@@ -344,10 +329,10 @@ CREATE TABLE sequence (
 );
 
 
-ALTER TABLE public.sequence OWNER TO postgres;
+ALTER TABLE awag_schema.sequence OWNER TO awag;
 
 --
--- Name: sex; Type: TABLE; Schema: public; Owner: postgres; Tablespace: 
+-- Name: sex; Type: TABLE; Schema: awag_schema; Owner: awag; Tablespace: 
 --
 
 CREATE TABLE sex (
@@ -356,10 +341,10 @@ CREATE TABLE sex (
 );
 
 
-ALTER TABLE public.sex OWNER TO postgres;
+ALTER TABLE awag_schema.sex OWNER TO awag;
 
 --
--- Name: source; Type: TABLE; Schema: public; Owner: postgres; Tablespace: 
+-- Name: source; Type: TABLE; Schema: awag_schema; Owner: awag; Tablespace: 
 --
 
 CREATE TABLE source (
@@ -368,10 +353,10 @@ CREATE TABLE source (
 );
 
 
-ALTER TABLE public.source OWNER TO postgres;
+ALTER TABLE awag_schema.source OWNER TO awag;
 
 --
--- Name: species; Type: TABLE; Schema: public; Owner: postgres; Tablespace: 
+-- Name: species; Type: TABLE; Schema: awag_schema; Owner: awag; Tablespace: 
 --
 
 CREATE TABLE species (
@@ -381,10 +366,10 @@ CREATE TABLE species (
 );
 
 
-ALTER TABLE public.species OWNER TO postgres;
+ALTER TABLE awag_schema.species OWNER TO awag;
 
 --
--- Name: study; Type: TABLE; Schema: public; Owner: postgres; Tablespace: 
+-- Name: study; Type: TABLE; Schema: awag_schema; Owner: awag; Tablespace: 
 --
 
 CREATE TABLE study (
@@ -394,10 +379,10 @@ CREATE TABLE study (
 );
 
 
-ALTER TABLE public.study OWNER TO postgres;
+ALTER TABLE awag_schema.study OWNER TO awag;
 
 --
--- Name: study_group; Type: TABLE; Schema: public; Owner: postgres; Tablespace: 
+-- Name: study_group; Type: TABLE; Schema: awag_schema; Owner: awag; Tablespace: 
 --
 
 CREATE TABLE study_group (
@@ -406,10 +391,10 @@ CREATE TABLE study_group (
 );
 
 
-ALTER TABLE public.study_group OWNER TO postgres;
+ALTER TABLE awag_schema.study_group OWNER TO awag;
 
 --
--- Name: study_group_animal; Type: TABLE; Schema: public; Owner: postgres; Tablespace: 
+-- Name: study_group_animal; Type: TABLE; Schema: awag_schema; Owner: awag; Tablespace: 
 --
 
 CREATE TABLE study_group_animal (
@@ -418,10 +403,10 @@ CREATE TABLE study_group_animal (
 );
 
 
-ALTER TABLE public.study_group_animal OWNER TO postgres;
+ALTER TABLE awag_schema.study_group_animal OWNER TO awag;
 
 --
--- Name: study_study_group; Type: TABLE; Schema: public; Owner: postgres; Tablespace: 
+-- Name: study_study_group; Type: TABLE; Schema: awag_schema; Owner: awag; Tablespace: 
 --
 
 CREATE TABLE study_study_group (
@@ -430,10 +415,10 @@ CREATE TABLE study_study_group (
 );
 
 
-ALTER TABLE public.study_study_group OWNER TO postgres;
+ALTER TABLE awag_schema.study_study_group OWNER TO awag;
 
 --
--- Name: users; Type: TABLE; Schema: public; Owner: postgres; Tablespace: 
+-- Name: users; Type: TABLE; Schema: awag_schema; Owner: awag; Tablespace: 
 --
 
 CREATE TABLE users (
@@ -442,10 +427,10 @@ CREATE TABLE users (
 );
 
 
-ALTER TABLE public.users OWNER TO postgres;
+ALTER TABLE awag_schema.users OWNER TO awag;
 
 --
--- Data for Name: animal; Type: TABLE DATA; Schema: public; Owner: postgres
+-- Data for Name: animal; Type: TABLE DATA; Schema: awag_schema; Owner: awag
 --
 
 COPY animal (mid, manimalnumber, mdateofbirth, misalive, misassessed, massessmenttemplate_mid, mdam_mid, mfather_mid, msex_mid, msource_mid, mspecies_mid, misdeleted) FROM stdin;
@@ -457,7 +442,7 @@ COPY animal (mid, manimalnumber, mdateofbirth, misalive, misassessed, massessmen
 
 
 --
--- Data for Name: animal_housing; Type: TABLE DATA; Schema: public; Owner: postgres
+-- Data for Name: animal_housing; Type: TABLE DATA; Schema: awag_schema; Owner: awag
 --
 
 COPY animal_housing (mid, mname) FROM stdin;
@@ -468,7 +453,7 @@ COPY animal_housing (mid, mname) FROM stdin;
 
 
 --
--- Data for Name: assessment; Type: TABLE DATA; Schema: public; Owner: postgres
+-- Data for Name: assessment; Type: TABLE DATA; Schema: awag_schema; Owner: awag
 --
 
 COPY assessment (mid, mdate, miscomplete, manimal_mid, manimalhousing_mid, mperformedby_mid, mreason_mid, mscore_mid, mstudy_mid) FROM stdin;
@@ -476,7 +461,7 @@ COPY assessment (mid, mdate, miscomplete, manimal_mid, manimalhousing_mid, mperf
 
 
 --
--- Data for Name: assessment_reason; Type: TABLE DATA; Schema: public; Owner: postgres
+-- Data for Name: assessment_reason; Type: TABLE DATA; Schema: awag_schema; Owner: awag
 --
 
 COPY assessment_reason (mid, mname) FROM stdin;
@@ -487,7 +472,7 @@ COPY assessment_reason (mid, mname) FROM stdin;
 
 
 --
--- Data for Name: assessment_score; Type: TABLE DATA; Schema: public; Owner: postgres
+-- Data for Name: assessment_score; Type: TABLE DATA; Schema: awag_schema; Owner: awag
 --
 
 COPY assessment_score (mid) FROM stdin;
@@ -495,7 +480,7 @@ COPY assessment_score (mid) FROM stdin;
 
 
 --
--- Data for Name: assessment_score_parameter_score; Type: TABLE DATA; Schema: public; Owner: postgres
+-- Data for Name: assessment_score_parameter_score; Type: TABLE DATA; Schema: awag_schema; Owner: awag
 --
 
 COPY assessment_score_parameter_score (assessmentscore_mid, mparametersscored_mid) FROM stdin;
@@ -503,7 +488,7 @@ COPY assessment_score_parameter_score (assessmentscore_mid, mparametersscored_mi
 
 
 --
--- Data for Name: assessment_template; Type: TABLE DATA; Schema: public; Owner: postgres
+-- Data for Name: assessment_template; Type: TABLE DATA; Schema: awag_schema; Owner: awag
 --
 
 COPY assessment_template (mid, mname, mscale_mid) FROM stdin;
@@ -514,7 +499,7 @@ COPY assessment_template (mid, mname, mscale_mid) FROM stdin;
 
 
 --
--- Data for Name: assessment_template_parameter_factor; Type: TABLE DATA; Schema: public; Owner: postgres
+-- Data for Name: assessment_template_parameter_factor; Type: TABLE DATA; Schema: awag_schema; Owner: awag
 --
 
 COPY assessment_template_parameter_factor (assessment_template_id, parameter_id, factor_id) FROM stdin;
@@ -534,7 +519,7 @@ COPY assessment_template_parameter_factor (assessment_template_id, parameter_id,
 
 
 --
--- Data for Name: factor; Type: TABLE DATA; Schema: public; Owner: postgres
+-- Data for Name: factor; Type: TABLE DATA; Schema: awag_schema; Owner: awag
 --
 
 COPY factor (mid, mname) FROM stdin;
@@ -546,7 +531,7 @@ COPY factor (mid, mname) FROM stdin;
 
 
 --
--- Data for Name: factor_scored; Type: TABLE DATA; Schema: public; Owner: postgres
+-- Data for Name: factor_scored; Type: TABLE DATA; Schema: awag_schema; Owner: awag
 --
 
 COPY factor_scored (mid, misignored, mscore, mscoringfactor_mid) FROM stdin;
@@ -554,7 +539,7 @@ COPY factor_scored (mid, misignored, mscore, mscoringfactor_mid) FROM stdin;
 
 
 --
--- Data for Name: parameter; Type: TABLE DATA; Schema: public; Owner: postgres
+-- Data for Name: parameter; Type: TABLE DATA; Schema: awag_schema; Owner: awag
 --
 
 COPY parameter (mid, mname) FROM stdin;
@@ -565,7 +550,7 @@ COPY parameter (mid, mname) FROM stdin;
 
 
 --
--- Data for Name: parameter_score; Type: TABLE DATA; Schema: public; Owner: postgres
+-- Data for Name: parameter_score; Type: TABLE DATA; Schema: awag_schema; Owner: awag
 --
 
 COPY parameter_score (mid, maveragescore, mcomment, mparameterscored_mid) FROM stdin;
@@ -573,7 +558,7 @@ COPY parameter_score (mid, maveragescore, mcomment, mparameterscored_mid) FROM s
 
 
 --
--- Data for Name: parameter_score_factor_scored; Type: TABLE DATA; Schema: public; Owner: postgres
+-- Data for Name: parameter_score_factor_scored; Type: TABLE DATA; Schema: awag_schema; Owner: awag
 --
 
 COPY parameter_score_factor_scored (parameterscore_mid, mscoringfactorsscored_mid) FROM stdin;
@@ -581,7 +566,7 @@ COPY parameter_score_factor_scored (parameterscore_mid, mscoringfactorsscored_mi
 
 
 --
--- Data for Name: scale; Type: TABLE DATA; Schema: public; Owner: postgres
+-- Data for Name: scale; Type: TABLE DATA; Schema: awag_schema; Owner: awag
 --
 
 COPY scale (mid, mmax, mmin, mname) FROM stdin;
@@ -592,7 +577,7 @@ COPY scale (mid, mmax, mmin, mname) FROM stdin;
 
 
 --
--- Data for Name: sequence; Type: TABLE DATA; Schema: public; Owner: postgres
+-- Data for Name: sequence; Type: TABLE DATA; Schema: awag_schema; Owner: awag
 --
 
 COPY sequence (seq_name, seq_count) FROM stdin;
@@ -601,7 +586,7 @@ SEQ_GEN	1
 
 
 --
--- Data for Name: sex; Type: TABLE DATA; Schema: public; Owner: postgres
+-- Data for Name: sex; Type: TABLE DATA; Schema: awag_schema; Owner: awag
 --
 
 COPY sex (mid, mname) FROM stdin;
@@ -611,7 +596,7 @@ COPY sex (mid, mname) FROM stdin;
 
 
 --
--- Data for Name: source; Type: TABLE DATA; Schema: public; Owner: postgres
+-- Data for Name: source; Type: TABLE DATA; Schema: awag_schema; Owner: awag
 --
 
 COPY source (mid, mname) FROM stdin;
@@ -622,7 +607,7 @@ COPY source (mid, mname) FROM stdin;
 
 
 --
--- Data for Name: species; Type: TABLE DATA; Schema: public; Owner: postgres
+-- Data for Name: species; Type: TABLE DATA; Schema: awag_schema; Owner: awag
 --
 
 COPY species (mid, mname, misdeleted) FROM stdin;
@@ -633,7 +618,7 @@ COPY species (mid, mname, misdeleted) FROM stdin;
 
 
 --
--- Data for Name: study; Type: TABLE DATA; Schema: public; Owner: postgres
+-- Data for Name: study; Type: TABLE DATA; Schema: awag_schema; Owner: awag
 --
 
 COPY study (mid, misopen, mstudynumber) FROM stdin;
@@ -644,7 +629,7 @@ COPY study (mid, misopen, mstudynumber) FROM stdin;
 
 
 --
--- Data for Name: study_group; Type: TABLE DATA; Schema: public; Owner: postgres
+-- Data for Name: study_group; Type: TABLE DATA; Schema: awag_schema; Owner: awag
 --
 
 COPY study_group (mid, mstudygroupnumber) FROM stdin;
@@ -655,7 +640,7 @@ COPY study_group (mid, mstudygroupnumber) FROM stdin;
 
 
 --
--- Data for Name: study_group_animal; Type: TABLE DATA; Schema: public; Owner: postgres
+-- Data for Name: study_group_animal; Type: TABLE DATA; Schema: awag_schema; Owner: awag
 --
 
 COPY study_group_animal (studygroup_mid, manimals_mid) FROM stdin;
@@ -665,7 +650,7 @@ COPY study_group_animal (studygroup_mid, manimals_mid) FROM stdin;
 
 
 --
--- Data for Name: study_study_group; Type: TABLE DATA; Schema: public; Owner: postgres
+-- Data for Name: study_study_group; Type: TABLE DATA; Schema: awag_schema; Owner: awag
 --
 
 COPY study_study_group (study_mid, mgroups_mid) FROM stdin;
@@ -674,7 +659,7 @@ COPY study_study_group (study_mid, mgroups_mid) FROM stdin;
 
 
 --
--- Data for Name: users; Type: TABLE DATA; Schema: public; Owner: postgres
+-- Data for Name: users; Type: TABLE DATA; Schema: awag_schema; Owner: awag
 --
 
 COPY users (mid, mname) FROM stdin;
@@ -685,7 +670,7 @@ COPY users (mid, mname) FROM stdin;
 
 
 --
--- Name: animal_housing_mname_key; Type: CONSTRAINT; Schema: public; Owner: postgres; Tablespace: 
+-- Name: animal_housing_mname_key; Type: CONSTRAINT; Schema: awag_schema; Owner: awag; Tablespace: 
 --
 
 ALTER TABLE ONLY animal_housing
@@ -693,7 +678,7 @@ ALTER TABLE ONLY animal_housing
 
 
 --
--- Name: animal_housing_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres; Tablespace: 
+-- Name: animal_housing_pkey; Type: CONSTRAINT; Schema: awag_schema; Owner: awag; Tablespace: 
 --
 
 ALTER TABLE ONLY animal_housing
@@ -701,7 +686,7 @@ ALTER TABLE ONLY animal_housing
 
 
 --
--- Name: animal_manimalnumber_key; Type: CONSTRAINT; Schema: public; Owner: postgres; Tablespace: 
+-- Name: animal_manimalnumber_key; Type: CONSTRAINT; Schema: awag_schema; Owner: awag; Tablespace: 
 --
 
 ALTER TABLE ONLY animal
@@ -709,7 +694,7 @@ ALTER TABLE ONLY animal
 
 
 --
--- Name: animal_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres; Tablespace: 
+-- Name: animal_pkey; Type: CONSTRAINT; Schema: awag_schema; Owner: awag; Tablespace: 
 --
 
 ALTER TABLE ONLY animal
@@ -717,7 +702,7 @@ ALTER TABLE ONLY animal
 
 
 --
--- Name: assessment_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres; Tablespace: 
+-- Name: assessment_pkey; Type: CONSTRAINT; Schema: awag_schema; Owner: awag; Tablespace: 
 --
 
 ALTER TABLE ONLY assessment
@@ -725,7 +710,7 @@ ALTER TABLE ONLY assessment
 
 
 --
--- Name: assessment_reason_mname_key; Type: CONSTRAINT; Schema: public; Owner: postgres; Tablespace: 
+-- Name: assessment_reason_mname_key; Type: CONSTRAINT; Schema: awag_schema; Owner: awag; Tablespace: 
 --
 
 ALTER TABLE ONLY assessment_reason
@@ -733,7 +718,7 @@ ALTER TABLE ONLY assessment_reason
 
 
 --
--- Name: assessment_reason_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres; Tablespace: 
+-- Name: assessment_reason_pkey; Type: CONSTRAINT; Schema: awag_schema; Owner: awag; Tablespace: 
 --
 
 ALTER TABLE ONLY assessment_reason
@@ -741,7 +726,7 @@ ALTER TABLE ONLY assessment_reason
 
 
 --
--- Name: assessment_score_parameter_score_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres; Tablespace: 
+-- Name: assessment_score_parameter_score_pkey; Type: CONSTRAINT; Schema: awag_schema; Owner: awag; Tablespace: 
 --
 
 ALTER TABLE ONLY assessment_score_parameter_score
@@ -749,7 +734,7 @@ ALTER TABLE ONLY assessment_score_parameter_score
 
 
 --
--- Name: assessment_score_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres; Tablespace: 
+-- Name: assessment_score_pkey; Type: CONSTRAINT; Schema: awag_schema; Owner: awag; Tablespace: 
 --
 
 ALTER TABLE ONLY assessment_score
@@ -757,7 +742,7 @@ ALTER TABLE ONLY assessment_score
 
 
 --
--- Name: assessment_template_parameter_factor_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres; Tablespace: 
+-- Name: assessment_template_parameter_factor_pkey; Type: CONSTRAINT; Schema: awag_schema; Owner: awag; Tablespace: 
 --
 
 ALTER TABLE ONLY assessment_template_parameter_factor
@@ -765,7 +750,7 @@ ALTER TABLE ONLY assessment_template_parameter_factor
 
 
 --
--- Name: assessment_template_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres; Tablespace: 
+-- Name: assessment_template_pkey; Type: CONSTRAINT; Schema: awag_schema; Owner: awag; Tablespace: 
 --
 
 ALTER TABLE ONLY assessment_template
@@ -773,7 +758,7 @@ ALTER TABLE ONLY assessment_template
 
 
 --
--- Name: factor_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres; Tablespace: 
+-- Name: factor_pkey; Type: CONSTRAINT; Schema: awag_schema; Owner: awag; Tablespace: 
 --
 
 ALTER TABLE ONLY factor
@@ -781,7 +766,7 @@ ALTER TABLE ONLY factor
 
 
 --
--- Name: factor_scored_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres; Tablespace: 
+-- Name: factor_scored_pkey; Type: CONSTRAINT; Schema: awag_schema; Owner: awag; Tablespace: 
 --
 
 ALTER TABLE ONLY factor_scored
@@ -789,7 +774,7 @@ ALTER TABLE ONLY factor_scored
 
 
 --
--- Name: parameter_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres; Tablespace: 
+-- Name: parameter_pkey; Type: CONSTRAINT; Schema: awag_schema; Owner: awag; Tablespace: 
 --
 
 ALTER TABLE ONLY parameter
@@ -797,7 +782,7 @@ ALTER TABLE ONLY parameter
 
 
 --
--- Name: parameter_score_factor_scored_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres; Tablespace: 
+-- Name: parameter_score_factor_scored_pkey; Type: CONSTRAINT; Schema: awag_schema; Owner: awag; Tablespace: 
 --
 
 ALTER TABLE ONLY parameter_score_factor_scored
@@ -805,7 +790,7 @@ ALTER TABLE ONLY parameter_score_factor_scored
 
 
 --
--- Name: parameter_score_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres; Tablespace: 
+-- Name: parameter_score_pkey; Type: CONSTRAINT; Schema: awag_schema; Owner: awag; Tablespace: 
 --
 
 ALTER TABLE ONLY parameter_score
@@ -813,7 +798,7 @@ ALTER TABLE ONLY parameter_score
 
 
 --
--- Name: scale_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres; Tablespace: 
+-- Name: scale_pkey; Type: CONSTRAINT; Schema: awag_schema; Owner: awag; Tablespace: 
 --
 
 ALTER TABLE ONLY scale
@@ -821,7 +806,7 @@ ALTER TABLE ONLY scale
 
 
 --
--- Name: sequence_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres; Tablespace: 
+-- Name: sequence_pkey; Type: CONSTRAINT; Schema: awag_schema; Owner: awag; Tablespace: 
 --
 
 ALTER TABLE ONLY sequence
@@ -829,7 +814,7 @@ ALTER TABLE ONLY sequence
 
 
 --
--- Name: sex_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres; Tablespace: 
+-- Name: sex_pkey; Type: CONSTRAINT; Schema: awag_schema; Owner: awag; Tablespace: 
 --
 
 ALTER TABLE ONLY sex
@@ -837,7 +822,7 @@ ALTER TABLE ONLY sex
 
 
 --
--- Name: source_mname_key; Type: CONSTRAINT; Schema: public; Owner: postgres; Tablespace: 
+-- Name: source_mname_key; Type: CONSTRAINT; Schema: awag_schema; Owner: awag; Tablespace: 
 --
 
 ALTER TABLE ONLY source
@@ -845,7 +830,7 @@ ALTER TABLE ONLY source
 
 
 --
--- Name: source_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres; Tablespace: 
+-- Name: source_pkey; Type: CONSTRAINT; Schema: awag_schema; Owner: awag; Tablespace: 
 --
 
 ALTER TABLE ONLY source
@@ -853,7 +838,7 @@ ALTER TABLE ONLY source
 
 
 --
--- Name: species_mname_key; Type: CONSTRAINT; Schema: public; Owner: postgres; Tablespace: 
+-- Name: species_mname_key; Type: CONSTRAINT; Schema: awag_schema; Owner: awag; Tablespace: 
 --
 
 ALTER TABLE ONLY species
@@ -861,7 +846,7 @@ ALTER TABLE ONLY species
 
 
 --
--- Name: species_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres; Tablespace: 
+-- Name: species_pkey; Type: CONSTRAINT; Schema: awag_schema; Owner: awag; Tablespace: 
 --
 
 ALTER TABLE ONLY species
@@ -869,7 +854,7 @@ ALTER TABLE ONLY species
 
 
 --
--- Name: study_group_animal_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres; Tablespace: 
+-- Name: study_group_animal_pkey; Type: CONSTRAINT; Schema: awag_schema; Owner: awag; Tablespace: 
 --
 
 ALTER TABLE ONLY study_group_animal
@@ -877,7 +862,7 @@ ALTER TABLE ONLY study_group_animal
 
 
 --
--- Name: study_group_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres; Tablespace: 
+-- Name: study_group_pkey; Type: CONSTRAINT; Schema: awag_schema; Owner: awag; Tablespace: 
 --
 
 ALTER TABLE ONLY study_group
@@ -885,7 +870,7 @@ ALTER TABLE ONLY study_group
 
 
 --
--- Name: study_mstudynumber_key; Type: CONSTRAINT; Schema: public; Owner: postgres; Tablespace: 
+-- Name: study_mstudynumber_key; Type: CONSTRAINT; Schema: awag_schema; Owner: awag; Tablespace: 
 --
 
 ALTER TABLE ONLY study
@@ -893,7 +878,7 @@ ALTER TABLE ONLY study
 
 
 --
--- Name: study_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres; Tablespace: 
+-- Name: study_pkey; Type: CONSTRAINT; Schema: awag_schema; Owner: awag; Tablespace: 
 --
 
 ALTER TABLE ONLY study
@@ -901,7 +886,7 @@ ALTER TABLE ONLY study
 
 
 --
--- Name: study_study_group_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres; Tablespace: 
+-- Name: study_study_group_pkey; Type: CONSTRAINT; Schema: awag_schema; Owner: awag; Tablespace: 
 --
 
 ALTER TABLE ONLY study_study_group
@@ -909,7 +894,7 @@ ALTER TABLE ONLY study_study_group
 
 
 --
--- Name: users_mname_key; Type: CONSTRAINT; Schema: public; Owner: postgres; Tablespace: 
+-- Name: users_mname_key; Type: CONSTRAINT; Schema: awag_schema; Owner: awag; Tablespace: 
 --
 
 ALTER TABLE ONLY users
@@ -917,113 +902,113 @@ ALTER TABLE ONLY users
 
 
 --
--- Name: users_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres; Tablespace: 
+-- Name: users_pkey; Type: CONSTRAINT; Schema: awag_schema; Owner: awag; Tablespace: 
 --
 
 ALTER TABLE ONLY users
     ADD CONSTRAINT users_pkey PRIMARY KEY (mid);
 
-	
+
 --
--- Name: animal_housing_lower_mname_unique; Type: INDEX; Schema: public; Owner: postgres; Tablespace: 
+-- Name: animal_housing_lower_mname_unique; Type: INDEX; Schema: awag_schema; Owner: awag; Tablespace: 
 --
 
 CREATE UNIQUE INDEX animal_housing_lower_mname_unique ON animal_housing USING btree (lower((mname)::text));
 
 
 --
--- Name: animal_lower_manimalnumber_unique; Type: INDEX; Schema: public; Owner: postgres; Tablespace: 
+-- Name: animal_lower_manimalnumber_unique; Type: INDEX; Schema: awag_schema; Owner: awag; Tablespace: 
 --
 
 CREATE UNIQUE INDEX animal_lower_manimalnumber_unique ON animal USING btree (lower((manimalnumber)::text));
 
 
 --
--- Name: assessment_reason_lower_mname_unique; Type: INDEX; Schema: public; Owner: postgres; Tablespace: 
+-- Name: assessment_reason_lower_mname_unique; Type: INDEX; Schema: awag_schema; Owner: awag; Tablespace: 
 --
 
 CREATE UNIQUE INDEX assessment_reason_lower_mname_unique ON assessment_reason USING btree (lower((mname)::text));
 
 
 --
--- Name: assessment_template_lower_mname_unique; Type: INDEX; Schema: public; Owner: postgres; Tablespace: 
+-- Name: assessment_template_lower_mname_unique; Type: INDEX; Schema: awag_schema; Owner: awag; Tablespace: 
 --
 
 CREATE UNIQUE INDEX assessment_template_lower_mname_unique ON assessment_template USING btree (lower((mname)::text));
 
 
 --
--- Name: factor_lower_mname_unique; Type: INDEX; Schema: public; Owner: postgres; Tablespace: 
+-- Name: factor_lower_mname_unique; Type: INDEX; Schema: awag_schema; Owner: awag; Tablespace: 
 --
 
 CREATE UNIQUE INDEX factor_lower_mname_unique ON factor USING btree (lower((mname)::text));
 
 
 --
--- Name: housing_lower_mname_unique; Type: INDEX; Schema: public; Owner: postgres; Tablespace: 
+-- Name: housing_lower_mname_unique; Type: INDEX; Schema: awag_schema; Owner: awag; Tablespace: 
 --
 
 CREATE UNIQUE INDEX housing_lower_mname_unique ON animal_housing USING btree (lower((mname)::text));
 
 
 --
--- Name: parameter_lower_mname_unique; Type: INDEX; Schema: public; Owner: postgres; Tablespace: 
+-- Name: parameter_lower_mname_unique; Type: INDEX; Schema: awag_schema; Owner: awag; Tablespace: 
 --
 
 CREATE UNIQUE INDEX parameter_lower_mname_unique ON parameter USING btree (lower((mname)::text));
 
 
 --
--- Name: reason_lower_mname_unique; Type: INDEX; Schema: public; Owner: postgres; Tablespace: 
+-- Name: reason_lower_mname_unique; Type: INDEX; Schema: awag_schema; Owner: awag; Tablespace: 
 --
 
 CREATE UNIQUE INDEX reason_lower_mname_unique ON assessment_reason USING btree (lower((mname)::text));
 
 
 --
--- Name: scale_lower_mname_unique; Type: INDEX; Schema: public; Owner: postgres; Tablespace: 
+-- Name: scale_lower_mname_unique; Type: INDEX; Schema: awag_schema; Owner: awag; Tablespace: 
 --
 
 CREATE UNIQUE INDEX scale_lower_mname_unique ON scale USING btree (lower((mname)::text));
 
 
 --
--- Name: source_lower_mname_unique; Type: INDEX; Schema: public; Owner: postgres; Tablespace: 
+-- Name: source_lower_mname_unique; Type: INDEX; Schema: awag_schema; Owner: awag; Tablespace: 
 --
 
 CREATE UNIQUE INDEX source_lower_mname_unique ON source USING btree (lower((mname)::text));
 
 
 --
--- Name: species_lower_mname_unique; Type: INDEX; Schema: public; Owner: postgres; Tablespace: 
+-- Name: species_lower_mname_unique; Type: INDEX; Schema: awag_schema; Owner: awag; Tablespace: 
 --
 
 CREATE UNIQUE INDEX species_lower_mname_unique ON species USING btree (lower((mname)::text));
 
 
 --
--- Name: study_group_lower_mstudygroupnumber_unique; Type: INDEX; Schema: public; Owner: postgres; Tablespace: 
+-- Name: study_group_lower_mstudygroupnumber_unique; Type: INDEX; Schema: awag_schema; Owner: awag; Tablespace: 
 --
 
 CREATE UNIQUE INDEX study_group_lower_mstudygroupnumber_unique ON study_group USING btree (lower((mstudygroupnumber)::text));
 
 
 --
--- Name: study_lower_mstudynumber_unique; Type: INDEX; Schema: public; Owner: postgres; Tablespace: 
+-- Name: study_lower_mstudynumber_unique; Type: INDEX; Schema: awag_schema; Owner: awag; Tablespace: 
 --
 
 CREATE UNIQUE INDEX study_lower_mstudynumber_unique ON study USING btree (lower((mstudynumber)::text));
 
 
 --
--- Name: users_lower_mname_unique; Type: INDEX; Schema: public; Owner: postgres; Tablespace: 
+-- Name: users_lower_mname_unique; Type: INDEX; Schema: awag_schema; Owner: awag; Tablespace: 
 --
 
 CREATE UNIQUE INDEX users_lower_mname_unique ON users USING btree (lower((mname)::text));
 
 
 --
--- Name: fk_animal_massessmenttemplate_mid; Type: FK CONSTRAINT; Schema: public; Owner: postgres
+-- Name: fk_animal_massessmenttemplate_mid; Type: FK CONSTRAINT; Schema: awag_schema; Owner: awag
 --
 
 ALTER TABLE ONLY animal
@@ -1031,7 +1016,7 @@ ALTER TABLE ONLY animal
 
 
 --
--- Name: fk_animal_mdam_mid; Type: FK CONSTRAINT; Schema: public; Owner: postgres
+-- Name: fk_animal_mdam_mid; Type: FK CONSTRAINT; Schema: awag_schema; Owner: awag
 --
 
 ALTER TABLE ONLY animal
@@ -1039,7 +1024,7 @@ ALTER TABLE ONLY animal
 
 
 --
--- Name: fk_animal_mfather_mid; Type: FK CONSTRAINT; Schema: public; Owner: postgres
+-- Name: fk_animal_mfather_mid; Type: FK CONSTRAINT; Schema: awag_schema; Owner: awag
 --
 
 ALTER TABLE ONLY animal
@@ -1047,7 +1032,7 @@ ALTER TABLE ONLY animal
 
 
 --
--- Name: fk_animal_msex_mid; Type: FK CONSTRAINT; Schema: public; Owner: postgres
+-- Name: fk_animal_msex_mid; Type: FK CONSTRAINT; Schema: awag_schema; Owner: awag
 --
 
 ALTER TABLE ONLY animal
@@ -1055,7 +1040,7 @@ ALTER TABLE ONLY animal
 
 
 --
--- Name: fk_animal_msource_mid; Type: FK CONSTRAINT; Schema: public; Owner: postgres
+-- Name: fk_animal_msource_mid; Type: FK CONSTRAINT; Schema: awag_schema; Owner: awag
 --
 
 ALTER TABLE ONLY animal
@@ -1063,7 +1048,7 @@ ALTER TABLE ONLY animal
 
 
 --
--- Name: fk_animal_mspecies_mid; Type: FK CONSTRAINT; Schema: public; Owner: postgres
+-- Name: fk_animal_mspecies_mid; Type: FK CONSTRAINT; Schema: awag_schema; Owner: awag
 --
 
 ALTER TABLE ONLY animal
@@ -1071,7 +1056,7 @@ ALTER TABLE ONLY animal
 
 
 --
--- Name: fk_assessment_manimal_mid; Type: FK CONSTRAINT; Schema: public; Owner: postgres
+-- Name: fk_assessment_manimal_mid; Type: FK CONSTRAINT; Schema: awag_schema; Owner: awag
 --
 
 ALTER TABLE ONLY assessment
@@ -1079,7 +1064,7 @@ ALTER TABLE ONLY assessment
 
 
 --
--- Name: fk_assessment_manimalhousing_mid; Type: FK CONSTRAINT; Schema: public; Owner: postgres
+-- Name: fk_assessment_manimalhousing_mid; Type: FK CONSTRAINT; Schema: awag_schema; Owner: awag
 --
 
 ALTER TABLE ONLY assessment
@@ -1087,7 +1072,7 @@ ALTER TABLE ONLY assessment
 
 
 --
--- Name: fk_assessment_mperformedby_mid; Type: FK CONSTRAINT; Schema: public; Owner: postgres
+-- Name: fk_assessment_mperformedby_mid; Type: FK CONSTRAINT; Schema: awag_schema; Owner: awag
 --
 
 ALTER TABLE ONLY assessment
@@ -1095,7 +1080,7 @@ ALTER TABLE ONLY assessment
 
 
 --
--- Name: fk_assessment_mreason_mid; Type: FK CONSTRAINT; Schema: public; Owner: postgres
+-- Name: fk_assessment_mreason_mid; Type: FK CONSTRAINT; Schema: awag_schema; Owner: awag
 --
 
 ALTER TABLE ONLY assessment
@@ -1103,15 +1088,15 @@ ALTER TABLE ONLY assessment
 
 
 --
--- Name: fk_assessment_mscore_mid; Type: FK CONSTRAINT; Schema: public; Owner: postgres
+-- Name: fk_assessment_mscore_mid; Type: FK CONSTRAINT; Schema: awag_schema; Owner: awag
 --
 
 ALTER TABLE ONLY assessment
     ADD CONSTRAINT fk_assessment_mscore_mid FOREIGN KEY (mscore_mid) REFERENCES assessment_score(mid);
-    
+
 
 --
--- Name: fk_assessment_mstudy_mid; Type: FK CONSTRAINT; Schema: public; Owner: postgres
+-- Name: fk_assessment_mstudy_mid; Type: FK CONSTRAINT; Schema: awag_schema; Owner: awag
 --
 
 ALTER TABLE ONLY assessment
@@ -1119,7 +1104,7 @@ ALTER TABLE ONLY assessment
 
 
 --
--- Name: fk_assessment_score_parameter_score_assessmentscore_mid; Type: FK CONSTRAINT; Schema: public; Owner: postgres
+-- Name: fk_assessment_score_parameter_score_assessmentscore_mid; Type: FK CONSTRAINT; Schema: awag_schema; Owner: awag
 --
 
 ALTER TABLE ONLY assessment_score_parameter_score
@@ -1127,7 +1112,7 @@ ALTER TABLE ONLY assessment_score_parameter_score
 
 
 --
--- Name: fk_assessment_score_parameter_score_mparametersscored_mid; Type: FK CONSTRAINT; Schema: public; Owner: postgres
+-- Name: fk_assessment_score_parameter_score_mparametersscored_mid; Type: FK CONSTRAINT; Schema: awag_schema; Owner: awag
 --
 
 ALTER TABLE ONLY assessment_score_parameter_score
@@ -1135,7 +1120,7 @@ ALTER TABLE ONLY assessment_score_parameter_score
 
 
 --
--- Name: fk_assessment_template_mscale_mid; Type: FK CONSTRAINT; Schema: public; Owner: postgres
+-- Name: fk_assessment_template_mscale_mid; Type: FK CONSTRAINT; Schema: awag_schema; Owner: awag
 --
 
 ALTER TABLE ONLY assessment_template
@@ -1143,7 +1128,7 @@ ALTER TABLE ONLY assessment_template
 
 
 --
--- Name: fk_assessment_template_parameter_factor_assessment_template_id; Type: FK CONSTRAINT; Schema: public; Owner: postgres
+-- Name: fk_assessment_template_parameter_factor_assessment_template_id; Type: FK CONSTRAINT; Schema: awag_schema; Owner: awag
 --
 
 ALTER TABLE ONLY assessment_template_parameter_factor
@@ -1151,7 +1136,7 @@ ALTER TABLE ONLY assessment_template_parameter_factor
 
 
 --
--- Name: fk_assessment_template_parameter_factor_factor_id; Type: FK CONSTRAINT; Schema: public; Owner: postgres
+-- Name: fk_assessment_template_parameter_factor_factor_id; Type: FK CONSTRAINT; Schema: awag_schema; Owner: awag
 --
 
 ALTER TABLE ONLY assessment_template_parameter_factor
@@ -1159,7 +1144,7 @@ ALTER TABLE ONLY assessment_template_parameter_factor
 
 
 --
--- Name: fk_assessment_template_parameter_factor_parameter_id; Type: FK CONSTRAINT; Schema: public; Owner: postgres
+-- Name: fk_assessment_template_parameter_factor_parameter_id; Type: FK CONSTRAINT; Schema: awag_schema; Owner: awag
 --
 
 ALTER TABLE ONLY assessment_template_parameter_factor
@@ -1167,7 +1152,7 @@ ALTER TABLE ONLY assessment_template_parameter_factor
 
 
 --
--- Name: fk_factor_scored_mscoringfactor_mid; Type: FK CONSTRAINT; Schema: public; Owner: postgres
+-- Name: fk_factor_scored_mscoringfactor_mid; Type: FK CONSTRAINT; Schema: awag_schema; Owner: awag
 --
 
 ALTER TABLE ONLY factor_scored
@@ -1175,7 +1160,7 @@ ALTER TABLE ONLY factor_scored
 
 
 --
--- Name: fk_parameter_score_factor_scored_parameterscore_mid; Type: FK CONSTRAINT; Schema: public; Owner: postgres
+-- Name: fk_parameter_score_factor_scored_parameterscore_mid; Type: FK CONSTRAINT; Schema: awag_schema; Owner: awag
 --
 
 ALTER TABLE ONLY parameter_score_factor_scored
@@ -1183,7 +1168,7 @@ ALTER TABLE ONLY parameter_score_factor_scored
 
 
 --
--- Name: fk_parameter_score_mparameterscored_mid; Type: FK CONSTRAINT; Schema: public; Owner: postgres
+-- Name: fk_parameter_score_mparameterscored_mid; Type: FK CONSTRAINT; Schema: awag_schema; Owner: awag
 --
 
 ALTER TABLE ONLY parameter_score
@@ -1191,7 +1176,7 @@ ALTER TABLE ONLY parameter_score
 
 
 --
--- Name: fk_study_group_animal_manimals_mid; Type: FK CONSTRAINT; Schema: public; Owner: postgres
+-- Name: fk_study_group_animal_manimals_mid; Type: FK CONSTRAINT; Schema: awag_schema; Owner: awag
 --
 
 ALTER TABLE ONLY study_group_animal
@@ -1199,7 +1184,7 @@ ALTER TABLE ONLY study_group_animal
 
 
 --
--- Name: fk_study_group_animal_studygroup_mid; Type: FK CONSTRAINT; Schema: public; Owner: postgres
+-- Name: fk_study_group_animal_studygroup_mid; Type: FK CONSTRAINT; Schema: awag_schema; Owner: awag
 --
 
 ALTER TABLE ONLY study_group_animal
@@ -1207,7 +1192,7 @@ ALTER TABLE ONLY study_group_animal
 
 
 --
--- Name: fk_study_study_group_mgroups_mid; Type: FK CONSTRAINT; Schema: public; Owner: postgres
+-- Name: fk_study_study_group_mgroups_mid; Type: FK CONSTRAINT; Schema: awag_schema; Owner: awag
 --
 
 ALTER TABLE ONLY study_study_group
@@ -1215,7 +1200,7 @@ ALTER TABLE ONLY study_study_group
 
 
 --
--- Name: fk_study_study_group_study_mid; Type: FK CONSTRAINT; Schema: public; Owner: postgres
+-- Name: fk_study_study_group_study_mid; Type: FK CONSTRAINT; Schema: awag_schema; Owner: awag
 --
 
 ALTER TABLE ONLY study_study_group
@@ -1223,7 +1208,7 @@ ALTER TABLE ONLY study_study_group
 
 
 --
--- Name: parameter_score_factor_scored_mscoringfactorsscored_mid; Type: FK CONSTRAINT; Schema: public; Owner: postgres
+-- Name: parameter_score_factor_scored_mscoringfactorsscored_mid; Type: FK CONSTRAINT; Schema: awag_schema; Owner: awag
 --
 
 ALTER TABLE ONLY parameter_score_factor_scored
@@ -1231,13 +1216,12 @@ ALTER TABLE ONLY parameter_score_factor_scored
 
 
 --
--- Name: public; Type: ACL; Schema: -; Owner: postgres
+-- Name: awag_schema; Type: ACL; Schema: -; Owner: awag
 --
 
-REVOKE ALL ON SCHEMA public FROM PUBLIC;
-REVOKE ALL ON SCHEMA public FROM postgres;
-GRANT ALL ON SCHEMA public TO postgres;
-GRANT ALL ON SCHEMA public TO PUBLIC;
+REVOKE ALL ON SCHEMA awag_schema FROM PUBLIC;
+REVOKE ALL ON SCHEMA awag_schema FROM awag;
+GRANT ALL ON SCHEMA awag_schema TO awag;
 
 
 --
