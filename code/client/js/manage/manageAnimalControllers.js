@@ -363,7 +363,10 @@ function(templateService, assessmentService, formService, $scope, select2Utils)
     {
         this.assessmentCount = 0;
         this.isTemplateLocked = false;
-        formService.setSelect2Val([{id : that.animal.assessmentTemplateId, text : that.animal.assessmentTemplateName, locked : that.isTemplateLocked}], jQuery("#" + that.selectId));
+        if(that.animal)
+        {
+            formService.setSelect2Val([{id : that.animal.assessmentTemplateId, text : that.animal.assessmentTemplateName, locked : that.isTemplateLocked}], jQuery("#" + that.selectId));
+        } 
     };
 
     var getAssessmentCountByAnimalIdSuccessCallback = function(count)

@@ -53,12 +53,12 @@ function(dataService, appConfig, pagingUtils) {
 		});
 	};
 
-	var getFemaleAnimalsLike = function(callback, likeTerm) {
-		_getSexFilteredAnimalsLike(callback, likeTerm, appConfig.services.actionParamsValues.sex.female);
+	var getFemaleAnimalsLike = function(callback, likeTerm, pagingOptions) {
+		_getSexFilteredAnimalsLike(callback, likeTerm, appConfig.services.actionParamsValues.sex.female, pagingOptions);
 	};
 
-	var getMaleAnimalsLike = function(callback, likeTerm) {
-		_getSexFilteredAnimalsLike(callback, likeTerm, appConfig.services.actionParamsValues.sex.male);
+	var getMaleAnimalsLike = function(callback, likeTerm, pagingOptions) {
+		_getSexFilteredAnimalsLike(callback, likeTerm, appConfig.services.actionParamsValues.sex.male, pagingOptions);
 	};
 
 	var getAnimals = function(callback, pagingOptions) {

@@ -1,7 +1,7 @@
 var formServices = angular.module('formServices', []);
 formServices.factory('formService', ['dataService', 'appConfig', '$timeout',
     function(dataService, appConfig, $timeout) {
-        var __isExcludedChoice = function(choice, excludedChoices){
+        var _isExcludedChoice = function(choice, excludedChoices){
             if(!excludedChoices){
                 return false;
             }
@@ -14,7 +14,7 @@ formServices.factory('formService', ['dataService', 'appConfig', '$timeout',
             return false;
         }
 
-        var __getResetPagingOptions = function(){
+        var _getResetPagingOptions = function(){
             return {            
                 offset : appConfig.config.defaultPageOffsetStart,
                 limit : appConfig.config.defaultPageSize,
@@ -31,7 +31,7 @@ formServices.factory('formService', ['dataService', 'appConfig', '$timeout',
                 results: []
             };
 
-            var pagingOptions = __getResetPagingOptions();
+            var pagingOptions = _getResetPagingOptions();
 
            /*
                 This function inspects the metadata sent back from a request fired by the select2 box and 
@@ -40,7 +40,7 @@ formServices.factory('formService', ['dataService', 'appConfig', '$timeout',
                 @param callbackMetadata.page - Holds current page number for a query. If it is -1 there are no more valid pages.
                 @param callbackMetadata.totalPages - Holds the total possible pages for the current query.
             */
-            var __isLastPage = function(callbackMetadata){
+            var _isLastPage = function(callbackMetadata){
                 return (!(callbackMetadata.page < callbackMetadata.totalPages) || (callbackMetadata.page === appConfig.config.noSuchPage));
             };
 
@@ -55,7 +55,7 @@ formServices.factory('formService', ['dataService', 'appConfig', '$timeout',
                             var found = false;
                             var result = callbackData[i];
 
-                            if(!__isExcludedChoice(result, excludedChoices)){
+                            if(!_isExcludedChoice(result, excludedChoices)){
                                  data.results.push({
                                         id: callbackData[i].id,
                                         text: callbackData[i].entityName                            
@@ -64,7 +64,7 @@ formServices.factory('formService', ['dataService', 'appConfig', '$timeout',
                         }
 
                         //if there are more pages for a query store the paging metadata in the select2 context and enable scrolling
-                        if(!__isLastPage(callbackMetadata)){
+                        if(!_isLastPage(callbackMetadata)){
                             data.more = true;
                             data.context = {
                                 pagingMetadata: callbackMetadata
@@ -86,11 +86,10 @@ formServices.factory('formService', ['dataService', 'appConfig', '$timeout',
                     */
                     if (query.term !== "") {                
                         if (query.context == null) {
-                            pagingOptions = __getResetPagingOptions();
+                            pagingOptions = _getResetPagingOptions();
                         } else if(data.context!=null){
-                            if(!__isLastPage(data.context.pagingMetadata)){
-                                pagingOptions.offset = data.context.pagingMetadata.offset + data.context.pagingMetadata.limit;
-                                pagingOptions.limit = data.context.pagingMetadata.limit;
+                            if(!_isLastPage(data.context.pagingMetadata)){
+                                pagingOptions.offset+= appConfig.config.defaultPageSize;
                             }                   
                         }
 
