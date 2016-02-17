@@ -6,7 +6,7 @@
     <groupId>uk.gov.phe.erdst.sc.awag</groupId>
 	<artifactId>animal-welfare-system</artifactId>
 	<packaging>war</packaging>
-	<version>3</version>
+	<version>4</version>
 	<name>animal-welfare-system</name>
 
 	<properties>
@@ -87,6 +87,11 @@
 			<version>3.0</version>
 			<scope>test</scope>
 		</dependency>
+        <dependency>
+            <groupId>com.opencsv</groupId>
+            <artifactId>opencsv</artifactId>
+            <version>3.7</version>
+        </dependency>
 
 	</dependencies>
 
@@ -146,6 +151,7 @@
 						<artifactId>maven-surefire-plugin</artifactId>
 						<configuration>
 						    <argLine>${memory.options.maxPermSize}</argLine>
+						    <skipAfterFailureCount>1</skipAfterFailureCount>
 							<groups>${testng.groups.containerBased}</groups>
 							<additionalClasspathElements>
 								<additionalClasspathElement>${extralibs.postgresql}</additionalClasspathElement>

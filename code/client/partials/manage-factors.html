@@ -3,7 +3,7 @@
     <form name="factorManagementForm" class="form-horizontal">
         <div class="form-group" ng-controller="MngmtFactorSelectionCtrl as factorCtrl">
             <label for="{{factorCtrl.selectId}}" class="col-xs-3 control-label">Factor name: </label>
-            <div class="col-xs-7">
+            <div ng-class="{'col-xs-7': factorMngmtCtrl.isNewFactor, 'col-xs-6': !factorMngmtCtrl.isNewFactor}">
                 <aw-search-select2 class="form-control" elem-id="{{factorCtrl.selectId}}" controller="factorCtrl"></aw-search-select2>
             </div>
             <div ng-click="factorMngmtCtrl.startUpdate()" ng-hide="factorMngmtCtrl.isNewFactor">
@@ -14,7 +14,7 @@
         </div>
         <div class="form-group" ng-controller="MngmtFactorSelectionUpdateCtrl as factorUpdateCtrl" ng-show="factorMngmtCtrl.isUpdatingFactor">
             <label for="{{factorUpdateCtrl.selectId}}" class="col-xs-3 control-label">Update factor name: </label>
-            <div class="col-xs-7">
+            <div ng-class="{'col-xs-7': factorMngmtCtrl.isNewFactor, 'col-xs-6': !factorMngmtCtrl.isNewFactor}">
                 <aw-select2 elem-id="{{factorUpdateCtrl.selectId}}" controller="factorUpdateCtrl"></aw-select2>
             </div>
             <div ng-click="factorMngmtCtrl.cancelUpdate()">
@@ -24,12 +24,12 @@
             </div>
         </div>
         <div class="form-group">
-            <div class="col-xs-12">
+            <div>
                 <aw-success-display success="factorMngmtCtrl.isSuccess"></aw-success-display>
             </div>
         </div>
         <div class="form-group">
-            <div class="col-xs-12">
+            <div>
                 <aw-error-display errors="factorMngmtCtrl.errors"></aw-error-display>
             </div>
         </div>
@@ -37,19 +37,15 @@
             <hr />
         </div>
         <div class="row">
-            <div class="col-xs-6" ng-show="factorMngmtCtrl.isNewFactor">
-                <button type="button" class="btn btn-success btn-sm pull-right" ng-click="factorMngmtCtrl.submitFactor()">
-                Create
+            <div class="text-center">
+                <button type="button" class="btn btn-lg btn-success" ng-click="factorMngmtCtrl.submitFactor()" ng-disabled="!factorMngmtCtrl.isNewFactor">
+                    Create
                 </button>
-            </div>
-            <div class="col-xs-6" ng-hide="factorMngmtCtrl.isNewFactor">
-                <button type="button" class="btn btn-primary btn-sm pull-right" ng-click="factorMngmtCtrl.updateFactor()">
-                Update
+                <button type="button" class="btn btn-lg btn-primary" ng-click="factorMngmtCtrl.updateFactor()" ng-disabled="factorMngmtCtrl.isNewFactor">
+                    Update
                 </button>
-            </div>
-            <div class="col-xs-6">
-                <button type="button" class="btn btn-danger btn-sm" ng-click="factorMngmtCtrl.clearFactor()">
-                Clear
+                <button type="button" class="btn btn-danger btn-lg" ng-click="factorMngmtCtrl.clearFactor()">
+                    Clear
                 </button>
             </div>
         </div>

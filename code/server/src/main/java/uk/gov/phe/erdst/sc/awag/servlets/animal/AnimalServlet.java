@@ -24,7 +24,6 @@ import uk.gov.phe.erdst.sc.awag.exceptions.AWInvalidParameterException;
 import uk.gov.phe.erdst.sc.awag.exceptions.AWInvalidResourceIdException;
 import uk.gov.phe.erdst.sc.awag.exceptions.AWNoSuchEntityException;
 import uk.gov.phe.erdst.sc.awag.exceptions.AWNonUniqueException;
-import uk.gov.phe.erdst.sc.awag.service.page.ResponsePager;
 import uk.gov.phe.erdst.sc.awag.service.validation.utils.ValidationConstants;
 import uk.gov.phe.erdst.sc.awag.service.validation.utils.ValidatorUtils;
 import uk.gov.phe.erdst.sc.awag.servlets.utils.RequestConverter;
@@ -35,7 +34,7 @@ import uk.gov.phe.erdst.sc.awag.servlets.utils.ServletUtils;
 
 @SuppressWarnings("serial")
 @WebServlet(name = "animal", urlPatterns = {"/animal/*"})
-@ServletSecurity(@HttpConstraint(rolesAllowed = {ServletSecurityUtils.RolesAllowed.AW_ADMIN}))
+@ServletSecurity(@HttpConstraint(rolesAllowed = {ServletSecurityUtils.RolesAllowed.AW_ASSESSMENT_USER}))
 public class AnimalServlet extends HttpServlet
 {
     @Inject
@@ -88,7 +87,7 @@ public class AnimalServlet extends HttpServlet
         AnimalClientData clientData = (AnimalClientData) mRequestConverter.convert(requestAnimalJson,
             AnimalClientData.class);
         ResponsePayload responsePayload = new ResponsePayload();
-        Long animalId = ServletUtils.getResourceId(request);
+        Long animalId = ServletUtils.getNumberResourceId(request);
 
         if (!ValidatorUtils.isResourceValid(animalId, HttpMethod.PUT))
         {
@@ -96,7 +95,8 @@ public class AnimalServlet extends HttpServlet
             return;
         }
 
-        mAnimalController.updateAnimal(animalId, clientData, responsePayload);
+        mAnimalController.updateAnimal(animalId, clientData, responsePayload,
+            ServletSecurityUtils.getLoggedUser(request));
 
         if (responsePayload.getErrors().size() > 0)
         {
@@ -111,15 +111,14 @@ public class AnimalServlet extends HttpServlet
     }
 
     @Override
-    protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException,
-        IOException
+    protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException
     {
         String requestAnimalJson = request.getParameter("animal");
         AnimalClientData clientData = (AnimalClientData) mRequestConverter.convert(requestAnimalJson,
             AnimalClientData.class);
         ResponsePayload responsePayload = new ResponsePayload();
 
-        mAnimalController.storeAnimal(clientData, responsePayload);
+        mAnimalController.storeAnimal(clientData, responsePayload, ServletSecurityUtils.getLoggedUser(request));
 
         if (responsePayload.getErrors().size() > 0)
         {
@@ -134,10 +133,10 @@ public class AnimalServlet extends HttpServlet
     }
 
     @Override
-    protected void doDelete(HttpServletRequest request, HttpServletResponse response) throws ServletException,
-        IOException
+    protected void doDelete(HttpServletRequest request, HttpServletResponse response)
+        throws ServletException, IOException
     {
-        Long animalId = ServletUtils.getResourceId(request);
+        Long animalId = ServletUtils.getNumberResourceId(request);
 
         if (!ValidatorUtils.isResourceValid(animalId, HttpMethod.DELETE))
         {
@@ -147,7 +146,7 @@ public class AnimalServlet extends HttpServlet
 
         try
         {
-            mAnimalController.deleteAnimal(animalId);
+            mAnimalController.deleteAnimal(animalId, ServletSecurityUtils.getLoggedUser(request));
         }
         catch (AWNoSuchEntityException ex)
         {

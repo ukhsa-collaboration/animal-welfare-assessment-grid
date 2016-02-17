@@ -5,6 +5,7 @@
 	<persistence-unit name="aw">
 		<provider>org.eclipse.persistence.jpa.PersistenceProvider</provider>
 		<jta-data-source>jdbc/awDatabase</jta-data-source>
+		<mapping-file>META-INF/awDatabaseOrm.xml</mapping-file>
 		<class>uk.gov.phe.erdst.sc.awag.datamodel.AnimalHousing</class>
 		<class>uk.gov.phe.erdst.sc.awag.datamodel.AssessmentReason</class>
 		<class>uk.gov.phe.erdst.sc.awag.datamodel.Assessment</class>
@@ -24,15 +25,27 @@
 		<class>uk.gov.phe.erdst.sc.awag.datamodel.Factor</class>
 		<class>uk.gov.phe.erdst.sc.awag.datamodel.Parameter</class>
 		<class>uk.gov.phe.erdst.sc.awag.datamodel.Scale</class>
-		<properties>
-			<property name="javax.persistence.target-database" value="PostgreSQL" />
+        <class>uk.gov.phe.erdst.sc.awag.datamodel.ActivityLog</class>
+		<!-- <properties>
 			<property name="eclipselink.jdbc.batch-writing" value="JDBC" />
-		<!--
-			<property name="eclipselink.ddl-generation" value="drop-and-create-tables"/>
-			<property name="eclipselink.ddl-generation" value="none" />
-			<property name="eclipselink.ddl-generation.output-mode" value="both" />
-			<property name="eclipselink.logging.level" value="FINEST" />
-		-->
-		</properties>
+			<property name="eclipselink.ddl-generation.output-mode"
+				value="both" />
+			<property name="eclipselink.logging.level" value="FINEST" /> 
+		</properties> -->
+	</persistence-unit>
+	<persistence-unit name="awauth">
+		<provider>org.eclipse.persistence.jpa.PersistenceProvider</provider>
+		<jta-data-source>jdbc/awAuth</jta-data-source>
+		<mapping-file>META-INF/awAuthOrm.xml</mapping-file>
+		<class>uk.gov.phe.erdst.sc.awag.datamodel.UserAuth</class>
+		<class>uk.gov.phe.erdst.sc.awag.datamodel.GroupAuth</class>
+		<class>uk.gov.phe.erdst.sc.awag.datamodel.UserGroupAuth</class>
+		<class>uk.gov.phe.erdst.sc.awag.datamodel.UserGroupAuthPK</class>
+		<!-- <properties>
+			<property name="eclipselink.jdbc.batch-writing" value="JDBC" />
+			<property name="eclipselink.ddl-generation.output-mode"
+				value="both" />
+			<property name="eclipselink.logging.level" value="FINEST" /> 
+		</properties> -->
 	</persistence-unit>
 </persistence>

@@ -9,10 +9,13 @@ import uk.gov.phe.erdst.sc.awag.dto.AssessmentFullDto;
 import uk.gov.phe.erdst.sc.awag.dto.AssessmentSearchPreviewDto;
 import uk.gov.phe.erdst.sc.awag.dto.AssessmentsDto;
 import uk.gov.phe.erdst.sc.awag.dto.PreviousAssessmentDto;
+import uk.gov.phe.erdst.sc.awag.exceptions.AWNoSuchEntityException;
+import uk.gov.phe.erdst.sc.awag.service.logging.LoggedUser;
 
 public interface AssessmentController
 {
-    void store(AssessmentClientData clientData, boolean isSubmit, ResponsePayload responsePayload);
+    void store(AssessmentClientData clientData, boolean isSubmit, ResponsePayload responsePayload,
+        LoggedUser loggedUser);
 
     PreviousAssessmentDto getPreviousAssessment(Long animalId);
 
@@ -30,7 +33,8 @@ public interface AssessmentController
 
     PreviousAssessmentDto getPreviousAssessmentByDate(Long animalId, String date, Long currentAssessmentId);
 
-    void update(Long assessmentId, AssessmentClientData clientData, boolean isSubmit, ResponsePayload responsePayload);
+    void update(Long assessmentId, AssessmentClientData clientData, boolean isSubmit, ResponsePayload responsePayload,
+        LoggedUser loggedUser);
 
     AssessmentFullDto getAssessmentFullDto(Long assessmentId, ResponsePayload responsePayload);
 
@@ -39,4 +43,6 @@ public interface AssessmentController
     Long getAssessmentsCountByAnimalId(Long animalId);
 
     Long getAssessmentsCountByTemplateId(Long templateId);
+
+    void delete(Long assessmentId, LoggedUser loggedUser) throws AWNoSuchEntityException;
 }

@@ -89,7 +89,7 @@
                         <div ng-show="mainCtrl.resultsDirty" class="row">
                             <div class="bg-info" style="margin-bottom:1em;">
                                 <span class="glyphicon glyphicon-info-sign pull-left" style="padding-right: 4px"></span>
-                                <p>You have submitted an assessment but it still may be shown here as incomplete. To update the table, please run the search again.</p>
+                                <p>The search results table may be showing out of date results. To update the table, please run the search again.</p>
                             </div>
                         </div>
                         <div class="row">
@@ -110,13 +110,16 @@ ng-class="{'bg-primary' : awHover, 'bg-warning' : !assessment.isComplete && !awH
                     <accordion-heading>
                         Selected assessment <i class="pull-right glyphicon" ng-class="{'glyphicon-chevron-down': accordionCtrl.accordionStatus.isAssessmentOpen, 'glyphicon-chevron-right': !accordionCtrl.accordionStatus.isAssessmentOpen}"></i>
                     </accordion-heading>
-                    <div>
-                        <aw-animal-assessment-form ng-attr-parent-ctrl="mainCtrl"></aw-animal-assessment-form>
+                    <div ng-controller="ExistAssessFormAssessmentSectionCtrl as assessmentSectionCtrl">
+                        <div ng-show="assessmentSectionCtrl.sectionVisible">
+                            <aw-animal-assessment-form ng-attr-parent-ctrl="mainCtrl"></aw-animal-assessment-form>
+                        </div>
                     </div>
                 </accordion-group>
             </accordion>
             <div>
                 <aw-error-display errors="mainCtrl.getAssessmentErrors"></aw-error-display>
+                <aw-success-display success="mainCtrl.deleteAssessmentSuccess"></aw-success-display>
             </div>
         </div>
     </div>

@@ -1,16 +1,19 @@
 <!DOCTYPE glassfish-web-app PUBLIC "-//GlassFish.org//DTD 
 GlassFish Application Server 3.1 Servlet 3.0//EN" 
 "http://glassfish.org/dtds/glassfish-web-app_3_0-1.dtd">
-<glassfish-web-app>
-	<!--
+<glassfish-web-app>	
+<!--
   	<security-role-mapping>
-		<role-name>admin</role-name>
-		<group-name>YOUR LDAP/ACTIVE DIRECTORY GROUP NAME</group-name>
-	</security-role-mapping>
+		<role-name>assessmentuser</role-name>
+		<group-name>{your LDAP group to map here}</group-name>
+	</security-role-mapping> 
 	-->
 	<security-role-mapping>
 		<role-name>admin</role-name>
 		<group-name>admin</group-name>
 	</security-role-mapping>
-	
+	<security-role-mapping>
+		<role-name>assessmentuser</role-name>
+		<group-name>assessmentuser</group-name>
+	</security-role-mapping>
 </glassfish-web-app>

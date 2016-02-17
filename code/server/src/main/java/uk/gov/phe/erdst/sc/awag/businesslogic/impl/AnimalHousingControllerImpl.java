@@ -19,6 +19,9 @@ import uk.gov.phe.erdst.sc.awag.exceptions.AWNoSuchEntityException;
 import uk.gov.phe.erdst.sc.awag.exceptions.AWNonUniqueException;
 import uk.gov.phe.erdst.sc.awag.service.factory.EntitySelectDtoFactory;
 import uk.gov.phe.erdst.sc.awag.service.factory.housing.AnimalHousingFactory;
+import uk.gov.phe.erdst.sc.awag.service.logging.LoggedActions;
+import uk.gov.phe.erdst.sc.awag.service.logging.LoggedActivity;
+import uk.gov.phe.erdst.sc.awag.service.logging.LoggedUser;
 import uk.gov.phe.erdst.sc.awag.service.page.ResponsePager;
 
 @Stateless
@@ -59,7 +62,9 @@ public class AnimalHousingControllerImpl implements AnimalHousingController
     }
 
     @Override
-    public void storeAnimalHousing(AnimalHousingClientData clientData, ResponsePayload responsePayload)
+    @LoggedActivity(actionName = LoggedActions.STORE_HOUSING)
+    public void storeAnimalHousing(AnimalHousingClientData clientData, ResponsePayload responsePayload,
+        LoggedUser loggedUser)
     {
         Set<ConstraintViolation<AnimalHousingClientData>> animalHousingConstraintViolations = mAnimalHousingValidator
             .validate(clientData);
@@ -85,8 +90,9 @@ public class AnimalHousingControllerImpl implements AnimalHousingController
     }
 
     @Override
+    @LoggedActivity(actionName = LoggedActions.UPDATE_HOUSING)
     public void updateAnimalHousing(Long animalHousingId, AnimalHousingClientData clientData,
-        ResponsePayload responsePayload)
+        ResponsePayload responsePayload, LoggedUser loggedUser)
     {
         Set<ConstraintViolation<AnimalHousingClientData>> animalHousingConstraintViolations = mAnimalHousingValidator
             .validate(clientData);

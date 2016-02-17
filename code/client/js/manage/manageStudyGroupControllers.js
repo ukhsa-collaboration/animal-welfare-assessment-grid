@@ -189,6 +189,7 @@ manageStudyGroupControllers.controller('MngmtStudyGroupManagementCtrl', ['$scope
         var onStudyGroupSubmitSuccess = function(data){
         	that.errors = [];
         	that.isSuccess = true;
+            that.isExistingStudyGroup = true;
         	that.studyGroup = data;
         };
 

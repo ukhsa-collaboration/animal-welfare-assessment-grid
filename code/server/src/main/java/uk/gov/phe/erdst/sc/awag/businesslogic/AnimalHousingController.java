@@ -8,6 +8,7 @@ import uk.gov.phe.erdst.sc.awag.datamodel.client.AnimalHousingClientData;
 import uk.gov.phe.erdst.sc.awag.datamodel.response.ResponsePayload;
 import uk.gov.phe.erdst.sc.awag.dto.EntitySelectDto;
 import uk.gov.phe.erdst.sc.awag.exceptions.AWNoSuchEntityException;
+import uk.gov.phe.erdst.sc.awag.service.logging.LoggedUser;
 
 public interface AnimalHousingController
 {
@@ -16,9 +17,10 @@ public interface AnimalHousingController
 
     AnimalHousing getAnimalHousing(String name) throws AWNoSuchEntityException;
 
-    void storeAnimalHousing(AnimalHousingClientData clientData, ResponsePayload responsePayload);
+    void storeAnimalHousing(AnimalHousingClientData clientData, ResponsePayload responsePayload, LoggedUser loggedUser);
 
-    void updateAnimalHousing(Long animalHousingId, AnimalHousingClientData clientData, ResponsePayload responsePayload);
+    void updateAnimalHousing(Long animalHousingId, AnimalHousingClientData clientData, ResponsePayload responsePayload,
+        LoggedUser loggedUser);
 
     List<EntitySelectDto> getHousingLike(String like, Integer offset, Integer limit, ResponsePayload responsePayload,
         boolean includeMetadata);

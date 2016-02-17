@@ -5,6 +5,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+import javax.validation.ConstraintValidatorContext;
 import javax.validation.Validation;
 import javax.validation.Validator;
 import javax.validation.ValidatorFactory;
@@ -25,6 +26,8 @@ public class ValidatorUtilsTest
 {
     private static final String VALID_FIRST_DATE = "2014-02-01T00:00:00.000Z";
     private static final String VALID_SECOND_DATE = "2013-02-01T00:00:00.000Z";
+    private static final String VALID_FROM_DATE = "2015-02-01T00:00:00.000Z";
+    private static final String VALID_TO_DATE = "2015-02-20T00:00:00.000Z";
     private static final String INVALID_PARSE_FIRST_DATE = "2014aaaaaaaaaa-02-01T00:00:00.000Z";
     private static final String INVALID_PARSE_SECOND_DATE = "2013aaaaaaaaaa-02-01T00:00:00.000Z";
 
@@ -173,6 +176,43 @@ public class ValidatorUtilsTest
         ValidatorUtils.validateRequest(new DataToValidate(), responsePayload, mValidator);
 
         Assert.assertTrue(responsePayload.hasErrors());
+    }
+
+    @Test
+    public void testValidDateFromToFilterFields()
+    {
+        final int expectedErrors = 0;
+        ConstraintValidatorContext context = new ValidationTestHelper.MockConstraintValidatorContext();
+
+        String dateFrom = VALID_FROM_DATE;
+        String dateTo = VALID_TO_DATE;
+        Assert.assertEquals(ValidatorUtils.validateDateFromToFilter(dateFrom, dateTo, context), expectedErrors);
+
+        dateTo = null;
+        Assert.assertEquals(ValidatorUtils.validateDateFromToFilter(dateFrom, dateTo, context), expectedErrors);
+
+        dateFrom = null;
+        dateTo = VALID_TO_DATE;
+        Assert.assertEquals(ValidatorUtils.validateDateFromToFilter(dateFrom, dateTo, context), expectedErrors);
+    }
+
+    @Test
+    public void testInvalidDateFromToFilterFields()
+    {
+        final int expectedErrors = 1;
+        ConstraintValidatorContext context = new ValidationTestHelper.MockConstraintValidatorContext();
+
+        String dateFrom = VALID_TO_DATE;
+        String dateTo = VALID_FROM_DATE;
+        Assert.assertEquals(ValidatorUtils.validateDateFromToFilter(dateFrom, dateTo, context), expectedErrors);
+
+        dateFrom = ValidationTestHelper.INVALID_DATE;
+        dateTo = null;
+        Assert.assertEquals(ValidatorUtils.validateDateFromToFilter(dateFrom, dateTo, context), expectedErrors);
+
+        dateFrom = null;
+        dateTo = ValidationTestHelper.INVALID_DATE;
+        Assert.assertEquals(ValidatorUtils.validateDateFromToFilter(dateFrom, dateTo, context), expectedErrors);
     }
 
     private static class DataToValidate

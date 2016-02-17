@@ -10,12 +10,13 @@ import uk.gov.phe.erdst.sc.awag.dto.EntitySelectDto;
 import uk.gov.phe.erdst.sc.awag.dto.StudySimpleDto;
 import uk.gov.phe.erdst.sc.awag.exceptions.AWMultipleResultException;
 import uk.gov.phe.erdst.sc.awag.exceptions.AWNoSuchEntityException;
+import uk.gov.phe.erdst.sc.awag.service.logging.LoggedUser;
 
 public interface StudyController
 {
-    void storeStudy(StudyClientData clientData, ResponsePayload responsePayload);
+    void storeStudy(StudyClientData clientData, ResponsePayload responsePayload, LoggedUser loggedUser);
 
-    void updateStudy(Long studyId, StudyClientData clientData, ResponsePayload responsePayload);
+    void updateStudy(Long studyId, StudyClientData clientData, ResponsePayload responsePayload, LoggedUser loggedUser);
 
     List<EntitySelectDto> getStudyLikeDtos(String like, Integer offset, Integer limit, ResponsePayload responsePayload,
         boolean includeMetadata);

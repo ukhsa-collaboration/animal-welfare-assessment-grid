@@ -5,7 +5,7 @@ public interface DaoErrorMessageProvider
 
     String getNonUniqueEntityErrorMessage(Object entity);
 
-    String getNoSuchEntityMessage(Long id);
+    String getNoSuchEntityMessage(Object id);
 
     String getNoSuchEntityMessage(String nameValue);
 }

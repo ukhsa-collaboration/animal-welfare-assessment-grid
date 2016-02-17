@@ -24,7 +24,7 @@ import uk.gov.phe.erdst.sc.awag.servlets.utils.ServletSecurityUtils;
 import uk.gov.phe.erdst.sc.awag.servlets.utils.ServletUtils;
 
 @WebServlet({"/prev-assessment"})
-@ServletSecurity(@HttpConstraint(rolesAllowed = {ServletSecurityUtils.RolesAllowed.AW_ADMIN}))
+@ServletSecurity(@HttpConstraint(rolesAllowed = {ServletSecurityUtils.RolesAllowed.AW_ASSESSMENT_USER}))
 public class PreviousAssessmentServlet extends HttpServlet
 {
     private static final long serialVersionUID = 1L;

@@ -16,11 +16,15 @@ public final class ValidationConstants
     public static final String VALID_ASSESSMENT_SCORE_ANNOT_DEFAULT_MSG = "Invalid score";
     public static final String SIMPLE_TEXT_INPUT_ANNOT_DEFAULT_MSG = "Invalid text input";
     public static final String VALID_ASSESSMENTS_GET_REQUEST_ANNOT_DEFAULT_MSG = "Invalid assessments get request";
+    public static final String VALID_ACTIVITY_LOG_GET_REQUEST_ANNOT_DEFAULT_MSG = "Invalid activity log get request";
+    public static final String VALID_USER_AUTH_ANNOT_DEFAULT_MSG = "Invalid authentication details";
 
     public static final String NO_ERR_TEMPLATE = "No error template set";
 
     public static final String SIMPLE_TEXT_INPUT_REGEX = "^[a-zA-Z0-9\\-\\_\\.\\,\\/\\(\\) ]*$";
     public static final String COMMENTS_TEXT_INPUT_REGEX = "^[a-zA-Z0-9\\-\\_\\.\\,\\/\\(\\)\\: ]*$";
+    public static final String EMAIL_REGEX = "^[_A-Za-z0-9-\\+]+(\\.[_A-Za-z0-9-]+)*@[A-Za-z0-9-]+(\\.[A-Za-z0-9]+)*(\\.[A-Za-z]{2,})$;";
+    public static final String PASSWORD_REGEX = "^[a-zA-Z0-9\\-\\_\\.\\,\\/\\(\\) ]*$";
     public static final int SIMPLE_TEXT_INPUT_SIZE_MAX = 255;
     public static final int SIMPLE_TEXT_INPUT_SIZE_MIN = 2;
 
@@ -128,6 +132,25 @@ public final class ValidationConstants
     public static final String TEMPLATE_NAME_PROPERTY = "Template name";
     public static final String TEMPLATE_ENTITY_NAME = "Template";
 
+    // User auth
+    public static final String AUTH_USER_ENTITY_NAME = "User";
+    public static final int AUTH_USER_NAME_SIZE_MIN = SIMPLE_TEXT_INPUT_SIZE_MIN;
+    public static final int AUTH_USER_NAME_SIZE_MAX = SIMPLE_TEXT_INPUT_SIZE_MAX;
+    public static final String AUTH_USER_NAME_PROPERTY = "Username";
+
+    public static final int AUTH_USER_EMAIL_SIZE_MIN = 5;
+    public static final int AUTH_USER_EMAIL_SIZE_MAX = SIMPLE_TEXT_INPUT_SIZE_MAX;
+    public static final String AUTH_USER_EMAIL_PROPERTY = "Email";
+
+    public static final int AUTH_PASSWORD_SIZE_MIN = 8;
+    public static final int AUTH_PASSWORD_SIZE_MAX = SIMPLE_TEXT_INPUT_SIZE_MAX;
+    public static final String AUTH_PASSWORD_PROPERTY = "Password";
+    public static final String AUTH_RETYPED_PASSWORD_PROPERTY = "Retyped password";
+
+    public static final String AUTH_GROUP_PROPERTY = "Group name";
+    public static final int AUTH_GROUP_SIZE_MIN = SIMPLE_TEXT_INPUT_SIZE_MIN;
+    public static final int AUTH_GROUP_SIZE_MAX = SIMPLE_TEXT_INPUT_SIZE_MAX;
+
     // Assessment
     public static final String ASSESSMENT_ENTITY_NAME = "Assessment";
     public static final String ASSESSMENT_DATE = "Assessment date";
@@ -147,19 +170,19 @@ public final class ValidationConstants
     public static final String ERR_ASSESSMENT_ZERO_NONIGNORED_SCORE = "Parameter score cannot be 0 "
         + "unless it is ignored.";
     public static final String ERR_ASSESSMENT_UPDATE_COMPLETED_ATTEMPT = "Assessment cannot be updated since it has "
-        + "been submitted already.";
+        + "been finalised already.";
     public static final String ERR_ASSESSMENT_SCORE_OUTSIDE_SCALE_FORMAT = "Score for factor is outside "
         + "scale (min: %s, max: %s)";
 
     public static final String ERR_ASSESSMENT_TEMPLATE_MISMATCH_FORMAT = "%s %s do not match template used";
-    public static final String ERR_ASSESSMENT_TEMPLATE_FACTORS_MISMATCH = String.format(
-        ERR_ASSESSMENT_TEMPLATE_MISMATCH_FORMAT, "Sent", "factors");
-    public static final String ERR_ASSESSMENT_TEMPLATE_PARAMETERS_MISMATCH = String.format(
-        ERR_ASSESSMENT_TEMPLATE_MISMATCH_FORMAT, "Sent", "parameters");
-    public static final String ERR_ASSESSMENT_TEMPLATE_SUBMITTED_FACTORS_MISMATCH = String.format(
-        ERR_ASSESSMENT_TEMPLATE_MISMATCH_FORMAT, "Submitted", "factors");
-    public static final String ERR_ASSESSMENT_TEMPLATE_SUBMITTED_PARAMETERS_MISMATCH = String.format(
-        ERR_ASSESSMENT_TEMPLATE_MISMATCH_FORMAT, "Submitted", "parameters");
+    public static final String ERR_ASSESSMENT_TEMPLATE_FACTORS_MISMATCH = String
+        .format(ERR_ASSESSMENT_TEMPLATE_MISMATCH_FORMAT, "Sent", "factors");
+    public static final String ERR_ASSESSMENT_TEMPLATE_PARAMETERS_MISMATCH = String
+        .format(ERR_ASSESSMENT_TEMPLATE_MISMATCH_FORMAT, "Sent", "parameters");
+    public static final String ERR_ASSESSMENT_TEMPLATE_SUBMITTED_FACTORS_MISMATCH = String
+        .format(ERR_ASSESSMENT_TEMPLATE_MISMATCH_FORMAT, "Submitted", "factors");
+    public static final String ERR_ASSESSMENT_TEMPLATE_SUBMITTED_PARAMETERS_MISMATCH = String
+        .format(ERR_ASSESSMENT_TEMPLATE_MISMATCH_FORMAT, "Submitted", "parameters");
 
     public static final String PAGING_OFFSET_NAME = "Offset";
     public static final String PAGING_LIMIT_NAME = "Limit";
@@ -172,13 +195,13 @@ public final class ValidationConstants
     public static final String DATE_TO = "Date to";
 
     // Exception messages
-    public static final String ERR_NO_SUCH_ENTITY = "Could not find entity %s with id %d.";
+    public static final String ERR_NO_SUCH_ENTITY = "Could not find entity %s with id %s.";
     public static final String ERR_NO_SUCH_ENTITY_WITH_NAME = "Could not find entity %s with name %s.";
 
     public static final String ERR_SEX_PARAM = String.format("Sex parameter %s should be set to %s or %s.",
         ServletConstants.REQ_PARAM_SEX, ServletConstants.REQ_PARAM_SEX_F, ServletConstants.REQ_PARAM_SEX_M);
-    public static final String ERR_CALLBACK_PARAM = String.format(
-        "The callback parameter %s must be provided for GET requests.", ServletConstants.REQ_PARAM_CALLBACK);
+    public static final String ERR_CALLBACK_PARAM = String
+        .format("The callback parameter %s must be provided for GET requests.", ServletConstants.REQ_PARAM_CALLBACK);
     public static final String ERR_ACTION_PARAM = String.format("The action parameter %s must be provided.",
         ServletConstants.REQ_PARAM_ACTION);
     public static final String ERR_LIKE_PARAM = String.format(
@@ -213,6 +236,12 @@ public final class ValidationConstants
     public static final String ERR_TEMPLATE_IN_USE_UPD_SCALE = "Cannot update the scale for this template because there are assessments using it.";
     public static final String ERR_TEMPLATE_IN_USE_UPD_PARAMS = "Cannot update the parameters and factors for this template because there are assessments using it.";
     public static final String ERR_TEMPLATE_IN_USE_DEL = "Cannot delete template parameter because there are assessments using it.";
+
+    public static final String ERR_PASSWORD_RETYPED_PASSWORD = "Password does not match retyped password";
+
+    public static final String ERR_DELETE_ADMIN_NOT_ALLOWED = "Deletion of the main admin user is not allowed";
+    public static final String ERR_ADMIN_ROLE_CHANGE = "You cannot change the group that the main admin user belongs to";
+    public static final String ERR_GROUP_NAME_NULL = "You must set a group name for the user";
 
     // Other common
     public static final String ERR_NOT_NEGATIVE_VALUES = "%s values must not be negative.";

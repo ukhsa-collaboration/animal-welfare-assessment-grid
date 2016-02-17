@@ -9,6 +9,7 @@ import uk.gov.phe.erdst.sc.awag.datamodel.response.ResponsePayload;
 import uk.gov.phe.erdst.sc.awag.dto.EntitySelectDto;
 import uk.gov.phe.erdst.sc.awag.dto.ParameterDto;
 import uk.gov.phe.erdst.sc.awag.exceptions.AWNoSuchEntityException;
+import uk.gov.phe.erdst.sc.awag.service.logging.LoggedUser;
 
 public interface ParameterController
 {
@@ -20,9 +21,10 @@ public interface ParameterController
     List<EntitySelectDto> getParametersLike(String like, Integer offset, Integer limit,
         ResponsePayload responsePayload, boolean includeMetadata);
 
-    void updateParameter(Long parameterId, ParameterClientData clientData, ResponsePayload responsePayload);
+    void updateParameter(Long parameterId, ParameterClientData clientData, ResponsePayload responsePayload,
+        LoggedUser loggedUser);
 
-    void storeParameter(ParameterClientData clientData, ResponsePayload responsePayload);
+    void storeParameter(ParameterClientData clientData, ResponsePayload responsePayload, LoggedUser loggedUser);
 
     Collection<Parameter> getParameters(Long... parametersIds);
 }

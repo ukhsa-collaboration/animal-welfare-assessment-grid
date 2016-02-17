@@ -97,6 +97,12 @@
                             <li ng-class="{ active: isActive('/manage-templates')}">
                                 <a href="#/manage-templates">Manage Templates</a>
                             </li>
+                            <li ng-class="{ active: isActive('/activity-logs')}">
+                                <a href="#/activity-logs">Activity Logs</a>
+                            </li>
+                            <li ng-class="{ active: isActive('/manage-users')}">
+                                <a href="#/manage-users">Manage Users</a>
+                            </li>
                         </ul>
                     </div>
                 </div>
@@ -112,6 +118,7 @@
         </div>
         <script src="js/common/logout.js"></script>
     </body>
+
     <script src="lib/js/offcanvas.js"></script>
     <script src="lib/js/bootstrap.js"></script>
     <script src="lib/js/d3.min.js"></script>
@@ -126,8 +133,8 @@
     <script src="lib/js/ui-bootstrap-tpls-0.11.0.min.js"></script>
     <script src="lib/js/ng-table.min.js"></script>
     <script src="lib/js/line-chart.min.js"></script>
-    <script src="js/common/awCommonDirectives.js"></script>
     <script src="js/index/indexControllers.js"></script>
+    <script src="js/common/awCommonDirectives.js"></script>
     <script src="js/assessment-form/assessmentFormControllers.js"></script>
     <script src="js/assessment-form/existingAssessmentControllers.js"></script>
     <script src="js/graphs/graphsController.js"></script>
@@ -142,8 +149,10 @@
     <script src="js/manage/manageFactorControllers.js"></script>
     <script src="js/manage/manageParameterControllers.js"></script>
     <script src="js/manage/manageTemplateControllers.js"></script>
+    <script src="js/manage/manageUsersControllers.js"></script>
     <script src="js/manage/manageStudyStudyGroupAccordionControllers.js"></script>
     <script src="js/about/aboutControllers.js"></script>
+    <script src="js/activity-logs/activityLogsControllers.js"></script>
     <script src="js/common/formServices.js"></script>
     <script src="js/common/select2utils.js"></script>
     <script src="js/common/numberUtils.js"></script>
@@ -152,6 +161,7 @@
     <script src="js/common/filterUtils.js"></script>
     <script src="js/common/graphUtils.js"></script>
     <script src="js/common/pagingUtils.js"></script>
+    <script src="js/common/cookieUtils.js"></script>
     <script src="js/services/logonServices.js"></script>
     <script src="js/services/animalServices.js"></script>
     <script src="js/services/factorServices.js"></script>
@@ -167,8 +177,10 @@
     <script src="js/services/scaleServices.js"></script>
     <script src="js/services/parameterServices.js"></script>
     <script src="js/services/studyGroupServices.js"></script>
+    <script src="js/services/userAuthServices.js"></script>
     <script src="js/services/tableServices.js"></script>
     <script src="js/services/graphDrawServices.js"></script>
+    <script src="js/services/activityLogServices.js"></script>
     <script src="js/common/dataServices.js"></script>
     <script src="js/common/entityServices.js"></script>
     <script src="js/common/formatServices.js"></script>

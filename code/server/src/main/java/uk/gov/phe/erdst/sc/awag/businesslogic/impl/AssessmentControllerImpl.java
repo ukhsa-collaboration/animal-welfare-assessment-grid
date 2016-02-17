@@ -29,6 +29,9 @@ import uk.gov.phe.erdst.sc.awag.service.factory.assessment.AssessmentDtoFactory;
 import uk.gov.phe.erdst.sc.awag.service.factory.assessment.AssessmentFactory;
 import uk.gov.phe.erdst.sc.awag.service.factory.assessment.AssessmentPartsFactory;
 import uk.gov.phe.erdst.sc.awag.service.factory.impl.AssessmentPartsFactoryImpl.AssessmentParts;
+import uk.gov.phe.erdst.sc.awag.service.logging.LoggedActions;
+import uk.gov.phe.erdst.sc.awag.service.logging.LoggedActivity;
+import uk.gov.phe.erdst.sc.awag.service.logging.LoggedUser;
 import uk.gov.phe.erdst.sc.awag.service.page.ResponsePager;
 import uk.gov.phe.erdst.sc.awag.service.validation.groups.SavedAssessment;
 import uk.gov.phe.erdst.sc.awag.service.validation.groups.SubmittedAssessment;
@@ -104,7 +107,9 @@ public class AssessmentControllerImpl implements AssessmentController
     }
 
     @Override
-    public void store(AssessmentClientData clientData, boolean isSubmit, ResponsePayload responsePayload)
+    @LoggedActivity(actionName = LoggedActions.STORE_ASSESSMENT)
+    public void store(AssessmentClientData clientData, boolean isSubmit, ResponsePayload responsePayload,
+        LoggedUser loggedUser)
     {
         Class<?> validationGroup = isSubmit ? SubmittedAssessment.class : SavedAssessment.class;
 
@@ -129,8 +134,9 @@ public class AssessmentControllerImpl implements AssessmentController
     }
 
     @Override
+    @LoggedActivity(actionName = LoggedActions.UPDATE_ASSESSMENT)
     public void update(Long assessmentId, AssessmentClientData clientData, boolean isSubmit,
-        ResponsePayload responsePayload)
+        ResponsePayload responsePayload, LoggedUser loggedUser)
     {
         Class<?> validationGroup = isSubmit ? SubmittedAssessment.class : SavedAssessment.class;
         Set<ConstraintViolation<AssessmentClientData>> constraintViolations = mAssessmentValidator.validate(clientData,
@@ -220,8 +226,8 @@ public class AssessmentControllerImpl implements AssessmentController
     public AssessmentsDto getAnimalAssessmentsBetween(String dateFrom, String dateTo, Long animalId, Integer offset,
         Integer limit, ResponsePayload responsePayload, boolean includeMetadata)
     {
-        List<Assessment> assessments = mAssessmentDao.getAnimalAssessmentsBetween(dateFrom, dateTo, animalId, offset,
-            limit);
+        List<Assessment> assessments = mAssessmentDao.getAnimalAssessmentsBetween(dateFrom, dateTo, animalId, true,
+            offset, limit);
 
         if (includeMetadata)
         {
@@ -261,5 +267,13 @@ public class AssessmentControllerImpl implements AssessmentController
     public Long getAssessmentsCountByTemplateId(Long templateId)
     {
         return mAssessmentDao.getCountAssessmentsByTemplateId(templateId);
+    }
+
+    @Override
+    @LoggedActivity(actionName = LoggedActions.DELETE_ASSESSMENT)
+    public void delete(Long assessmentId, LoggedUser loggedUser) throws AWNoSuchEntityException
+    {
+        Assessment assessment = mAssessmentDao.getAssessment(assessmentId);
+        mAssessmentDao.deleteAssessment(assessment);
     }
 }

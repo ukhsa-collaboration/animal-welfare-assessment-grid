@@ -24,6 +24,9 @@ import uk.gov.phe.erdst.sc.awag.exceptions.AWNonUniqueException;
 import uk.gov.phe.erdst.sc.awag.service.factory.EntitySelectDtoFactory;
 import uk.gov.phe.erdst.sc.awag.service.factory.animal.AnimalDtoFactory;
 import uk.gov.phe.erdst.sc.awag.service.factory.animal.AnimalFactory;
+import uk.gov.phe.erdst.sc.awag.service.logging.LoggedActions;
+import uk.gov.phe.erdst.sc.awag.service.logging.LoggedActivity;
+import uk.gov.phe.erdst.sc.awag.service.logging.LoggedUser;
 import uk.gov.phe.erdst.sc.awag.service.page.ResponsePager;
 
 @Stateless
@@ -85,7 +88,8 @@ public class AnimalControllerImpl implements AnimalController
     }
 
     @Override
-    public void storeAnimal(AnimalClientData clientData, ResponsePayload responsePayload)
+    @LoggedActivity(actionName = LoggedActions.STORE_ANIMAL)
+    public void storeAnimal(AnimalClientData clientData, ResponsePayload responsePayload, LoggedUser loggedUser)
     {
         Set<ConstraintViolation<AnimalClientData>> animalConstraintViolations = mAnimalValidator.validate(clientData);
 
@@ -110,7 +114,9 @@ public class AnimalControllerImpl implements AnimalController
     }
 
     @Override
-    public void updateAnimal(Long animalId, AnimalClientData clientData, ResponsePayload responsePayload)
+    @LoggedActivity(actionName = LoggedActions.UPDATE_ANIMAL)
+    public void updateAnimal(Long animalId, AnimalClientData clientData, ResponsePayload responsePayload,
+        LoggedUser loggedUser)
     {
         Set<ConstraintViolation<AnimalClientData>> animalConstraintViolations = mAnimalValidator.validate(clientData);
 
@@ -135,7 +141,8 @@ public class AnimalControllerImpl implements AnimalController
     }
 
     @Override
-    public void deleteAnimal(Long animalId) throws AWNoSuchEntityException
+    @LoggedActivity(actionName = LoggedActions.DELETE_ANIMAL)
+    public void deleteAnimal(Long animalId, LoggedUser loggedUser) throws AWNoSuchEntityException
     {
         mAnimalDao.updateIsDeleted(animalId, true);
     }

@@ -11,6 +11,7 @@ import uk.gov.phe.erdst.sc.awag.datamodel.AssessmentReason;
 @Stateless
 public class AssessmentReasonDaoImpl extends CommonDaoImpl<AssessmentReason> implements AssessmentReasonDao
 {
+
     public AssessmentReasonDaoImpl()
     {
         super("mId", "mName", new DaoErrorMessageProvider() {
@@ -22,7 +23,7 @@ public class AssessmentReasonDaoImpl extends CommonDaoImpl<AssessmentReason> imp
             }
 
             @Override
-            public String getNoSuchEntityMessage(Long id)
+            public String getNoSuchEntityMessage(Object id)
             {
                 return DaoUtils.getNoSuchEntityMessage(DaoConstants.PROP_REASON_ID, id);
             }

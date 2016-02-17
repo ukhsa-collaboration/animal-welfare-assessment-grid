@@ -49,14 +49,6 @@ public class MockAssessmentDao implements AssessmentDao
     }
 
     @Override
-    public List<Assessment> getAnimalAssessmentsBetween(String dateFrom, String dateTo, Long animalId, Integer offset,
-        Integer limit)
-    {
-        // TODO Auto-generated method stub
-        return null;
-    }
-
-    @Override
     public Long getCountAssessments()
     {
         // TODO Auto-generated method stub
@@ -123,6 +115,14 @@ public class MockAssessmentDao implements AssessmentDao
 
     @Override
     public Long getCountAssessmentsByTemplateId(Long templateId)
+    {
+        // TODO Auto-generated method stub
+        return null;
+    }
+
+    @Override
+    public List<Assessment> getAnimalAssessmentsBetween(String dateFrom, String dateTo, Long animalId,
+        boolean isComplete, Integer offset, Integer limit)
     {
         // TODO Auto-generated method stub
         return null;

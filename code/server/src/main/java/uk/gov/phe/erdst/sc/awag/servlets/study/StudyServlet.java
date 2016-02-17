@@ -19,7 +19,6 @@ import uk.gov.phe.erdst.sc.awag.datamodel.response.ResponsePayload;
 import uk.gov.phe.erdst.sc.awag.exceptions.AWInvalidParameterException;
 import uk.gov.phe.erdst.sc.awag.exceptions.AWInvalidResourceIdException;
 import uk.gov.phe.erdst.sc.awag.exceptions.AWNoSuchEntityException;
-import uk.gov.phe.erdst.sc.awag.service.page.ResponsePager;
 import uk.gov.phe.erdst.sc.awag.service.validation.utils.ValidatorUtils;
 import uk.gov.phe.erdst.sc.awag.servlets.utils.RequestConverter;
 import uk.gov.phe.erdst.sc.awag.servlets.utils.ResponseFormatter;
@@ -29,7 +28,7 @@ import uk.gov.phe.erdst.sc.awag.servlets.utils.ServletUtils;
 
 @SuppressWarnings("serial")
 @WebServlet(name = "study", urlPatterns = {"/study/*"})
-@ServletSecurity(@HttpConstraint(rolesAllowed = {ServletSecurityUtils.RolesAllowed.AW_ADMIN}))
+@ServletSecurity(@HttpConstraint(rolesAllowed = {ServletSecurityUtils.RolesAllowed.AW_ASSESSMENT_USER}))
 public class StudyServlet extends HttpServlet
 {
     @Inject
@@ -138,7 +137,7 @@ public class StudyServlet extends HttpServlet
         StudyClientData clientData = (StudyClientData) mRequestConverter.convert(requestStudyJson,
             StudyClientData.class);
         ResponsePayload responsePayload = new ResponsePayload();
-        Long studyId = ServletUtils.getResourceId(request);
+        Long studyId = ServletUtils.getNumberResourceId(request);
 
         if (!ValidatorUtils.isResourceValid(studyId, HttpMethod.PUT))
         {
@@ -146,7 +145,7 @@ public class StudyServlet extends HttpServlet
             return;
         }
 
-        mStudyController.updateStudy(studyId, clientData, responsePayload);
+        mStudyController.updateStudy(studyId, clientData, responsePayload, ServletSecurityUtils.getLoggedUser(request));
 
         if (responsePayload.getErrors().size() > 0)
         {
@@ -168,7 +167,7 @@ public class StudyServlet extends HttpServlet
             StudyClientData.class);
         ResponsePayload responsePayload = new ResponsePayload();
 
-        mStudyController.storeStudy(clientData, responsePayload);
+        mStudyController.storeStudy(clientData, responsePayload, ServletSecurityUtils.getLoggedUser(request));
 
         if (responsePayload.getErrors().size() > 0)
         {

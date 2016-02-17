@@ -25,7 +25,7 @@ import uk.gov.phe.erdst.sc.awag.servlets.utils.ServletUtils;
 
 @SuppressWarnings("serial")
 @WebServlet({"/user"})
-@ServletSecurity(@HttpConstraint(rolesAllowed = {ServletSecurityUtils.RolesAllowed.AW_ADMIN}))
+@ServletSecurity(@HttpConstraint(rolesAllowed = {ServletSecurityUtils.RolesAllowed.AW_ASSESSMENT_USER}))
 public class UserServlet extends HttpServlet
 {
     @Inject
@@ -106,8 +106,7 @@ public class UserServlet extends HttpServlet
     }
 
     @Override
-    protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException,
-        IOException
+    protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException
     {
         String userJson = request.getParameter("user");
 
@@ -115,7 +114,7 @@ public class UserServlet extends HttpServlet
 
         ResponsePayload responsePayload = new ResponsePayload();
 
-        mUserController.storeUser(clientData, responsePayload);
+        mUserController.storeUser(clientData, responsePayload, ServletSecurityUtils.getLoggedUser(request));
 
         if (responsePayload.getErrors().size() > 0)
         {

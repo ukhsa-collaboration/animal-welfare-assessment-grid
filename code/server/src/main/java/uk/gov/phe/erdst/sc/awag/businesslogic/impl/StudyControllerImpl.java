@@ -29,6 +29,9 @@ import uk.gov.phe.erdst.sc.awag.service.factory.EntitySelectDtoFactory;
 import uk.gov.phe.erdst.sc.awag.service.factory.study.StudyDtoFactory;
 import uk.gov.phe.erdst.sc.awag.service.factory.study.StudyFactory;
 import uk.gov.phe.erdst.sc.awag.service.factory.studygroup.StudyGroupFactory;
+import uk.gov.phe.erdst.sc.awag.service.logging.LoggedActions;
+import uk.gov.phe.erdst.sc.awag.service.logging.LoggedActivity;
+import uk.gov.phe.erdst.sc.awag.service.logging.LoggedUser;
 import uk.gov.phe.erdst.sc.awag.service.page.ResponsePager;
 
 @Stateless
@@ -74,7 +77,9 @@ public class StudyControllerImpl implements StudyController
     }
 
     @Override
-    public void updateStudy(Long studyId, StudyClientData clientData, ResponsePayload responsePayload)
+    @LoggedActivity(actionName = LoggedActions.UPDATE_STUDY)
+    public void updateStudy(Long studyId, StudyClientData clientData, ResponsePayload responsePayload,
+        LoggedUser loggedUser)
     {
         Set<ConstraintViolation<StudyClientData>> studyConstraintViolations = mStudyValidator.validate(clientData);
         if (studyConstraintViolations.isEmpty())
@@ -98,7 +103,8 @@ public class StudyControllerImpl implements StudyController
     }
 
     @Override
-    public void storeStudy(StudyClientData clientData, ResponsePayload responsePayload)
+    @LoggedActivity(actionName = LoggedActions.STORE_STUDY)
+    public void storeStudy(StudyClientData clientData, ResponsePayload responsePayload, LoggedUser loggedUser)
     {
         Set<ConstraintViolation<StudyClientData>> studyConstraintViolations = mStudyValidator.validate(clientData);
         if (studyConstraintViolations.isEmpty())

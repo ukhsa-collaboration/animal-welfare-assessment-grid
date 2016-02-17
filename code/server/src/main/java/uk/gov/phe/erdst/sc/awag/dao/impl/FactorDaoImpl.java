@@ -22,7 +22,7 @@ public class FactorDaoImpl extends CommonDaoImpl<Factor> implements FactorDao
             }
 
             @Override
-            public String getNoSuchEntityMessage(Long id)
+            public String getNoSuchEntityMessage(Object id)
             {
                 return DaoUtils.getNoSuchEntityMessage(DaoConstants.PROP_FACTOR_ID, id);
             }

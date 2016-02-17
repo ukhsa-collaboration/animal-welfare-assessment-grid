@@ -21,6 +21,9 @@ import uk.gov.phe.erdst.sc.awag.exceptions.AWNoSuchEntityException;
 import uk.gov.phe.erdst.sc.awag.exceptions.AWNonUniqueException;
 import uk.gov.phe.erdst.sc.awag.service.factory.EntitySelectDtoFactory;
 import uk.gov.phe.erdst.sc.awag.service.factory.species.SpeciesFactory;
+import uk.gov.phe.erdst.sc.awag.service.logging.LoggedActions;
+import uk.gov.phe.erdst.sc.awag.service.logging.LoggedActivity;
+import uk.gov.phe.erdst.sc.awag.service.logging.LoggedUser;
 import uk.gov.phe.erdst.sc.awag.service.page.ResponsePager;
 
 @Stateless
@@ -42,7 +45,8 @@ public class SpeciesControllerImpl implements SpeciesController
     private ResponsePager mResponsePager;
 
     @Override
-    public void storeSpecies(SpeciesClientData clientData, ResponsePayload responsePayload)
+    @LoggedActivity(actionName = LoggedActions.STORE_SPECIES)
+    public void storeSpecies(SpeciesClientData clientData, ResponsePayload responsePayload, LoggedUser loggedUser)
     {
         Set<ConstraintViolation<SpeciesClientData>> speciesConstraintViolations = mSpeciesValidator
             .validate(clientData);
@@ -68,12 +72,14 @@ public class SpeciesControllerImpl implements SpeciesController
     }
 
     @Override
-    public void updateSpecies(Long speciesId, SpeciesClientData clientData, ResponsePayload responsePayload)
+    @LoggedActivity(actionName = LoggedActions.UPDATE_SPECIES)
+    public void updateSpecies(Long speciesId, SpeciesClientData clientData, ResponsePayload responsePayload,
+        LoggedUser loggedUser)
     {
         Set<ConstraintViolation<SpeciesClientData>> speciesConstraintViolations = mSpeciesValidator
             .validate(clientData);
 
-        if (!speciesConstraintViolations.isEmpty())
+        if (speciesConstraintViolations.isEmpty())
         {
             try
             {
@@ -94,7 +100,8 @@ public class SpeciesControllerImpl implements SpeciesController
     }
 
     @Override
-    public void deleteSpecies(Long speciesId)
+    @LoggedActivity(actionName = LoggedActions.DELETE_SPECIES)
+    public void deleteSpecies(Long speciesId, LoggedUser loggedUser)
     {
         // mSpeciesDao.updateIsDeleted(speciesId, true);
         throw new NotImplementedException("Not implemented yet.");

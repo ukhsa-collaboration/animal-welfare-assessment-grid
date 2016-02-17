@@ -1,0 +1,43 @@
+<div class="container-fluid">
+    <div ng-controller="ActivityLogsMainCtrl as mainCtrl">
+        <h1 class="page-header text-center">Activity Logs</h1>
+        <div>
+            <div class="form-group row" ng-controller="ActivityLogsDateFromSelectionCtrl as searchDateFromCtrl" >
+                <label class="col-xs-12 col-md-3" for="{{searchDateFromCtrl.selectId}}">Date from: </label>
+                <div class="col-xs-12 col-md-9">
+                    <aw-date-picker elem-id="{{searchDateFromCtrl.selectId}}" today-highlight="false" controller="searchDateFromCtrl"></aw-date-picker>
+                </div>
+            </div>
+            <div class="form-group row" ng-controller="ActivityLogsDateToSelectionCtrl as searchDateToCtrl">
+                <label class="col-xs-12 col-md-3" for="{{searchDateToCtrl.selectId}}">Date to: </label>
+                <div class="col-xs-12 col-md-9">
+                    <aw-date-picker elem-id="{{searchDateToCtrl.selectId}}" today-highlight="false" controller="searchDateToCtrl"></aw-date-picker>
+                </div>
+            </div>
+            <div class="row">
+                <div class="bg-info" style="margin-bottom:1em;">
+                    <span class="glyphicon glyphicon-info-sign pull-left" style="padding-right: 4px"></span>
+                    <p>If dates are not specified, the search will return all logs.</p>
+                </div>
+            </div>
+            <div class="row spacer">
+                <div class="col-xs-6 center-block">
+                    <button type="button" class="btn btn-lg center-block" ng-class="{'btn-success' : !mainCtrl.isDownloading, 'btn-info' : mainCtrl.isDownloading}" ng-click="mainCtrl.onDownloadClick()" ng-disabled="mainCtrl.isDownloading">
+                        {{mainCtrl.downloadBtnText}}
+                    </button>
+                </div>
+                <div class="col-xs-6 center-block">
+                    <button type="button" class="btn btn-danger btn-lg center-block" ng-click="mainCtrl.clearCriteria()">
+                        Clear dates
+                    </button>
+                </div>
+            </div>
+        </div>
+        <div>
+            <aw-error-display errors="mainCtrl.errors"></aw-error-display>
+        </div>
+    </div>
+</div>
+<div>
+    <iframe id="activityLogIframe" src="" style="display:none;"></iframe>
+</div>

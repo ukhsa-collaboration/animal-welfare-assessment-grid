@@ -4,40 +4,79 @@ var graphMngmtFormEvents = {
     onAnimalSelected : "onAnimalSelected",
     onAnimalRemoved : "onAnimalRemoved",
     onDateFromSelected : "onDateFromSelected",
-    onDateToSelected : "onDateToSelected"
+    onDateToSelected : "onDateToSelected",
+    onSelectDataFormCleared : "onSelectDataFormCleared"
 };
 
-graphsControllers.controller('AnimalSelectionController', ['$scope', 'formService', 'animalService', 'appConfig', function($scope, formService, animalService, appConfig) {
+graphsControllers.controller('AnimalSelectionController', ['$scope', 'formService', 'animalService', 'appConfig', 
+    function($scope, formService, animalService, appConfig) {
+
     this.selectId = 'animalSelect';
     this.placeHolder = 'Search an animal...';
     var that = this;
+
     this.onSearchSelect2DirectiveLinked = function() {
-        formService.initSearchSelect2(jQuery('#' + this.selectId), animalService.getAnimalsLike, true, this.placeHolder);
+        formService.initSearchSelect2(jQuery('#' + this.selectId), animalService.getAnimalsLike, false, this.placeHolder);
     };
+
     this.onSearchSelect2Selecting = function(choice) {
         if (choice) {
             animalService.getAnimalById(getAnimalCallback, choice.id);
         }
     };
+
     var getAnimalCallback = function(data) {
         $scope.$emit(graphMngmtFormEvents.onAnimalSelected, data);
     };
+
     this.onSearchSelect2Removed = function(choice) {
         $scope.$emit(graphMngmtFormEvents.onAnimalRemoved, choice);
     };
+
+    $scope.$on(graphMngmtFormEvents.onSelectDataFormCleared, function(event)
+    {
+        formService.clearSelect2(jQuery("#" + that.selectId));
+    });
+
 }]);
-graphsControllers.controller('DateFromSelectionController', ['$scope', 'formService', 'dateUtils', function($scope, formService, dateUtils) {
+
+graphsControllers.controller('DateFromSelectionController', ['$scope', 'formService', 'dateUtils', 
+    function($scope, formService, dateUtils) {
+
     this.dateFromId = 'dateFromSelect';
+    var that = this;
+
     this.onDateChange = function(date) {
-        $scope.$emit(graphMngmtFormEvents.onDateFromSelected, date);
+        if(dateUtils.isDateValid(date)){
+            $scope.$emit(graphMngmtFormEvents.onDateFromSelected, date);
+        }     
     };
+
+    $scope.$on(graphMngmtFormEvents.onSelectDataFormCleared, function(event)
+    {
+        formService.clearDatePickerField(jQuery("#" + that.dateFromId));
+    });
 }]);
-graphsControllers.controller('DateToSelectionController', ['$scope', 'formService', 'dateUtils', function($scope, formService, dateUtils) {
+
+graphsControllers.controller('DateToSelectionController', ['$scope', 'formService', 'dateUtils', 
+    function($scope, formService, dateUtils) {
+
     this.dateToId = 'dateToId';
+    var that = this;
+
     this.onDateChange = function(date) {
-        $scope.$emit(graphMngmtFormEvents.onDateToSelected, date);
+        if(dateUtils.isDateValid(date))
+        {
+             $scope.$emit(graphMngmtFormEvents.onDateToSelected, date);
+        }
     };
+
+    $scope.$on(graphMngmtFormEvents.onSelectDataFormCleared, function(event)
+    {
+        formService.clearDatePickerField(jQuery("#" + that.dateToId));
+    });
 }]);
+
 graphsControllers.controller('GraphMainController', ['$scope', 'assessmentService', '$filter', 'numberUtils', 'formatService', 'appConfig', '$timeout',
     function($scope, assessmentService, $filter, numberUtils, formatService, appConfig, $timeout) {
     
@@ -87,6 +126,14 @@ graphsControllers.controller('GraphMainController', ['$scope', 'assessmentServic
             $scope.$apply();
         });
     });
+
+    $scope.clearForm = function(){
+        $scope.animal.id = appConfig.config.unassignedId;
+        $scope.dateFrom = "";
+        $scope.dateTo = "";
+        that.errors = [];
+        $scope.$broadcast(graphMngmtFormEvents.onSelectDataFormCleared);
+    };
 
     $scope.getTimeLineData = function() {
         that.errors = [];

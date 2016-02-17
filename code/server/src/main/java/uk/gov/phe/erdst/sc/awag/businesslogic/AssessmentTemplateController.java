@@ -10,6 +10,7 @@ import uk.gov.phe.erdst.sc.awag.dto.AssessmentTemplateDto;
 import uk.gov.phe.erdst.sc.awag.dto.EntitySelectDto;
 import uk.gov.phe.erdst.sc.awag.exceptions.AWNoSuchEntityException;
 import uk.gov.phe.erdst.sc.awag.exceptions.AWTemplateInUseException;
+import uk.gov.phe.erdst.sc.awag.service.logging.LoggedUser;
 
 public interface AssessmentTemplateController
 {
@@ -25,11 +26,12 @@ public interface AssessmentTemplateController
 
     AssessmentTemplateDto getAssessmentTemplateDtoById(Long templateId) throws AWNoSuchEntityException;
 
-    void storeAssessmentTemplate(AssessmentTemplateClientData clientData, ResponsePayload responsePayload);
+    void storeAssessmentTemplate(AssessmentTemplateClientData clientData, ResponsePayload responsePayload,
+        LoggedUser loggedUser);
 
     void updateAssessmentTemplate(Long assessmentTemplateId, AssessmentTemplateClientData clientData,
-        ResponsePayload responsePayload);
+        ResponsePayload responsePayload, LoggedUser loggedUser);
 
-    void deleteTemplateParameter(Long templateId, Long parameterId)
+    void deleteTemplateParameter(Long templateId, Long parameterId, LoggedUser loggedUser)
         throws AWNoSuchEntityException, AWTemplateInUseException;
 }

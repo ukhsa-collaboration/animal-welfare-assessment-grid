@@ -50,11 +50,29 @@ function()
                 female : "f"
             },
             all : "all"
+        },
+    };
+
+    var auth = {
+        authTypes : {
+            database : "database",
+            ldap : "ldap"
+        },
+        groups : {
+            admin : {
+                userFriendlyName : "Admin",
+                roleName : "admin"
+            },
+            assessmentuser : {
+                userFriendlyName : "Assessment user",
+                roleName : "assessmentuser"
+            }
         }
     };
 
     return {
         config : config,
-        services : services
+        services : services,
+        auth : auth
     };
 }]);

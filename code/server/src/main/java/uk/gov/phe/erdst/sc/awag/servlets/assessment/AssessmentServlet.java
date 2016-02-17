@@ -20,6 +20,7 @@ import uk.gov.phe.erdst.sc.awag.datamodel.client.AssessmentsGetRequestParams;
 import uk.gov.phe.erdst.sc.awag.datamodel.response.ResponsePayload;
 import uk.gov.phe.erdst.sc.awag.exceptions.AWInvalidParameterException;
 import uk.gov.phe.erdst.sc.awag.exceptions.AWInvalidResourceIdException;
+import uk.gov.phe.erdst.sc.awag.exceptions.AWNoSuchEntityException;
 import uk.gov.phe.erdst.sc.awag.service.validation.utils.ValidatorUtils;
 import uk.gov.phe.erdst.sc.awag.servlets.utils.RequestConverter;
 import uk.gov.phe.erdst.sc.awag.servlets.utils.ResponseFormatter;
@@ -29,7 +30,7 @@ import uk.gov.phe.erdst.sc.awag.servlets.utils.ServletUtils;
 
 @SuppressWarnings("serial")
 @WebServlet(name = "assessment", urlPatterns = {"/assessment/*"})
-@ServletSecurity(@HttpConstraint(rolesAllowed = {ServletSecurityUtils.RolesAllowed.AW_ADMIN}))
+@ServletSecurity(@HttpConstraint(rolesAllowed = {ServletSecurityUtils.RolesAllowed.AW_ASSESSMENT_USER}))
 public class AssessmentServlet extends HttpServlet
 {
     @Inject
@@ -60,7 +61,7 @@ public class AssessmentServlet extends HttpServlet
 
         ResponsePayload responsePayload = new ResponsePayload();
 
-        mAssessmentController.store(clientData, isSubmit, responsePayload);
+        mAssessmentController.store(clientData, isSubmit, responsePayload, ServletSecurityUtils.getLoggedUser(request));
 
         if (responsePayload.hasErrors())
         {
@@ -115,7 +116,7 @@ public class AssessmentServlet extends HttpServlet
             AssessmentClientData.class);
 
         ResponsePayload responsePayload = new ResponsePayload();
-        Long assessmentId = ServletUtils.getResourceId(request);
+        Long assessmentId = ServletUtils.getNumberResourceId(request);
 
         if (!ValidatorUtils.isResourceValid(assessmentId, HttpMethod.PUT))
         {
@@ -123,7 +124,8 @@ public class AssessmentServlet extends HttpServlet
             return;
         }
 
-        mAssessmentController.update(assessmentId, clientData, isSubmit, responsePayload);
+        mAssessmentController.update(assessmentId, clientData, isSubmit, responsePayload,
+            ServletSecurityUtils.getLoggedUser(request));
 
         if (responsePayload.hasErrors())
         {
@@ -135,6 +137,30 @@ public class AssessmentServlet extends HttpServlet
         }
 
         ServletUtils.setResponseBody(response, mResponseFormatter.toJson(responsePayload));
+    }
+
+    @Override
+    public void doDelete(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException
+    {
+        Long assessmentId = ServletUtils.getNumberResourceId(request);
+
+        if (!ValidatorUtils.isResourceValid(assessmentId, HttpMethod.DELETE))
+        {
+            ServletUtils.setResponseResourceNotFound(response);
+            return;
+        }
+
+        try
+        {
+            mAssessmentController.delete(assessmentId, ServletSecurityUtils.getLoggedUser(request));
+        }
+        catch (AWNoSuchEntityException ex)
+        {
+            ServletUtils.setResponseResourceNotFound(response);
+            return;
+        }
+
+        ServletUtils.setResponseDeleteOk(response);
     }
 
     private void executeAction(String action, HttpServletRequest request, ResponsePayload responsePayload)

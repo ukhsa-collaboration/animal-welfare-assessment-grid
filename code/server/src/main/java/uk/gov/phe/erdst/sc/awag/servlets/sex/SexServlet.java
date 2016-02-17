@@ -22,7 +22,7 @@ import uk.gov.phe.erdst.sc.awag.servlets.utils.ServletUtils;
 
 @SuppressWarnings("serial")
 @WebServlet({"/sex"})
-@ServletSecurity(@HttpConstraint(rolesAllowed = {ServletSecurityUtils.RolesAllowed.AW_ADMIN}))
+@ServletSecurity(@HttpConstraint(rolesAllowed = {ServletSecurityUtils.RolesAllowed.AW_ASSESSMENT_USER}))
 public class SexServlet extends HttpServlet
 {
     @Inject

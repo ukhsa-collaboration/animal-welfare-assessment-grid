@@ -21,6 +21,9 @@ import uk.gov.phe.erdst.sc.awag.exceptions.AWNonUniqueException;
 import uk.gov.phe.erdst.sc.awag.service.factory.EntitySelectDtoFactory;
 import uk.gov.phe.erdst.sc.awag.service.factory.parameter.ParameterDtoFactory;
 import uk.gov.phe.erdst.sc.awag.service.factory.parameter.ParameterFactory;
+import uk.gov.phe.erdst.sc.awag.service.logging.LoggedActions;
+import uk.gov.phe.erdst.sc.awag.service.logging.LoggedActivity;
+import uk.gov.phe.erdst.sc.awag.service.logging.LoggedUser;
 import uk.gov.phe.erdst.sc.awag.service.page.ResponsePager;
 
 @Stateless
@@ -78,7 +81,9 @@ public class ParameterControllerImpl implements ParameterController
     }
 
     @Override
-    public void updateParameter(Long parameterId, ParameterClientData clientData, ResponsePayload responsePayload)
+    @LoggedActivity(actionName = LoggedActions.UPDATE_PARAMETER)
+    public void updateParameter(Long parameterId, ParameterClientData clientData, ResponsePayload responsePayload,
+        LoggedUser loggedUser)
     {
         Set<ConstraintViolation<ParameterClientData>> parameterConstraintViolations = mParameterValidator
             .validate(clientData);
@@ -104,7 +109,8 @@ public class ParameterControllerImpl implements ParameterController
     }
 
     @Override
-    public void storeParameter(ParameterClientData clientData, ResponsePayload responsePayload)
+    @LoggedActivity(actionName = LoggedActions.STORE_PARAMETER)
+    public void storeParameter(ParameterClientData clientData, ResponsePayload responsePayload, LoggedUser loggedUser)
     {
         Set<ConstraintViolation<ParameterClientData>> parameterConstraintViolations = mParameterValidator
             .validate(clientData);

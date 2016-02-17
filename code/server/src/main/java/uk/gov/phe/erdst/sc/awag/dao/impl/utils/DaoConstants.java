@@ -24,10 +24,15 @@ public final class DaoConstants
     public static final String PROP_PARAMETER_ID = "Parameter id";
     public static final String PROP_ASSESSMENT_TEMPLATE_ID = "Assessment template id";
     public static final String PROP_ASSESSMENT_TEMPLATE_NAME = "Assessment template name";
+    public static final String PROP_AUTH_USER_NAME = "User name";
+    public static final String PROP_AUTH_GROUP_NAME = "Group name";
 
     public static final String QUERY_PARAM_ANIMAL_ID = "animalId";
     public static final String QUERY_PARAM_DATE_FROM = "fromDate";
     public static final String QUERY_PARAM_DATE_TO = "toDate";
+    public static final String QUERY_PARAM_IS_COMPLETE = "isComplete";
+
+    public static final String UNSUPPORTED_OPERATION = "UNSUPPORTED OPERATION";
 
     private DaoConstants()
     {

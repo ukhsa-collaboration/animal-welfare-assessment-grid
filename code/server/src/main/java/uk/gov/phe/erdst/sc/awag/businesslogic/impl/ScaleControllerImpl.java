@@ -21,6 +21,9 @@ import uk.gov.phe.erdst.sc.awag.exceptions.AWNonUniqueException;
 import uk.gov.phe.erdst.sc.awag.service.factory.EntitySelectDtoFactory;
 import uk.gov.phe.erdst.sc.awag.service.factory.scale.ScaleDtoFactory;
 import uk.gov.phe.erdst.sc.awag.service.factory.scale.ScaleFactory;
+import uk.gov.phe.erdst.sc.awag.service.logging.LoggedActions;
+import uk.gov.phe.erdst.sc.awag.service.logging.LoggedActivity;
+import uk.gov.phe.erdst.sc.awag.service.logging.LoggedUser;
 import uk.gov.phe.erdst.sc.awag.service.page.ResponsePager;
 
 @Stateless
@@ -45,7 +48,8 @@ public class ScaleControllerImpl implements ScaleController
     private ResponsePager mResponsePager;
 
     @Override
-    public void storeScale(ScaleClientData clientData, ResponsePayload responsePayload)
+    @LoggedActivity(actionName = LoggedActions.STORE_SCALE)
+    public void storeScale(ScaleClientData clientData, ResponsePayload responsePayload, LoggedUser loggedUser)
     {
         Set<ConstraintViolation<ScaleClientData>> scaleConstraintViolations = mScaleValidator.validate(clientData);
 
@@ -70,7 +74,9 @@ public class ScaleControllerImpl implements ScaleController
     }
 
     @Override
-    public void updateScale(Long scaleId, ScaleClientData clientData, ResponsePayload responsePayload)
+    @LoggedActivity(actionName = LoggedActions.UPDATE_SCALE)
+    public void updateScale(Long scaleId, ScaleClientData clientData, ResponsePayload responsePayload,
+        LoggedUser loggedUser)
     {
         Set<ConstraintViolation<ScaleClientData>> scaleConstraintViolations = mScaleValidator.validate(clientData);
 

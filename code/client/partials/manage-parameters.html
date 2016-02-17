@@ -3,7 +3,7 @@
     <form name="parameterManagementForm" class="form-horizontal">
         <div class="form-group" ng-controller="MngmtParameterSelectionCtrl as parameterCtrl">
             <label for="{{parameterCtrl.selectId}}" class="col-xs-3 control-label">Parameter name: </label>
-            <div class="col-xs-7">
+            <div ng-class="{'col-xs-7': parameterMngmtCtrl.isNewParameter, 'col-xs-6': !parameterMngmtCtrl.isNewParameter}">
                 <aw-search-select2 class="form-control" elem-id="{{parameterCtrl.selectId}}" controller="parameterCtrl"></aw-search-select2>
             </div>
             <div ng-click="parameterMngmtCtrl.startUpdate()" ng-hide="parameterMngmtCtrl.isNewParameter">
@@ -14,7 +14,7 @@
         </div>
         <div class="form-group" ng-controller="MngmtParameterSelectionUpdateCtrl as parameterUpdateCtrl" ng-show="parameterMngmtCtrl.isUpdatingParameter">
             <label for="{{parameterUpdateCtrl.selectId}}" class="col-xs-3 control-label">Update parameter name: </label>
-            <div class="col-xs-7">
+            <div ng-class="{'col-xs-7': parameterMngmtCtrl.isNewParameter, 'col-xs-6': !parameterMngmtCtrl.isNewParameter}">
                 <aw-select2 elem-id="{{parameterUpdateCtrl.selectId}}" controller="parameterUpdateCtrl"></aw-select2>
             </div>
             <div ng-click="parameterMngmtCtrl.cancelUpdate()">
@@ -37,21 +37,17 @@
             <hr />
         </div>
         <div class="row">
-            <div class="col-xs-6" ng-show="parameterMngmtCtrl.isNewParameter">
-                <button type="button" class="btn btn-success btn-sm pull-right" ng-click="parameterMngmtCtrl.submitParameter()">
-                Create
+            <div class="text-center">
+                <button type="button" class="btn btn-lg btn-success" ng-click="parameterMngmtCtrl.submitParameter()" ng-disabled="!parameterMngmtCtrl.isNewParameter">
+                    Create
+                </button>
+                <button type="button" class="btn btn-lg btn-primary" ng-click="parameterMngmtCtrl.updateParameter()" ng-disabled="parameterMngmtCtrl.isNewParameter">
+                    Update
+                </button>
+                <button type="button" class="btn btn-danger btn-lg" ng-click="parameterMngmtCtrl.clearParameter()">
+                    Clear
                 </button>
             </div>
-            <div class="col-xs-6" ng-hide="parameterMngmtCtrl.isNewParameter">
-                <button type="button" class="btn btn-primary btn-sm pull-right" ng-click="parameterMngmtCtrl.updateParameter()">
-                Update
-                </button>
-            </div>
-            <div class="col-xs-6">
-                <button type="button" class="btn btn-danger btn-sm" ng-click="parameterMngmtCtrl.clearParameter()">
-                Clear
-                </button>
-            </div>
-        </div>
+        </div>       
     </form>
 </div>

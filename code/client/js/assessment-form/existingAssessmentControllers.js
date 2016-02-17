@@ -15,7 +15,8 @@ var existingAssessmentFormEvents = {
     searchCriteriaCleared : "searchCriteriaCleared",
     beforeSearchRun : "beforeSearchRun",
     assessmentSelected : "assessmentSelected",
-    assessmentSelectedError : "assessmentSelectedError"
+    assessmentSelectedError : "assessmentSelectedError",
+    assessmentDeleted : "assessmentDeleted"
 };
 
 existingAssessmentFormControllers.controller('ExistAssessFormAccordionCtrl', ['$scope',
@@ -28,6 +29,10 @@ function($scope)
     };
 
     var that = this;
+
+    $scope.$on(existingAssessmentFormEvents.beforeSearchRun, function(event, data){
+        that.accordionStatus.isAssessmentOpen = false;
+    });
 
     $scope.$on(existingAssessmentFormEvents.searchResultAvailable, function(event, data){
         that.accordionStatus.isSearchOpen = false;
@@ -49,12 +54,41 @@ function($scope)
         that.accordionStatus.isSearchOpen = false;
         that.accordionStatus.isAssessmentOpen = false;
     });
+
+    $scope.$on(existingAssessmentFormEvents.assessmentDeleted, function(event, data){
+        that.accordionStatus.isAssessmentOpen = false;
+    });
+}]);
+
+existingAssessmentFormControllers.controller('ExistAssessFormAssessmentSectionCtrl', ['$rootScope', '$scope',
+function($rootScope, $scope)
+{
+    this.sectionVisible = false;
+
+    var that = this;
+
+    $scope.$on(existingAssessmentFormEvents.beforeSearchRun, function(event, data){
+        that.sectionVisible = false;
+    });
+
+    $scope.$on(existingAssessmentFormEvents.assessmentSelected, function(event, data){
+        that.sectionVisible = true;
+    });
+
+    $scope.$on(existingAssessmentFormEvents.assessmentSelectedError, function(event, data){
+        that.sectionVisible = false;
+    });
+
+    $scope.$on(existingAssessmentFormEvents.assessmentDeleted, function(event, data){
+        that.sectionVisible = false;
+    });
 }]);
 
 existingAssessmentFormControllers.controller('ExistAssessFormMainCtrl', ['$rootScope', '$scope', 'assessmentService', 'templateService',
 function($rootScope, $scope, assessmentService, templateService)
 {
     this.getAssessmentErrors = [];
+    this.deleteAssessmentSuccess = false;
     this.resultsDirty = false;
 
     var that = this;
@@ -103,6 +137,12 @@ function($rootScope, $scope, assessmentService, templateService)
         $scope.$on(assessmentFormController.submitSuccessInExistingModeEvent, function(event, data){
             that.resultsDirty = true;
         });
+
+        $scope.$on(assessmentFormController.deleteSuccessEvent, function(event, data){
+            $rootScope.$broadcast(existingAssessmentFormEvents.assessmentDeleted);
+            that.resultsDirty = true;
+            that.deleteAssessmentSuccess = true;
+        });
     };
 
     this.onGetAssessmentError = function()
@@ -118,6 +158,7 @@ function($rootScope, $scope, assessmentService, templateService)
 
     $scope.$on(existingAssessmentFormEvents.beforeSearchRun, function(event){
         that.resultsDirty = false;
+        that.getAssessmentErrors = [];
     });
 
     // Just to be sure as we link them manually

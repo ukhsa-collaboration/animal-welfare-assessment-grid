@@ -6,19 +6,25 @@
 	<display-name>aw</display-name>
 	<welcome-file-list>
 		<welcome-file>index.html</welcome-file>
-	</welcome-file-list>
-	<!--
-	<login-config>
+	</welcome-file-list><!--
+	<context-param>
+		<param-name>authType</param-name>
+		<param-value>ldap</param-value>
+	</context-param>
+	<login-config>	
 		<auth-method>FORM</auth-method>
 		<realm-name>ldapRealm</realm-name> 
 		<form-login-config>
 			<form-login-page>/login.html</form-login-page>
 			<form-error-page>/login-failed.html</form-error-page> 
 		</form-login-config>
-	</login-config>
-	-->
+	</login-config> -->	
 	
-	<login-config>
+	<context-param>
+		<param-name>authType</param-name>
+		<param-value>database</param-value>
+	</context-param>
+	 <login-config>
 		<auth-method>FORM</auth-method>
 		<realm-name>jdbcRealm</realm-name>
 		<form-login-config>
@@ -26,13 +32,13 @@
 			<form-error-page>/login-failed.html</form-error-page>
 		</form-login-config>
 	</login-config>
-	
 	<security-constraint>
 		<web-resource-collection>
 			<web-resource-name>Secure Pages</web-resource-name>
 			<url-pattern>/*</url-pattern>
 		</web-resource-collection>
 		<auth-constraint>
+			<role-name>assessmentuser</role-name>
 			<role-name>admin</role-name>
 		</auth-constraint>
 	</security-constraint>

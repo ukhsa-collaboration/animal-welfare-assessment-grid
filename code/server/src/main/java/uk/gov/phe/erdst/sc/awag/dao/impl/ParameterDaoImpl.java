@@ -22,7 +22,7 @@ public class ParameterDaoImpl extends CommonDaoImpl<Parameter> implements Parame
             }
 
             @Override
-            public String getNoSuchEntityMessage(Long id)
+            public String getNoSuchEntityMessage(Object id)
             {
                 return DaoUtils.getNoSuchEntityMessage(DaoConstants.PROP_PARAMETER_ID, id);
             }

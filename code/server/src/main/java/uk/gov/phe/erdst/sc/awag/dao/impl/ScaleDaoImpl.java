@@ -22,7 +22,7 @@ public class ScaleDaoImpl extends CommonDaoImpl<Scale> implements ScaleDao
             }
 
             @Override
-            public String getNoSuchEntityMessage(Long id)
+            public String getNoSuchEntityMessage(Object id)
             {
                 return DaoUtils.getNoSuchEntityMessage(DaoConstants.PROP_SCALE_ID, id);
             }

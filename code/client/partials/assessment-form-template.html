@@ -1,4 +1,20 @@
 <div class="container-fluid" ng-controller="AssessFormAnimalSelectionCtrl as animalCtrl">
+    <div ng-show="animalCtrl.isInExistingCompleteMode" class="row existing-assessment-info-panel">
+        <div class="bg-info">
+            <span class="glyphicon glyphicon-info-sign pull-left" style="padding-right: 4px"></span>
+            <div>
+                <p>This assessment has been finalised and therefore cannot be edited. You can delete it.</p>
+            </div>
+        </div>
+    </div>
+    <div ng-show="animalCtrl.isInExistingMode && !animalCtrl.isInExistingCompleteMode" class="row existing-assessment-info-panel">
+        <div class="bg-info">
+            <span class="glyphicon glyphicon-info-sign pull-left" style="padding-right: 4px"></span>
+            <div>
+                <p>After you save changes made to an existing assessment, you can edit it at a later time. However, finalised assessments can be viewed or deleted but <strong>not edited</strong>.</p>
+            </div>
+        </div>
+     </div>   
     <form name="assessmentForm">
         <div class="row">
             <div class="col-xs-12 col-sm-3">
@@ -166,23 +182,48 @@
             <aw-error-display errors="animalCtrl.errors"></aw-error-display>
         </div>
 
-        <div ng-show="!animalCtrl.isInExistingCompleteMode">
+        <div>
+            <div ng-show="!animalCtrl.isInExistingMode" class="row">
+                <div class="bg-info">
+                    <span class="glyphicon glyphicon-info-sign pull-left" style="padding-right: 4px"></span>
+                    <div>
+                        <p>After you create an assessment, you can review it and make changes in the Existing Assessment section (see menu). Finalised assessments can be viewed or deleted but <strong>not edited</strong>.</p>
+                    </div>
+                </div>
+            </div>
+            <div ng-show="animalCtrl.isInExistingMode && !animalCtrl.isInExistingCompleteMode" class="row">
+                <div class="bg-info">
+                    <span class="glyphicon glyphicon-info-sign pull-left" style="padding-right: 4px"></span>
+                    <div>
+                        <p>After you save changes made to an existing assessment, you can edit it at a later time. However, finalised assessments can be viewed or deleted but <strong>not edited</strong>.</p>
+                    </div>
+                </div>
+            </div>
             <div class="row assessment-form" id="btns-panel">
-                <div class="col-xs-4 col-sm-4 col-md-4 center-block">
-                    <button type="button" class="btn btn-success btn-lg center-block" ng-click="animalCtrl.submitAssessment()">
-                        Submit
-                    </button>
-                </div>
-                <div class="col-xs-4 col-sm-4 col-md-4 center-block">
-                    <button type="button" class="btn btn-primary btn-lg center-block" ng-click="animalCtrl.saveAssessment()">
-                        Save
-                    </button>
-                </div>
-                <div class="col-xs-4 col-sm-4 col-md-4 center-block">
-                    <button type="button" class="btn btn-danger btn-lg center-block" ng-click="animalCtrl.clearForm()">
-                        Clear
-                    </button>
-                </div>
+                <button ng-show="!animalCtrl.isInExistingCompleteMode" type="button" class="btn btn-success btn-lg" ng-click="animalCtrl.submitAssessment()">
+                    {{animalCtrl.isInExistingMode ? "Finalise assessment" : "Create and finalise assessment"}}
+                </button>
+                <button ng-show="!animalCtrl.isInExistingCompleteMode" type="button" class="btn btn-primary btn-lg" ng-click="animalCtrl.saveAssessment()">
+                    {{animalCtrl.isInExistingMode ? "Save changes" : "Create assessment"}}
+                </button>
+                <button ng-show="!animalCtrl.isInExistingCompleteMode" type="button" class="btn btn-danger btn-lg" ng-click="animalCtrl.clearForm()">
+                    Clear form
+                </button>
+                <button ng-show="animalCtrl.isInExistingMode && !animalCtrl.isIntendingToDelete" type="button" class="btn btn-danger btn-lg" ng-click="animalCtrl.intendToDeleteAssessment()">
+                    Delete Assessment
+                </button>
+                <div ng-show="animalCtrl.isIntendingToDelete && animalCtrl.isInExistingMode" style="display: inline;">
+                    <div ng-click="animalCtrl.deleteAssessment()" style="display: inline;">
+                        <button type="button" class="btn btn-success btn-sm" title="Confirm deletion" ng-disabled="animalCtrl.isDeleting">
+                            <i class="glyphicon glyphicon-ok"></i>
+                        </button>
+                    </div>
+                    <div ng-click="animalCtrl.cancelDeleteAssessment()" style="display: inline;">
+                        <button type="button" class="btn btn-danger btn-sm" title="Cancel deletion" ng-disabled="animalCtrl.isDeleting">
+                            <i class="glyphicon glyphicon-remove"></i>
+                        </button>
+                    </div>
+                </div>                
             </div>
         </div>
     </form>

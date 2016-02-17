@@ -38,6 +38,9 @@ import uk.gov.phe.erdst.sc.awag.service.factory.factor.FactorFactory;
 import uk.gov.phe.erdst.sc.awag.service.factory.parameter.ParameterFactory;
 import uk.gov.phe.erdst.sc.awag.service.factory.template.AssessmentTemplateDtoFactory;
 import uk.gov.phe.erdst.sc.awag.service.factory.template.AssessmentTemplateFactory;
+import uk.gov.phe.erdst.sc.awag.service.logging.LoggedActions;
+import uk.gov.phe.erdst.sc.awag.service.logging.LoggedActivity;
+import uk.gov.phe.erdst.sc.awag.service.logging.LoggedUser;
 import uk.gov.phe.erdst.sc.awag.service.page.ResponsePager;
 import uk.gov.phe.erdst.sc.awag.service.validation.utils.ValidationConstants;
 
@@ -134,7 +137,9 @@ public class AssessmentTemplateControllerImpl implements AssessmentTemplateContr
     }
 
     @Override
-    public void storeAssessmentTemplate(AssessmentTemplateClientData clientData, ResponsePayload responsePayload)
+    @LoggedActivity(actionName = LoggedActions.STORE_ASSESSMENT_TEMPLATE)
+    public void storeAssessmentTemplate(AssessmentTemplateClientData clientData, ResponsePayload responsePayload,
+        LoggedUser loggedUser)
     {
         Set<ConstraintViolation<AssessmentTemplateClientData>> violations = mAssessmentTemplateValidator
             .validate(clientData);
@@ -163,8 +168,9 @@ public class AssessmentTemplateControllerImpl implements AssessmentTemplateContr
     }
 
     @Override
+    @LoggedActivity(actionName = LoggedActions.UPDATE_ASSESSMENT_TEMPLATE)
     public void updateAssessmentTemplate(Long assessmentTemplateId, AssessmentTemplateClientData clientData,
-        ResponsePayload responsePayload)
+        ResponsePayload responsePayload, LoggedUser loggedUser)
     {
         Set<ConstraintViolation<AssessmentTemplateClientData>> violations = mAssessmentTemplateValidator
             .validate(clientData);
@@ -286,8 +292,9 @@ public class AssessmentTemplateControllerImpl implements AssessmentTemplateContr
     }
 
     @Override
-    public void deleteTemplateParameter(Long templateId, Long parameterId) throws AWNoSuchEntityException,
-        AWTemplateInUseException
+    @LoggedActivity(actionName = LoggedActions.DELETE_ASSESSMENT_TEMPLATE_PARAMETER)
+    public void deleteTemplateParameter(Long templateId, Long parameterId, LoggedUser loggedUser)
+        throws AWNoSuchEntityException, AWTemplateInUseException
     {
         AssessmentTemplate template = mAssessmentTemplateDao.getEntityById(templateId);
 

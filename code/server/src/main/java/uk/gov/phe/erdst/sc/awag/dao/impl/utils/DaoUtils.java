@@ -48,7 +48,7 @@ public final class DaoUtils
         }
     }
 
-    public static String getNoSuchEntityMessage(String entityName, Long violatingIdValue)
+    public static String getNoSuchEntityMessage(String entityName, Object violatingIdValue)
     {
         return String.format(ValidationConstants.ERR_NO_SUCH_ENTITY, entityName, violatingIdValue);
     }

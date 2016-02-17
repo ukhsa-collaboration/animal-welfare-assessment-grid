@@ -11,8 +11,8 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import uk.gov.phe.erdst.sc.awag.datamodel.client.LogonDetails;
 import uk.gov.phe.erdst.sc.awag.datamodel.response.ResponsePayload;
+import uk.gov.phe.erdst.sc.awag.dto.LogonDetailsDto;
 import uk.gov.phe.erdst.sc.awag.exceptions.AWInvalidParameterException;
 import uk.gov.phe.erdst.sc.awag.servlets.utils.ResponseFormatter;
 import uk.gov.phe.erdst.sc.awag.servlets.utils.ServletSecurityUtils;
@@ -20,20 +20,19 @@ import uk.gov.phe.erdst.sc.awag.servlets.utils.ServletUtils;
 
 @SuppressWarnings("serial")
 @WebServlet({"/logondetails"})
-@ServletSecurity(@HttpConstraint(rolesAllowed = {ServletSecurityUtils.RolesAllowed.AW_ADMIN}))
+@ServletSecurity(@HttpConstraint(rolesAllowed = {ServletSecurityUtils.RolesAllowed.AW_ASSESSMENT_USER}))
 public class LogonDetailsServlet extends HttpServlet
 {
     @Inject
-    ResponseFormatter mResponseFormatter;
+    private ResponseFormatter mResponseFormatter;
 
     @Override
     public void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException
     {
-        String username = ServletSecurityUtils.getLoggedInUserName(request);
-
-        LogonDetails logonDetails = new LogonDetails();
-        logonDetails.username = username;
-        // logonDetails.username = "No Security";
+        LogonDetailsDto logonDetails = new LogonDetailsDto();
+        logonDetails.username = ServletSecurityUtils.getLoggedInUserName(request);
+        logonDetails.authType = ServletSecurityUtils.getAuthType(request);
+        logonDetails.groupName = ServletSecurityUtils.getGroupName(request);
 
         String callback;
         ServletUtils.setJsonContentType(response);

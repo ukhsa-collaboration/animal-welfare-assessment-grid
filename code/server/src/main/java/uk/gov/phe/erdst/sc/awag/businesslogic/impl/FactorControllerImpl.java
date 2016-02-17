@@ -19,6 +19,9 @@ import uk.gov.phe.erdst.sc.awag.exceptions.AWNoSuchEntityException;
 import uk.gov.phe.erdst.sc.awag.exceptions.AWNonUniqueException;
 import uk.gov.phe.erdst.sc.awag.service.factory.EntitySelectDtoFactory;
 import uk.gov.phe.erdst.sc.awag.service.factory.factor.FactorFactory;
+import uk.gov.phe.erdst.sc.awag.service.logging.LoggedActions;
+import uk.gov.phe.erdst.sc.awag.service.logging.LoggedActivity;
+import uk.gov.phe.erdst.sc.awag.service.logging.LoggedUser;
 import uk.gov.phe.erdst.sc.awag.service.page.ResponsePager;
 
 @Stateless
@@ -76,7 +79,9 @@ public class FactorControllerImpl implements FactorController
     }
 
     @Override
-    public void updateFactor(Long factorId, FactorClientData clientData, ResponsePayload responsePayload)
+    @LoggedActivity(actionName = LoggedActions.UPDATE_FACTOR)
+    public void updateFactor(Long factorId, FactorClientData clientData, ResponsePayload responsePayload,
+        LoggedUser loggedUser)
     {
         Set<ConstraintViolation<FactorClientData>> constraintViolations = mFactorValidator.validate(clientData);
 
@@ -102,7 +107,8 @@ public class FactorControllerImpl implements FactorController
     }
 
     @Override
-    public void storeFactor(FactorClientData clientData, ResponsePayload responsePayload)
+    @LoggedActivity(actionName = LoggedActions.STORE_FACTOR)
+    public void storeFactor(FactorClientData clientData, ResponsePayload responsePayload, LoggedUser loggedUser)
     {
         Set<ConstraintViolation<FactorClientData>> constraintViolations = mFactorValidator.validate(clientData);
 

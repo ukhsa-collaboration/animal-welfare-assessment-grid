@@ -56,8 +56,8 @@ public class AssessmentDaoImplTest
         mAssessmentDao = (AssessmentDao) GlassfishTestsHelper.lookupMultiInterface("AssessmentDaoImpl",
             AssessmentDao.class);
 
-        mAssessmentTemplateDao = (AssessmentTemplateDao) GlassfishTestsHelper
-            .lookupMultiInterface("AssessmentTemplateDaoImpl", AssessmentTemplateDao.class);
+        mAssessmentTemplateDao = (AssessmentTemplateDao) GlassfishTestsHelper.lookupMultiInterface(
+            "AssessmentTemplateDaoImpl", AssessmentTemplateDao.class);
     }
 
     @AfterClass

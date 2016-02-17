@@ -7,6 +7,7 @@ import uk.gov.phe.erdst.sc.awag.datamodel.client.UserClientData;
 import uk.gov.phe.erdst.sc.awag.datamodel.response.ResponsePayload;
 import uk.gov.phe.erdst.sc.awag.dto.EntitySelectDto;
 import uk.gov.phe.erdst.sc.awag.exceptions.AWNoSuchEntityException;
+import uk.gov.phe.erdst.sc.awag.service.logging.LoggedUser;
 
 public interface UserController
 {
@@ -17,5 +18,5 @@ public interface UserController
 
     User getUser(String name) throws AWNoSuchEntityException;
 
-    void storeUser(UserClientData clientData, ResponsePayload responsePayload);
+    void storeUser(UserClientData clientData, ResponsePayload responsePayload, LoggedUser loggedUser);
 }

@@ -64,7 +64,7 @@ ALTER TABLE public.users OWNER TO awag;
 
 CREATE TABLE users_groups (
     user_name character varying(50) NOT NULL,
-    group_name character varying(20) NOT NULL
+    group_name character varying(50) NOT NULL
 );
 
 
@@ -76,13 +76,13 @@ ALTER TABLE public.users_groups OWNER TO awag;
 
 COPY groups (group_name) FROM stdin;
 admin
+assessmentuser
 \.
 
 
 --
 -- Data for Name: users; Type: TABLE DATA; Schema: public; Owner: awag
 --
-
 COPY users (user_name, password) FROM stdin;
 admin	d82494f05d6917ba02f7aaa29689ccb444bb73f20380876cb05d1f37537b7892
 \.
@@ -94,6 +94,7 @@ admin	d82494f05d6917ba02f7aaa29689ccb444bb73f20380876cb05d1f37537b7892
 
 COPY users_groups (user_name, group_name) FROM stdin;
 admin	admin
+admin	assessmentuser
 \.
 
 

@@ -104,6 +104,7 @@ DROP TABLE awag_schema.assessment_reason;
 DROP TABLE awag_schema.assessment;
 DROP TABLE awag_schema.animal_housing;
 DROP TABLE awag_schema.animal;
+DROP TABLE awag_schema.activity_log;
 DROP SCHEMA awag_schema;
 --
 -- Name: awag_schema; Type: SCHEMA; Schema: -; Owner: awag
@@ -429,6 +430,19 @@ CREATE TABLE users (
 
 ALTER TABLE awag_schema.users OWNER TO awag;
 
+CREATE TABLE awag_schema.activity_log
+(
+  mid bigint NOT NULL,
+  maction character varying(255) NOT NULL,
+  mdatetime character varying(255) NOT NULL,
+  musername character varying(255) NOT NULL,
+  CONSTRAINT activity_log_pkey PRIMARY KEY (mid)
+)
+WITH (
+  OIDS=FALSE
+);
+ALTER TABLE awag_schema.activity_log OWNER TO awag;
+  
 --
 -- Data for Name: animal; Type: TABLE DATA; Schema: awag_schema; Owner: awag
 --

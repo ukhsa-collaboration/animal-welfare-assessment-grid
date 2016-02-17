@@ -5,6 +5,11 @@ function($http, appConfig) {
 
 	var pathSeparator = "/";
 
+	var downloadFileViaIframe = function(iframeElem, options) {
+		var url = __getUrl(options);
+		iframeElem.attr("src", url);
+	};
+
 	var dataConnection = function(options) {
 		var url = __getUrl(options);
 
@@ -23,7 +28,6 @@ function($http, appConfig) {
 			{
 				options.callback.success(data.data, data.metadata);
 			} else {
-				console.log(status);
 				options.callback.error(data.errors);
 			}
 		}).error(function(data, status){
@@ -182,6 +186,7 @@ function($http, appConfig) {
 		dataConnectionNextPage : dataConnectionNextPage,
 		postData : postData,
 		putData : putData,
-		deleteData : deleteData
+		deleteData : deleteData,
+		downloadFileViaIframe : downloadFileViaIframe
 	};
 }]);

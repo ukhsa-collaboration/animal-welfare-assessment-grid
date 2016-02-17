@@ -24,7 +24,7 @@ public interface CommonDao<T>
 
     Long getEntityCountLike(String likeParam);
 
-    void deleteEntityById(Long id) throws AWNoSuchEntityException;
+    void deleteEntityById(Object id) throws AWNoSuchEntityException;
 
     void deleteEntityByNameField(String name) throws AWNoSuchEntityException;
 

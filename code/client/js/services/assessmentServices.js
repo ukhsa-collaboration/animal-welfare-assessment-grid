@@ -211,6 +211,23 @@ function(appConfig, dataService, pagingUtils) {
         });
     };
 
+    var deleteAssessment = function(assessment, successCallback, errCallback)
+    {
+        _deleteAssessment(assessment, successCallback, errCallback);
+    };
+
+    var _deleteAssessment = function(assessment, successCallback, errCallback)
+    {
+        dataService.deleteData({
+            servlet : assessmentServlet,
+            resourceId : assessment.id,
+            callback : {
+                success : successCallback,
+                error : errCallback
+            }
+        });
+    };
+
 	return {
 		submitAssessment : submitAssessment,
 		saveAssessment : saveAssessment,
@@ -222,6 +239,7 @@ function(appConfig, dataService, pagingUtils) {
         getAssessmentById : getAssessmentById,
         getAssessmentsCount : getAssessmentsCount,
         getAssessmentCountByAnimalId : getAssessmentCountByAnimalId,
-        getAssessmentCountByTemplateId : getAssessmentCountByTemplateId
+        getAssessmentCountByTemplateId : getAssessmentCountByTemplateId,
+        deleteAssessment : deleteAssessment
 	};
 }]);

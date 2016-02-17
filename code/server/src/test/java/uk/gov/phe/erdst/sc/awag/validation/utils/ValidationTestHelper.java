@@ -7,6 +7,7 @@ import java.util.Set;
 
 import javax.validation.Configuration;
 import javax.validation.ConstraintValidator;
+import javax.validation.ConstraintValidatorContext;
 import javax.validation.ConstraintValidatorFactory;
 import javax.validation.ConstraintViolation;
 import javax.validation.Validation;
@@ -157,5 +158,61 @@ public final class ValidationTestHelper
             mDefaultFactory.releaseInstance(instance);
         }
 
+    }
+
+    public static class MockConstraintValidatorContext implements ConstraintValidatorContext
+    {
+        @Override
+        public ConstraintViolationBuilder buildConstraintViolationWithTemplate(String messageTemplate)
+        {
+            return new ConstraintViolationBuilder() {
+                @Override
+                public LeafNodeBuilderCustomizableContext addBeanNode()
+                {
+                    return null;
+                }
+
+                @Override
+                public ConstraintValidatorContext addConstraintViolation()
+                {
+                    return null;
+                }
+
+                @Override
+                public NodeBuilderDefinedContext addNode(String name)
+                {
+                    return null;
+                }
+
+                @Override
+                public NodeBuilderDefinedContext addParameterNode(int index)
+                {
+                    return null;
+                }
+
+                @Override
+                public NodeBuilderCustomizableContext addPropertyNode(String name)
+                {
+                    return null;
+                }
+            };
+        }
+
+        @Override
+        public void disableDefaultConstraintViolation()
+        {
+        }
+
+        @Override
+        public String getDefaultConstraintMessageTemplate()
+        {
+            return null;
+        }
+
+        @Override
+        public <T> T unwrap(Class<T> type)
+        {
+            return null;
+        }
     }
 }

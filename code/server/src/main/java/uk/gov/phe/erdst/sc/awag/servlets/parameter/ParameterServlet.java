@@ -19,7 +19,6 @@ import uk.gov.phe.erdst.sc.awag.datamodel.response.ResponsePayload;
 import uk.gov.phe.erdst.sc.awag.exceptions.AWInvalidParameterException;
 import uk.gov.phe.erdst.sc.awag.exceptions.AWInvalidResourceIdException;
 import uk.gov.phe.erdst.sc.awag.exceptions.AWNoSuchEntityException;
-import uk.gov.phe.erdst.sc.awag.service.page.ResponsePager;
 import uk.gov.phe.erdst.sc.awag.service.validation.utils.ValidatorUtils;
 import uk.gov.phe.erdst.sc.awag.servlets.utils.RequestConverter;
 import uk.gov.phe.erdst.sc.awag.servlets.utils.ResponseFormatter;
@@ -29,7 +28,7 @@ import uk.gov.phe.erdst.sc.awag.servlets.utils.ServletUtils;
 
 @SuppressWarnings("serial")
 @WebServlet(name = "parameter", urlPatterns = {"/parameter/*"})
-@ServletSecurity(@HttpConstraint(rolesAllowed = {ServletSecurityUtils.RolesAllowed.AW_ADMIN}))
+@ServletSecurity(@HttpConstraint(rolesAllowed = {ServletSecurityUtils.RolesAllowed.AW_ASSESSMENT_USER}))
 public class ParameterServlet extends HttpServlet
 {
     @Inject
@@ -45,15 +44,14 @@ public class ParameterServlet extends HttpServlet
     private Validator mRequestValidator;
 
     @Override
-    protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException,
-        IOException
+    protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException
     {
         String requestParameterJson = request.getParameter("parameter");
         ParameterClientData clientData = (ParameterClientData) mRequestConverter.convert(requestParameterJson,
             ParameterClientData.class);
         ResponsePayload responsePayload = new ResponsePayload();
 
-        mParameterController.storeParameter(clientData, responsePayload);
+        mParameterController.storeParameter(clientData, responsePayload, ServletSecurityUtils.getLoggedUser(request));
 
         if (responsePayload.getErrors().size() > 0)
         {
@@ -73,7 +71,7 @@ public class ParameterServlet extends HttpServlet
         ParameterClientData clientData = (ParameterClientData) mRequestConverter.convert(parameterHousingJson,
             ParameterClientData.class);
         ResponsePayload responsePayload = new ResponsePayload();
-        Long parameterId = ServletUtils.getResourceId(request);
+        Long parameterId = ServletUtils.getNumberResourceId(request);
 
         if (!ValidatorUtils.isResourceValid(parameterId, HttpMethod.PUT))
         {
@@ -81,7 +79,8 @@ public class ParameterServlet extends HttpServlet
             return;
         }
 
-        mParameterController.updateParameter(parameterId, clientData, responsePayload);
+        mParameterController.updateParameter(parameterId, clientData, responsePayload,
+            ServletSecurityUtils.getLoggedUser(request));
 
         if (responsePayload.getErrors().size() > 0)
         {

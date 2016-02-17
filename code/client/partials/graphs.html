@@ -4,32 +4,33 @@
       <accordion-group is-open="accordionStatus.dataSelection">
          <accordion-heading>
             Data Selection
-            <span ng-show="animalAssessmentTimeLineData.length > 0"> ({{animalAssessmentTimeLineData.length}} result(s) for {{animal.animalNumber}} between {{dateFrom | date:'EEE dd MMM yyyy'}} and {{dateTo | date:'EEE dd MMM yyyy'}})
+            <span ng-show="animalAssessmentTimeLineData.length > 0"> ({{animalAssessmentTimeLineData.length}} complete assessment(s) for {{animal.animalNumber}} between {{dateFrom | date:'EEE dd MMM yyyy'}} and {{dateTo | date:'EEE dd MMM yyyy'}})
             </span>
             <i class="pull-right glyphicon" ng-class="{'glyphicon-chevron-down': accordionStatus.dataSelection, 'glyphicon-chevron-right': !accordionStatus.dataSelection}"></i>
          </accordion-heading>
          <form name="graphsForm" class="form-horizontal">
             <div class="form-group" ng-controller="AnimalSelectionController as animalSelectionCtrl">
-               <label for="{{animalSelectionCtrl.selectId}}" class="col-xs-6 col-md-2 control-label">Animal number: </label>
-               <div class="col-xs-6 col-md-4">
+               <label for="{{animalSelectionCtrl.selectId}}" class="col-xs-3 control-label">Animal number: </label>
+               <div class="col-xs-7">
                   <aw-search-select2 elem-id="{{animalSelectionCtrl.selectId}}" controller="animalSelectionCtrl"></aw-search-select2>
                </div>
             </div>
             <div class="form-group" ng-controller="DateFromSelectionController as dateFromCtrl">
-               <label for="{{dateFromCtrl.dateFromId}}" class="col-xs-6 col-md-2 control-label">Date from: </label>
-               <div class="col-xs-6 col-sm-6 col-md-4">
+               <label for="{{dateFromCtrl.dateFromId}}" class="col-xs-3 control-label">Date from: </label>
+               <div class="col-xs-7">
                   <aw-date-picker elem-id="{{dateFromCtrl.dateFromId}}" today-highlight="false" controller="dateFromCtrl"></aw-date-picker>
                </div>
             </div>
             <div class="form-group" ng-controller="DateToSelectionController as dateToCtrl">
-               <label for="{{dateToCtrl.dateToId}}" class="col-xs-6 col-md-2 control-label">Date to: </label>
-               <div class="col-xs-6 col-sm-6 col-md-4">
+               <label for="{{dateToCtrl.dateToId}}" class="col-xs-3 control-label">Date to: </label>
+               <div class="col-xs-7">
                   <aw-date-picker elem-id="{{dateToCtrl.dateToId}}" today-highlight="false" controller="dateToCtrl"></aw-date-picker>
                </div>
             </div>
-            <div class="form-group" ng-controller="DateToSelectionController as dateToCtrl">
-               <div class="col-xs-12 col-sm-12 col-md-6">
-                  <button class="btn btn-small btn-success pull-right" ng-click="getTimeLineData()">Submit</button>
+            <div class="form-group">
+               <div class="text-center">
+                  <button class="btn btn-lg btn-success" ng-click="getTimeLineData()">Submit</button>
+                  <button class="btn btn-lg btn-danger" ng-click="clearForm()">Clear</button>
                </div>
             </div>
             <div class="form-group">

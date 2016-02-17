@@ -26,7 +26,7 @@ import uk.gov.phe.erdst.sc.awag.servlets.utils.ServletUtils;
 
 @SuppressWarnings("serial")
 @WebServlet(name = "species", urlPatterns = {"/species/*"})
-@ServletSecurity(@HttpConstraint(rolesAllowed = {ServletSecurityUtils.RolesAllowed.AW_ADMIN}))
+@ServletSecurity(@HttpConstraint(rolesAllowed = {ServletSecurityUtils.RolesAllowed.AW_ASSESSMENT_USER}))
 public class SpeciesServlet extends HttpServlet
 {
     @Inject
@@ -80,7 +80,7 @@ public class SpeciesServlet extends HttpServlet
         SpeciesClientData clientData = (SpeciesClientData) mRequestConverter.convert(speciesJson,
             SpeciesClientData.class);
         ResponsePayload responsePayload = new ResponsePayload();
-        Long speciesId = ServletUtils.getResourceId(request);
+        Long speciesId = ServletUtils.getNumberResourceId(request);
 
         if (!ValidatorUtils.isResourceValid(speciesId, HttpMethod.PUT))
         {
@@ -88,7 +88,8 @@ public class SpeciesServlet extends HttpServlet
             return;
         }
 
-        mSpeciesController.updateSpecies(speciesId, clientData, responsePayload);
+        mSpeciesController.updateSpecies(speciesId, clientData, responsePayload,
+            ServletSecurityUtils.getLoggedUser(request));
 
         if (responsePayload.getErrors().size() > 0)
         {
@@ -103,15 +104,14 @@ public class SpeciesServlet extends HttpServlet
     }
 
     @Override
-    protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException,
-        IOException
+    protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException
     {
         String requestSpeciesJson = request.getParameter("species");
         SpeciesClientData clientData = (SpeciesClientData) mRequestConverter.convert(requestSpeciesJson,
             SpeciesClientData.class);
         ResponsePayload responsePayload = new ResponsePayload();
 
-        mSpeciesController.storeSpecies(clientData, responsePayload);
+        mSpeciesController.storeSpecies(clientData, responsePayload, ServletSecurityUtils.getLoggedUser(request));
 
         if (responsePayload.getErrors().size() > 0)
         {

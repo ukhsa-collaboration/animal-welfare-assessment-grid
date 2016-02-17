@@ -1,23 +1,31 @@
 package uk.gov.phe.erdst.sc.awag.servlets.utils;
 
+import java.io.CharConversionException;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.io.Reader;
+import java.io.UnsupportedEncodingException;
 import java.io.Writer;
+import java.net.URLDecoder;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import uk.gov.phe.erdst.sc.awag.datamodel.client.PagingGetRequestParams;
 import uk.gov.phe.erdst.sc.awag.datamodel.response.ResponsePayloadConstants;
 import uk.gov.phe.erdst.sc.awag.exceptions.AWInvalidParameterException;
 import uk.gov.phe.erdst.sc.awag.exceptions.AWInvalidResourceIdException;
 import uk.gov.phe.erdst.sc.awag.service.validation.utils.ValidationConstants;
+import uk.gov.phe.erdst.sc.awag.utils.Constants;
 import uk.gov.phe.erdst.sc.awag.utils.ResponseWrapper;
 
 public final class ServletUtils
 {
     private static final int BUFFER_SIZE = 512;
+    private static final Logger LOGGER = LogManager.getLogger(ServletUtils.class.getName());
 
     private ServletUtils()
     {
@@ -101,12 +109,30 @@ public final class ServletUtils
         response.setStatus(HttpServletResponse.SC_NOT_FOUND);
     }
 
-    public static Long getResourceId(HttpServletRequest request)
+    private static String getResourceIdPart(HttpServletRequest request) throws CharConversionException
+    {
+        String uri = null;
+        try
+        {
+            uri = URLDecoder.decode(request.getRequestURI(), Constants.AW_CHARSET.toString());
+        }
+        catch (UnsupportedEncodingException ex)
+        {
+            LOGGER.error(ex.getMessage());
+        }
+        return uri.substring(uri.lastIndexOf("/"), uri.length()).replace("/", "");
+    }
+
+    public static String getStringResourceId(HttpServletRequest request) throws CharConversionException
+    {
+        return getResourceIdPart(request);
+    }
+
+    public static Long getNumberResourceId(HttpServletRequest request) throws CharConversionException
     {
         try
         {
-            String uri = request.getRequestURI();
-            return Long.parseLong(uri.substring(uri.lastIndexOf("/"), uri.length()).replace("/", ""));
+            return Long.parseLong(getResourceIdPart(request));
         }
         catch (NumberFormatException ex)
         {
@@ -197,7 +223,8 @@ public final class ServletUtils
 
     public static String getCallbackParameter(HttpServletRequest request) throws AWInvalidParameterException
     {
-        return getNonNullParameter(request, ServletConstants.REQ_PARAM_CALLBACK, ValidationConstants.ERR_CALLBACK_PARAM);
+        return getNonNullParameter(request, ServletConstants.REQ_PARAM_CALLBACK,
+            ValidationConstants.ERR_CALLBACK_PARAM);
     }
 
     public static String getSelectActionParameter(HttpServletRequest request) throws AWInvalidParameterException

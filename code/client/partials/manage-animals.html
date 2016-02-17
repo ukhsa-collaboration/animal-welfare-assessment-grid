@@ -1,124 +1,114 @@
 <h1 class="page-header text-center">Animal management</h1>
 <div class="container-fluid" ng-controller="MngmtAnimalManagementCtrl as animalMngmtCtrl">
 	<form name="animalManagementForm" class="form-horizontal">
-		 <div class="form-group" ng-controller="MngmtAnimalSelectionCtrl as animalCtrl">
-            <label for="{{animalCtrl.selectId}}" class="col-xs-6 col-md-2 control-label">Animal number: </label>
-            <div class="col-xs-6 col-sm-6 col-md-4">
-                <aw-search-select2 class="form-control" elem-id="{{animalCtrl.selectId}}" controller="animalCtrl"></aw-search-select2>
-            </div>
-            <div ng-click="animalMngmtCtrl.startUpdate()" ng-hide="animalMngmtCtrl.isNewAnimal">
-            	<button type="button" class="btn btn-default btn-sm">
-                	<i class="glyphicon glyphicon-edit"></i>
-            	</button>
-            </div>
-        </div>
-        <div class="form-group" ng-controller="MngmtAnimalSelectionUpdateCtrl as animalUpdateCtrl" ng-show="animalMngmtCtrl.isUpdatingAnimal">
-            <label for="{{animalUpdateCtrl.selectId}}" class="col-xs-6 col-md-2 control-label">Update animal number: </label>
-            <div class="col-xs-6 col-sm-6 col-md-4">
-                <aw-select2 elem-id="{{animalUpdateCtrl.selectId}}" controller="animalUpdateCtrl"></aw-select2>
-            </div>
-            <div ng-click="animalMngmtCtrl.cancelUpdate()">
-            	<button type="button" class="btn btn-default btn-sm">
-                	<i class="glyphicon glyphicon-remove"></i>
-            	</button>
-            </div>            
-        </div>
+		<div class="form-group" ng-controller="MngmtAnimalSelectionCtrl as animalCtrl">
+			<label for="{{animalCtrl.selectId}}" class="col-xs-3 control-label">Animal number: </label>
+			<div ng-class="{'col-xs-7': animalMngmtCtrl.isNewAnimal, 'col-xs-6': !animalMngmtCtrl.isNewAnimal}">
+				<aw-search-select2 class="form-control" elem-id="{{animalCtrl.selectId}}" controller="animalCtrl"></aw-search-select2>
+			</div>
+			<div ng-click="animalMngmtCtrl.startUpdate()" ng-hide="animalMngmtCtrl.isNewAnimal">
+				<button type="button" class="btn btn-default btn-sm">
+					<i class="glyphicon glyphicon-edit"></i>
+				</button>
+			</div>
+		</div>
+		<div class="form-group" ng-controller="MngmtAnimalSelectionUpdateCtrl as animalUpdateCtrl" ng-show="animalMngmtCtrl.isUpdatingAnimal">
+			<label for="{{animalUpdateCtrl.selectId}}" class="col-xs-3 control-label">Update animal number: </label>
+			<div ng-class="{'col-xs-7': animalMngmtCtrl.isNewAnimal, 'col-xs-6': !animalMngmtCtrl.isNewAnimal}">
+				<aw-select2 elem-id="{{animalUpdateCtrl.selectId}}" controller="animalUpdateCtrl"></aw-select2>
+			</div>
+			<div ng-click="animalMngmtCtrl.cancelUpdate()">
+				<button type="button" class="btn btn-default btn-sm">
+					<i class="glyphicon glyphicon-remove"></i>
+				</button>
+			</div>
+		</div>
 		<div class="form-group" ng-controller="MngmtAnimalDoBSelectionCtrl as dateCtrl">
-			<label for="{{dateCtrl.id}}" class="col-xs-6 col-md-2 control-label">Date of birth: </label>
-			<div class="col-xs-6 col-sm-6 col-md-4">
+			<label for="{{dateCtrl.id}}" class="col-xs-3 control-label">Date of birth: </label>
+			<div class="col-xs-7">
 				<aw-date-picker elem-id="{{dateCtrl.selectId}}" today-highlight="false" controller="dateCtrl"></aw-date-picker>
 			</div>
 		</div>
 		<div class="form-group" ng-controller="MngmtAnimalSexSelectionCtrl as sexCtrl">
-			<label for="{{sexCtrl.selectId}}" class="col-xs-6 col-md-2 control-label">Sex: </label>
-			<div class="col-xs-6 col-sm-6 col-md-4">
+			<label for="{{sexCtrl.selectId}}" class="col-xs-3 control-label">Sex: </label>
+			<div class="col-xs-7">
 				<aw-select2 elem-id="{{sexCtrl.selectId}}" controller="sexCtrl"></aw-select2>
 			</div>
 		</div>
 		<div class="form-group" ng-controller="MngmtAnimalSpeciesSelectionCtrl as speciesCtrl">
-			<label for="{{speciesCtrl.selectId}}" class="col-xs-6 col-md-2 control-label">Species: </label>
-			<div class="col-xs-6 col-sm-6 col-md-4">
+			<label for="{{speciesCtrl.selectId}}" class="col-xs-3 control-label">Species: </label>
+			<div class="col-xs-7">
 				<aw-search-select2 elem-id="{{speciesCtrl.selectId}}" controller="speciesCtrl"></aw-search-select2>
 			</div>
 		</div>
 		<div class="form-group" ng-controller="MngmtAnimalSourceSelectionCtrl as sourceCtrl">
-			<label for="{{sourceCtrl.selectId}}" class="col-xs-6 col-md-2 control-label">Source: </label>
-			<div class="col-xs-6 col-sm-6 col-md-4">
+			<label for="{{sourceCtrl.selectId}}" class="col-xs-3 control-label">Source: </label>
+			<div class="col-xs-7">
 				<aw-search-select2 elem-id="{{sourceCtrl.selectId}}" controller="sourceCtrl"></aw-search-select2>
 			</div>
 		</div>
-
 		<div ng-controller="MngmtAnimalParentsSelectionCtrl as parentsCtrl">
 			<div class="form-group">
-				<label for="{{parentsCtrl.damSelectId}}" class="col-xs-6 col-md-2 control-label">Dam: </label>
-				<div class="col-xs-6 col-sm-6 col-md-4">
+				<label for="{{parentsCtrl.damSelectId}}" class="col-xs-3 control-label">Dam: </label>
+				<div class="col-xs-7">
 					<aw-search-select2 elem-id="{{parentsCtrl.damSelectId}}" controller="parentsCtrl"></aw-search-select2>
 				</div>
 			</div>
 			<div class="form-group">
-				<label for="{{parentsCtrl.fatherSelectId}}" class="col-xs-6 col-md-2 control-label">Father: </label>
-				<div class="col-xs-6 col-sm-6 col-md-4">
+				<label for="{{parentsCtrl.fatherSelectId}}" class="col-xs-3 control-label">Father: </label>
+				<div class="col-xs-7">
 					<aw-search-select2 elem-id="{{parentsCtrl.fatherSelectId}}" controller="parentsCtrl"></aw-search-select2>
 				</div>
 			</div>
 		</div>
 		<div ng-controller="MngmtAnimalAssessmentTemplateSelectionCtrl as templateCtrl">
 			<div class="form-group">
-				<label for="{{templateCtrl.selectId}}" class="col-xs-6 col-md-2 control-label">Assessment template: </label>
-				<div class="col-xs-6 col-sm-6 col-md-4">
+				<label for="{{templateCtrl.selectId}}" class="col-xs-3 control-label">Assessment template: </label>
+				<div class="col-xs-7">
 					<aw-search-select2 elem-id="{{templateCtrl.selectId}}" controller="templateCtrl"></aw-search-select2>
-				</div>			
+				</div>
 			</div>
 			<div class="form-group" ng-show="templateCtrl.isTemplateLocked">
-				<div class="col-xs-offset-4 col-sm-offset-4 col-md-offset-2">
-                	<span class="glyphicon glyphicon-info-sign pull-left" style="padding-right: 4px"></span>Assessment template locked: there is {{templateCtrl.assessmentCount}} assessments for this animal.
-            	</div> 
-			</div>			
+				<div class="col-xs-offset-3 col-xs-7">
+					<span class="glyphicon glyphicon-info-sign pull-left" style="padding-right: 4px">
+					</span>Assessment template locked: there is {{templateCtrl.assessmentCount}} assessments for this animal.
+				</div>
+			</div>
 		</div>
-		
 		<div class="form-group" ng-controller="MngmtAnimalIsAliveCtrl as isAliveCtrl">
-			<label for="{{isAliveCtrl.selectId}}" class="col-xs-6 col-md-2 control-label">Is alive?</label>
-			<div class="col-xs-6 col-sm-6 col-md-4">
+			<label for="{{isAliveCtrl.selectId}}" class="col-xs-3 control-label">Is alive?</label>
+			<div class="col-xs-7">
 				<aw-select2 elem-id="{{isAliveCtrl.selectId}}" controller="isAliveCtrl"></aw-select2>
 			</div>
 		</div>
-
 		<div class="form-group">
-			<div class="col-sm-offset-6 col-sm-6 col-md-offset-2 col-md-4">
+			<div>
 				<aw-success-display success="animalMngmtCtrl.isSuccess"></aw-success-display>
 			</div>
 		</div>
-		
 		<div class="form-group">
-			<div class="col-sm-offset-2 col-sm-6 col-md-offset-2 col-md-4">
+			<div>
 				<aw-error-display errors="animalMngmtCtrl.errors"></aw-error-display>
 			</div>
 		</div>
-
 		<div class="row">
 			<hr />
 		</div>
 		<div class="row">
-			<div class="col-xs-6 col-sm-6 col-md-4" ng-show="animalMngmtCtrl.isNewAnimal">
-				<button type="button" class="btn btn-success btn-lg pull-right" ng-click="animalMngmtCtrl.submitAnimal()">
-					Create
-				</button>
-			</div>
-			<div class="col-xs-6 col-sm-6 col-md-4" ng-hide="animalMngmtCtrl.isNewAnimal">
-				<button type="button" class="btn btn-primary btn-lg pull-right" ng-click="animalMngmtCtrl.updateAnimal()">
-					Update
-				</button>
-			</div>
-			<div class="col-xs-6 col-sm-6 col-md-4">
-				<button type="button" class="btn btn-danger btn-lg pull-right" ng-click="animalMngmtCtrl.clearAnimal()">
+			<div class="text-center">
+				<button type="button" class="btn btn-lg btn-success" ng-click="animalMngmtCtrl.submitAnimal()" ng-disabled="!animalMngmtCtrl.isNewAnimal">
+                	Create
+            	</button>
+            	<button type="button" class="btn btn-lg btn-primary" ng-click="animalMngmtCtrl.updateAnimal()" ng-disabled="animalMngmtCtrl.isNewAnimal">
+                	Update
+                </button>
+                <button type="button" class="btn btn-danger btn-lg" ng-click="animalMngmtCtrl.clearAnimal()">
 					Clear
 				</button>
-			</div>
-			<div class="col-xs-6 col-sm-6 col-md-4" ng-hide="animalMngmtCtrl.isNewAnimal">
-				<button type="button" class="btn btn-danger btn-lg pull-right" ng-click="animalMngmtCtrl.removeAnimal()">
+				<button type="button" class="btn btn-danger btn-lg" ng-click="animalMngmtCtrl.removeAnimal()" ng-disabled="animalMngmtCtrl.isNewAnimal">
 					Remove
 				</button>
-			</div>
-		</div>
-	</form>	
+			</div>			
+		</div>		
+	</form>
 </div>

@@ -10,6 +10,7 @@ import uk.gov.phe.erdst.sc.awag.dto.AnimalDto;
 import uk.gov.phe.erdst.sc.awag.dto.AssessmentTemplateDto;
 import uk.gov.phe.erdst.sc.awag.dto.EntitySelectDto;
 import uk.gov.phe.erdst.sc.awag.exceptions.AWNoSuchEntityException;
+import uk.gov.phe.erdst.sc.awag.service.logging.LoggedUser;
 
 public interface AnimalController
 {
@@ -22,11 +23,12 @@ public interface AnimalController
 
     AnimalDto getAnimalDto(Long animalId) throws AWNoSuchEntityException;
 
-    void storeAnimal(AnimalClientData clientData, ResponsePayload responsePayload);
+    void storeAnimal(AnimalClientData clientData, ResponsePayload responsePayload, LoggedUser loggedUser);
 
-    void updateAnimal(Long animalId, AnimalClientData clientData, ResponsePayload responsePayload);
+    void updateAnimal(Long animalId, AnimalClientData clientData, ResponsePayload responsePayload,
+        LoggedUser loggedUser);
 
-    void deleteAnimal(Long animalId) throws AWNoSuchEntityException;
+    void deleteAnimal(Long animalId, LoggedUser loggedUser) throws AWNoSuchEntityException;
 
     List<EntitySelectDto> getNonDeletedAnimalsLikeDtos(String like, Integer offset, Integer limit,
         ResponsePayload responsePayload, boolean includeMetadata);

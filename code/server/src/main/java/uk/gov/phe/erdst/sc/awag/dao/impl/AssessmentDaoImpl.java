@@ -116,14 +116,15 @@ public class AssessmentDaoImpl implements AssessmentDao
 
     @SuppressWarnings("unchecked")
     @Override
-    public List<Assessment> getAnimalAssessmentsBetween(String dateFrom, String dateTo, Long animalId, Integer offset,
-        Integer limit)
+    public List<Assessment> getAnimalAssessmentsBetween(String dateFrom, String dateTo, Long animalId,
+        boolean isComplete, Integer offset, Integer limit)
     {
         Query getAssessmentsQuery = mEntityManager
             .createNamedQuery(Assessment.Q_ANIMAL_ASSESSMENT_BETWEEN, Assessment.class)
             .setParameter(DaoConstants.QUERY_PARAM_ANIMAL_ID, animalId)
             .setParameter(DaoConstants.QUERY_PARAM_DATE_FROM, dateFrom)
-            .setParameter(DaoConstants.QUERY_PARAM_DATE_TO, dateTo);
+            .setParameter(DaoConstants.QUERY_PARAM_DATE_TO, dateTo)
+            .setParameter(DaoConstants.QUERY_PARAM_IS_COMPLETE, isComplete);
         DaoUtils.setOffset(getAssessmentsQuery, offset);
         DaoUtils.setLimit(getAssessmentsQuery, limit);
         return getAssessmentsQuery.getResultList();

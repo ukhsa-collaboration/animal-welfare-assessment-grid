@@ -22,7 +22,7 @@ public class AnimalHousingDaoImpl extends CommonDaoImpl<AnimalHousing> implement
             }
 
             @Override
-            public String getNoSuchEntityMessage(Long id)
+            public String getNoSuchEntityMessage(Object id)
             {
                 return DaoUtils.getNoSuchEntityMessage(DaoConstants.PROP_ANIMAL_HOUSING_ID, id);
             }

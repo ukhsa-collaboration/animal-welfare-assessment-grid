@@ -23,7 +23,7 @@ public class UserDaoImpl extends CommonDaoImpl<User> implements UserDao
             }
 
             @Override
-            public String getNoSuchEntityMessage(Long id)
+            public String getNoSuchEntityMessage(Object id)
             {
                 return DaoUtils.getNoSuchEntityMessage(DaoConstants.PROP_USER_ID, id);
             }

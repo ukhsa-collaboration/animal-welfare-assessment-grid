@@ -51,13 +51,13 @@
     <managed-scheduled-executor-service object-type="system-all" jndi-name="concurrent/__defaultManagedScheduledExecutorService"></managed-scheduled-executor-service>
     <managed-thread-factory object-type="system-all" jndi-name="concurrent/__defaultManagedThreadFactory"></managed-thread-factory>
     <!-- AWAG Database Connection Configuration START -->
-    <jdbc-connection-pool driver-classname="org.postgresql.Driver" ping="true" name="awDatabase" res-type="java.sql.Driver">
+    <jdbc-connection-pool driver-classname="org.postgresql.Driver" datasource-classname="org.postgresql.xa.PGXADataSource" res-type="javax.sql.XADataSource" name="awDatabase" ping="true">
       <property name="password" value="main database user password here"></property>
       <property name="user" value="main database user name here"></property>
       <property name="URL" value="jdbc:postgresql://localhost:5432/awdatabase"></property>
     </jdbc-connection-pool>
     <jdbc-resource pool-name="awDatabase" jndi-name="jdbc/awDatabase"></jdbc-resource>
-    <jdbc-connection-pool driver-classname="org.postgresql.Driver" ping="true" name="awAuth" res-type="java.sql.Driver">
+    <jdbc-connection-pool driver-classname="org.postgresql.Driver" datasource-classname="org.postgresql.xa.PGXADataSource" res-type="javax.sql.XADataSource" name="awAuth" ping="true">
       <property name="password" value="authentication database user password here"></property>
       <property name="user" value="authentication database user name here"></property>
       <property name="URL" value="jdbc:postgresql://localhost:5432/awauth"></property>

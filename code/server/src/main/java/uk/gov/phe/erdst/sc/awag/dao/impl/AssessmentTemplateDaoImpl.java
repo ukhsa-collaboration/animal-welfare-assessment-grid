@@ -32,7 +32,7 @@ public class AssessmentTemplateDaoImpl extends CommonDaoImpl<AssessmentTemplate>
             }
 
             @Override
-            public String getNoSuchEntityMessage(Long id)
+            public String getNoSuchEntityMessage(Object id)
             {
                 return DaoUtils.getNoSuchEntityMessage(DaoConstants.PROP_ASSESSMENT_TEMPLATE_ID, id);
             }
@@ -48,7 +48,7 @@ public class AssessmentTemplateDaoImpl extends CommonDaoImpl<AssessmentTemplate>
     @Override
     public AssessmentTemplate getAssessmentTemplateByAnimalId(Long animalId) throws AWNoSuchEntityException
     {
-        List<AssessmentTemplate> result = mEntityManager
+        List<AssessmentTemplate> result = getEntityManager()
             .createNamedQuery(Animal.Q_FIND_ANIMAL_ASSESSMENT_TEMPLATE, AssessmentTemplate.class)
             .setParameter("id", animalId).getResultList();
 

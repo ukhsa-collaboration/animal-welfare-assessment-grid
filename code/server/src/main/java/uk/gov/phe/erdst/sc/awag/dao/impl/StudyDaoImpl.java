@@ -26,7 +26,7 @@ public class StudyDaoImpl extends CommonDaoImpl<Study> implements StudyDao
             }
 
             @Override
-            public String getNoSuchEntityMessage(Long id)
+            public String getNoSuchEntityMessage(Object id)
             {
                 return DaoUtils.getNoSuchEntityMessage(DaoConstants.PROP_STUDY_ID, id);
             }
@@ -42,7 +42,7 @@ public class StudyDaoImpl extends CommonDaoImpl<Study> implements StudyDao
     @Override
     public Study getStudyWithAnimal(Animal animal) throws AWMultipleResultException
     {
-        List<Study> result = mEntityManager.createNamedQuery(Study.Q_FIND_STUDY_WITH_ANIMAL, Study.class)
+        List<Study> result = getEntityManager().createNamedQuery(Study.Q_FIND_STUDY_WITH_ANIMAL, Study.class)
             .setParameter("animal", animal).getResultList();
 
         if (result.isEmpty())

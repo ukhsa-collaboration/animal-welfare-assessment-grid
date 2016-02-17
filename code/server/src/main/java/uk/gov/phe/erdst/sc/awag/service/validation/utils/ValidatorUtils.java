@@ -4,6 +4,7 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Set;
 
+import javax.validation.ConstraintValidatorContext;
 import javax.validation.ConstraintViolation;
 import javax.validation.Validator;
 import javax.ws.rs.HttpMethod;
@@ -13,7 +14,7 @@ import uk.gov.phe.erdst.sc.awag.utils.Constants;
 
 public final class ValidatorUtils
 {
-    private static final SimpleDateFormat DATE_FORMATTER = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'");
+    private static final SimpleDateFormat DATE_FORMATTER = new SimpleDateFormat(Constants.DATE_FORMAT);
 
     private ValidatorUtils()
     {
@@ -91,5 +92,42 @@ public final class ValidatorUtils
         {
             responsePayload.addValidationErrors(violations);
         }
+    }
+
+    public static int validateDateFromToFilter(String dateFrom, String dateTo, ConstraintValidatorContext context)
+    {
+        int errCount = 0;
+        context.disableDefaultConstraintViolation();
+
+        if (dateTo != null && dateFrom != null)
+        {
+            if (ValidatorUtils.isDateValid(dateTo) && ValidatorUtils.isDateValid(dateFrom))
+            {
+                boolean isEqual = dateTo.equals(dateFrom);
+                if (!isEqual && !ValidatorUtils.isFirstDateAfterSecondDate(dateTo, dateFrom))
+                {
+                    context.buildConstraintViolationWithTemplate(ValidationConstants.ERR_FROM_TO_DATE_PARAMS)
+                        .addConstraintViolation();
+                    errCount++;
+                }
+            }
+        }
+
+        if (dateFrom != null && !ValidatorUtils.isDateValid(dateFrom))
+        {
+            context.buildConstraintViolationWithTemplate(
+                String.format(ValidationConstants.ERR_DATE_FORMAT, ValidationConstants.DATE_FROM))
+                .addConstraintViolation();
+            errCount++;
+        }
+
+        if (dateTo != null && !ValidatorUtils.isDateValid(dateTo))
+        {
+            context.buildConstraintViolationWithTemplate(
+                String.format(ValidationConstants.ERR_DATE_FORMAT, ValidationConstants.DATE_TO))
+                .addConstraintViolation();
+            errCount++;
+        }
+        return errCount;
     }
 }

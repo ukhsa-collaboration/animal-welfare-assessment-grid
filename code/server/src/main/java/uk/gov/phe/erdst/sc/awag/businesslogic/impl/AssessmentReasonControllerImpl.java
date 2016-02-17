@@ -19,6 +19,9 @@ import uk.gov.phe.erdst.sc.awag.exceptions.AWNoSuchEntityException;
 import uk.gov.phe.erdst.sc.awag.exceptions.AWNonUniqueException;
 import uk.gov.phe.erdst.sc.awag.service.factory.EntitySelectDtoFactory;
 import uk.gov.phe.erdst.sc.awag.service.factory.assessment.AssessmentReasonFactory;
+import uk.gov.phe.erdst.sc.awag.service.logging.LoggedActions;
+import uk.gov.phe.erdst.sc.awag.service.logging.LoggedActivity;
+import uk.gov.phe.erdst.sc.awag.service.logging.LoggedUser;
 import uk.gov.phe.erdst.sc.awag.service.page.ResponsePager;
 
 @Stateless
@@ -59,7 +62,9 @@ public class AssessmentReasonControllerImpl implements AssessmentReasonControlle
     }
 
     @Override
-    public void storeReason(AssessmentReasonClientData clientData, ResponsePayload responsePayload)
+    @LoggedActivity(actionName = LoggedActions.STORE_REASON)
+    public void storeReason(AssessmentReasonClientData clientData, ResponsePayload responsePayload,
+        LoggedUser loggedUser)
     {
         Set<ConstraintViolation<AssessmentReasonClientData>> reasonConstraintViolations = mReasonValidator
             .validate(clientData);
@@ -85,7 +90,9 @@ public class AssessmentReasonControllerImpl implements AssessmentReasonControlle
     }
 
     @Override
-    public void updateReason(Long reasonId, AssessmentReasonClientData clientData, ResponsePayload responsePayload)
+    @LoggedActivity(actionName = LoggedActions.UPDATE_REASON)
+    public void updateReason(Long reasonId, AssessmentReasonClientData clientData, ResponsePayload responsePayload,
+        LoggedUser loggedUser)
     {
         Set<ConstraintViolation<AssessmentReasonClientData>> reasonConstraintViolations = mReasonValidator
             .validate(clientData);

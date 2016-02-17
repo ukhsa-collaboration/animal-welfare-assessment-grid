@@ -28,8 +28,8 @@ public interface AssessmentDao
      */
     Assessment getPreviousAssessment(long animalId);
 
-    List<Assessment> getAnimalAssessmentsBetween(String dateFrom, String dateTo, Long animalId, Integer offset,
-        Integer limit);
+    List<Assessment> getAnimalAssessmentsBetween(String dateFrom, String dateTo, Long animalId, boolean isComplete,
+        Integer offset, Integer limit);
 
     Long getCountAnimalAssessmentsBetween(String dateFrom, String dateTo, Long animalId);
 

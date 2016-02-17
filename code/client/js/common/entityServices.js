@@ -17,19 +17,35 @@ function(appConfig, dataService, pagingUtils) {
         });
     };
 
-    var saveEntity = function(servletName, parameters, successCallback, errCallback){
+    var getEntityById = function(servletName, successCallback, errorCallback, id)
+    {
+        var parameters = {};
+        parameters[appConfig.services.selectAction] = appConfig.services.selectActions.id;
+        parameters[appConfig.services.actionParams.id] = id;
+        dataService.dataConnection({
+            servlet : servletName,
+            parameters : parameters,
+            callback : {
+                success : successCallback,
+                error : errorCallback
+            }
+        });
+    };
+
+    var saveEntity = function(servletName, parameters, successCallback, errorCallback){
         dataService.postData({
             servlet : servletName,
             parameters : parameters,
             callback : {
                 success : successCallback,
-                error : errCallback
+                error : errorCallback
             }
         });
     };
 
     return {
         getEntityLike : getEntityLike,
-        saveEntity : saveEntity
+        saveEntity : saveEntity,
+        getEntityById : getEntityById
     };
 }]);

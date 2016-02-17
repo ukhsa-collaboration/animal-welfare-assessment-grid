@@ -3,7 +3,7 @@
     <form name="scaleManagementForm" class="form-horizontal">
         <div class="form-group" ng-controller="MngmtScaleSelectionCtrl as scaleCtrl">
             <label for="{{scaleCtrl.selectId}}" class="col-xs-3 control-label">Scale name: </label>
-            <div class="col-xs-7">
+            <div ng-class="{'col-xs-7': scaleMngmtCtrl.isNewScale, 'col-xs-6': !scaleMngmtCtrl.isNewScale}">
                 <aw-search-select2 class="form-control" elem-id="{{scaleCtrl.selectId}}" controller="scaleCtrl"></aw-search-select2>
             </div>
             <div ng-click="scaleMngmtCtrl.startUpdate()" ng-hide="scaleMngmtCtrl.isNewScale">
@@ -14,7 +14,7 @@
         </div>
         <div class="form-group" ng-controller="MngmtScaleSelectionUpdateCtrl as scaleUpdateCtrl" ng-show="scaleMngmtCtrl.isUpdatingScale">
             <label for="{{scaleUpdateCtrl.selectId}}" class="col-xs-3 control-label">Update scale name: </label>
-            <div class="col-xs-7">
+            <div ng-class="{'col-xs-7': scaleMngmtCtrl.isNewScale, 'col-xs-6': !scaleMngmtCtrl.isNewScale}">
                 <aw-select2 elem-id="{{scaleUpdateCtrl.selectId}}" controller="scaleUpdateCtrl"></aw-select2>
             </div>
             <div ng-click="scaleMngmtCtrl.cancelUpdate()">
@@ -51,22 +51,17 @@
             <hr />
         </div>
         <div class="row">
-
-        <div class="col-xs-6" ng-show="scaleMngmtCtrl.isNewScale">
-                <button type="button" class="btn btn-success btn-sm pull-right" ng-click="scaleMngmtCtrl.submitScale()">
-                Create
+            <div class="text-center">
+                <button type="button" class="btn btn-lg btn-success" ng-click="scaleMngmtCtrl.submitScale()" ng-disabled="!scaleMngmtCtrl.isNewScale">
+                    Create
+                </button>
+                <button type="button" class="btn btn-lg btn-primary" ng-click="scaleMngmtCtrl.updateScale()" ng-disabled="scaleMngmtCtrl.isNewScale">
+                    Update
+                </button>
+                <button type="button" class="btn btn-danger btn-lg" ng-click="scaleMngmtCtrl.clearScale()">
+                    Clear
                 </button>
             </div>
-            <div class="col-xs-6" ng-hide="scaleMngmtCtrl.isNewScale">
-                <button type="button" class="btn btn-primary btn-sm pull-right" ng-click="scaleMngmtCtrl.updateScale()">
-                Update
-                </button>
-            </div>
-            <div class="col-xs-6">
-                <button type="button" class="btn btn-danger btn-sm" ng-click="scaleMngmtCtrl.clearScale()">
-                Clear
-                </button>
-            </div>            
         </div>
     </form>
 </div>

@@ -30,7 +30,7 @@ import uk.gov.phe.erdst.sc.awag.servlets.utils.ServletUtils;
 
 @SuppressWarnings("serial")
 @WebServlet(name = "template", urlPatterns = {"/template/*"})
-@ServletSecurity(@HttpConstraint(rolesAllowed = {ServletSecurityUtils.RolesAllowed.AW_ADMIN}))
+@ServletSecurity(@HttpConstraint(rolesAllowed = {ServletSecurityUtils.RolesAllowed.AW_ASSESSMENT_USER}))
 public class AssessmentTemplateServlet extends HttpServlet
 {
     @Inject
@@ -73,7 +73,8 @@ public class AssessmentTemplateServlet extends HttpServlet
                 Long templateId = Long.parseLong(parts[0]);
                 Long parameterId = Long.parseLong(parts[2]);
 
-                mAssessmentTemplateController.deleteTemplateParameter(templateId, parameterId);
+                mAssessmentTemplateController.deleteTemplateParameter(templateId, parameterId,
+                    ServletSecurityUtils.getLoggedUser(request));
             }
             catch (NumberFormatException ex)
             {
@@ -97,11 +98,12 @@ public class AssessmentTemplateServlet extends HttpServlet
     public void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException
     {
         String requestTemplateJson = request.getParameter("template");
-        AssessmentTemplateClientData clientData = (AssessmentTemplateClientData) mRequestConverter.convert(
-            requestTemplateJson, AssessmentTemplateClientData.class);
+        AssessmentTemplateClientData clientData = (AssessmentTemplateClientData) mRequestConverter
+            .convert(requestTemplateJson, AssessmentTemplateClientData.class);
         ResponsePayload responsePayload = new ResponsePayload();
 
-        mAssessmentTemplateController.storeAssessmentTemplate(clientData, responsePayload);
+        mAssessmentTemplateController.storeAssessmentTemplate(clientData, responsePayload,
+            ServletSecurityUtils.getLoggedUser(request));
 
         if (responsePayload.getErrors().size() > 0)
         {
@@ -118,10 +120,10 @@ public class AssessmentTemplateServlet extends HttpServlet
     public void doPut(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException
     {
         String assessmentTemplateJson = ServletUtils.getRequestBody(request);
-        AssessmentTemplateClientData clientData = (AssessmentTemplateClientData) mRequestConverter.convert(
-            assessmentTemplateJson, AssessmentTemplateClientData.class);
+        AssessmentTemplateClientData clientData = (AssessmentTemplateClientData) mRequestConverter
+            .convert(assessmentTemplateJson, AssessmentTemplateClientData.class);
         ResponsePayload responsePayload = new ResponsePayload();
-        Long assessmentTemplateId = ServletUtils.getResourceId(request);
+        Long assessmentTemplateId = ServletUtils.getNumberResourceId(request);
 
         if (!ValidatorUtils.isResourceValid(assessmentTemplateId, HttpMethod.PUT))
         {
@@ -129,7 +131,8 @@ public class AssessmentTemplateServlet extends HttpServlet
             return;
         }
 
-        mAssessmentTemplateController.updateAssessmentTemplate(assessmentTemplateId, clientData, responsePayload);
+        mAssessmentTemplateController.updateAssessmentTemplate(assessmentTemplateId, clientData, responsePayload,
+            ServletSecurityUtils.getLoggedUser(request));
 
         if (responsePayload.getErrors().size() > 0)
         {

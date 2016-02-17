@@ -19,7 +19,6 @@ import uk.gov.phe.erdst.sc.awag.datamodel.response.ResponsePayload;
 import uk.gov.phe.erdst.sc.awag.exceptions.AWInvalidParameterException;
 import uk.gov.phe.erdst.sc.awag.exceptions.AWInvalidResourceIdException;
 import uk.gov.phe.erdst.sc.awag.exceptions.AWNoSuchEntityException;
-import uk.gov.phe.erdst.sc.awag.service.page.ResponsePager;
 import uk.gov.phe.erdst.sc.awag.service.validation.utils.ValidatorUtils;
 import uk.gov.phe.erdst.sc.awag.servlets.utils.RequestConverter;
 import uk.gov.phe.erdst.sc.awag.servlets.utils.ResponseFormatter;
@@ -29,7 +28,7 @@ import uk.gov.phe.erdst.sc.awag.servlets.utils.ServletUtils;
 
 @SuppressWarnings("serial")
 @WebServlet(name = "housing", urlPatterns = {"/housing/*"})
-@ServletSecurity(@HttpConstraint(rolesAllowed = {ServletSecurityUtils.RolesAllowed.AW_ADMIN}))
+@ServletSecurity(@HttpConstraint(rolesAllowed = {ServletSecurityUtils.RolesAllowed.AW_ASSESSMENT_USER}))
 public class HousingServlet extends HttpServlet
 {
     @Inject
@@ -45,15 +44,15 @@ public class HousingServlet extends HttpServlet
     private Validator mRequestValidator;
 
     @Override
-    protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException,
-        IOException
+    protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException
     {
         String requestSourceJson = request.getParameter("housing");
         AnimalHousingClientData clientData = (AnimalHousingClientData) mRequestConverter.convert(requestSourceJson,
             AnimalHousingClientData.class);
         ResponsePayload responsePayload = new ResponsePayload();
 
-        mAnimalHousingController.storeAnimalHousing(clientData, responsePayload);
+        mAnimalHousingController.storeAnimalHousing(clientData, responsePayload,
+            ServletSecurityUtils.getLoggedUser(request));
 
         if (responsePayload.getErrors().size() > 0)
         {
@@ -73,7 +72,7 @@ public class HousingServlet extends HttpServlet
         AnimalHousingClientData clientData = (AnimalHousingClientData) mRequestConverter.convert(animalHousingJson,
             AnimalHousingClientData.class);
         ResponsePayload responsePayload = new ResponsePayload();
-        Long animalHousingId = ServletUtils.getResourceId(request);
+        Long animalHousingId = ServletUtils.getNumberResourceId(request);
 
         if (!ValidatorUtils.isResourceValid(animalHousingId, HttpMethod.PUT))
         {
@@ -81,7 +80,8 @@ public class HousingServlet extends HttpServlet
             return;
         }
 
-        mAnimalHousingController.updateAnimalHousing(animalHousingId, clientData, responsePayload);
+        mAnimalHousingController.updateAnimalHousing(animalHousingId, clientData, responsePayload,
+            ServletSecurityUtils.getLoggedUser(request));
 
         if (responsePayload.getErrors().size() > 0)
         {

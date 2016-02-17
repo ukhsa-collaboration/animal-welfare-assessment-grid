@@ -82,6 +82,7 @@ function($scope, $timeout, appConfig, animalService, studyService, assessmentSer
     this.placeHolder = "Search for an animal...";
 
     this.submitSuccessInExistingModeEvent = "submitSuccessInExistingModeEvent";
+    this.deleteSuccessEvent = "deleteSuccessEvent";
 
     this.previousAnimal = null;
 
@@ -152,6 +153,12 @@ function($scope, $timeout, appConfig, animalService, studyService, assessmentSer
         this.isSuccess = false;
     };
 
+    this.resetDeleteStatus = function()
+    {
+        this.isIntendingToDelete = false;
+        this.isDeleting = false;
+    }
+
     this.setUpModeHandlers = function()
     {
         this.modeHandlers[assessmentFormModes.existingComplete] = this.onModeExistingComplete;
@@ -171,6 +178,8 @@ function($scope, $timeout, appConfig, animalService, studyService, assessmentSer
         this.resetAssessmentCtrlScoreParametersModel();
 
         this.resetErrorsAndSuccess();
+
+        this.resetDeleteStatus();
     };
 
     this.onAnimalChangedDifferentTemplate = function()
@@ -292,6 +301,8 @@ function($scope, $timeout, appConfig, animalService, studyService, assessmentSer
         this.resetAssessmentCtrlScoreParametersModel();
 
         this.resetErrors();
+
+        this.resetDeleteStatus();
 
         $timeout(function(){
             $scope.$apply();
@@ -475,6 +486,11 @@ function($scope, $timeout, appConfig, animalService, studyService, assessmentSer
     {
         that.isSuccess = true;
         that.resetErrors();
+
+        if (!that.isInExistingMode)
+        {
+            that.clearFormOnSubmit();
+        }
     };
 
     var onErrorCallBack = function(errors)
@@ -494,6 +510,7 @@ function($scope, $timeout, appConfig, animalService, studyService, assessmentSer
             that.isLockedInputs = true;
             assessFormHelperService.lockSelectWithValue(that.animal.id, that.animal.animalNumber, that.selectId);
             $scope.$emit(that.submitSuccessInExistingModeEvent);
+            that.isInExistingCompleteMode = true;
         }
         else
         {
@@ -503,11 +520,13 @@ function($scope, $timeout, appConfig, animalService, studyService, assessmentSer
 
     this.saveAssessment = function()
     {
+        // Save performs the 'create' and also the 'save' action.
         assessmentService.saveAssessment(this.assessment, that.isInExistingMode, onSaveAssessmentCallback, onErrorCallBack);
     };
 
     this.submitAssessment = function()
     {
+        // Submit is equivalent to finalise.
         assessmentService.submitAssessment(this.assessment, that.isInExistingMode, onSubmitAssessmentCallback, onErrorCallBack);
     };
 
@@ -565,12 +584,35 @@ function($scope, $timeout, appConfig, animalService, studyService, assessmentSer
         });
     };
 
+    this.intendToDeleteAssessment = function()
+    {
+        this.isIntendingToDelete = true;
+    };
+
+    var onDeleteAssessmentCallback = function()
+    {
+        that.clearFormOnSubmit();
+        $scope.$emit(that.deleteSuccessEvent);
+    };
+
+    this.deleteAssessment = function()
+    {
+        this.isDeleting = true;
+        assessmentService.deleteAssessment(this.assessment, onDeleteAssessmentCallback, onErrorCallBack);
+    };
+
+    this.cancelDeleteAssessment = function()
+    {
+        this.isIntendingToDelete = false;
+    };
+
     this.resetAnimalModel();
     this.resetStudyModel();
     this.resetAssessmentModel();
     this.resetAssessmentScoreParametersModel();
     this.resetAssessmentCtrlScoreParametersModel();
     this.resetErrorsAndSuccess();
+    this.resetDeleteStatus();
 
     this.setUpModeHandlers();
 }]);

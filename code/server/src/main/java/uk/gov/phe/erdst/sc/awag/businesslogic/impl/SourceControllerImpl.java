@@ -21,6 +21,9 @@ import uk.gov.phe.erdst.sc.awag.exceptions.AWNoSuchEntityException;
 import uk.gov.phe.erdst.sc.awag.exceptions.AWNonUniqueException;
 import uk.gov.phe.erdst.sc.awag.service.factory.EntitySelectDtoFactory;
 import uk.gov.phe.erdst.sc.awag.service.factory.source.SourceFactory;
+import uk.gov.phe.erdst.sc.awag.service.logging.LoggedActions;
+import uk.gov.phe.erdst.sc.awag.service.logging.LoggedActivity;
+import uk.gov.phe.erdst.sc.awag.service.logging.LoggedUser;
 import uk.gov.phe.erdst.sc.awag.service.page.ResponsePager;
 
 @Stateless
@@ -42,7 +45,8 @@ public class SourceControllerImpl implements SourceController
     private EntitySelectDtoFactory mEntitySelectDtoFactory;
 
     @Override
-    public void storeSource(SourceClientData clientData, ResponsePayload responsePayload)
+    @LoggedActivity(actionName = LoggedActions.STORE_SOURCE)
+    public void storeSource(SourceClientData clientData, ResponsePayload responsePayload, LoggedUser loggedUser)
     {
         Set<ConstraintViolation<SourceClientData>> sourceConstraintViolations = mSourceValidator.validate(clientData);
 
@@ -67,7 +71,9 @@ public class SourceControllerImpl implements SourceController
     }
 
     @Override
-    public void updateSource(Long sourceId, SourceClientData clientData, ResponsePayload responsePayload)
+    @LoggedActivity(actionName = LoggedActions.UPDATE_SOURCE)
+    public void updateSource(Long sourceId, SourceClientData clientData, ResponsePayload responsePayload,
+        LoggedUser loggedUser)
     {
         Set<ConstraintViolation<SourceClientData>> sourceConstraintViolations = mSourceValidator.validate(clientData);
 
@@ -92,7 +98,8 @@ public class SourceControllerImpl implements SourceController
     }
 
     @Override
-    public void deleteSource(Long sourceId)
+    @LoggedActivity(actionName = LoggedActions.DELETE_SOURCE)
+    public void deleteSource(Long sourceId, LoggedUser loggedUser)
     {
         throw new NotImplementedException("Not implemented yet.");
     }

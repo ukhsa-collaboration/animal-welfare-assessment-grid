@@ -19,7 +19,6 @@ import uk.gov.phe.erdst.sc.awag.datamodel.response.ResponsePayload;
 import uk.gov.phe.erdst.sc.awag.exceptions.AWInvalidParameterException;
 import uk.gov.phe.erdst.sc.awag.exceptions.AWInvalidResourceIdException;
 import uk.gov.phe.erdst.sc.awag.exceptions.AWNoSuchEntityException;
-import uk.gov.phe.erdst.sc.awag.service.page.ResponsePager;
 import uk.gov.phe.erdst.sc.awag.service.validation.utils.ValidatorUtils;
 import uk.gov.phe.erdst.sc.awag.servlets.utils.RequestConverter;
 import uk.gov.phe.erdst.sc.awag.servlets.utils.ResponseFormatter;
@@ -28,7 +27,7 @@ import uk.gov.phe.erdst.sc.awag.servlets.utils.ServletSecurityUtils;
 import uk.gov.phe.erdst.sc.awag.servlets.utils.ServletUtils;
 
 @WebServlet(name = "scale", urlPatterns = {"/scale/*"})
-@ServletSecurity(@HttpConstraint(rolesAllowed = {ServletSecurityUtils.RolesAllowed.AW_ADMIN}))
+@ServletSecurity(@HttpConstraint(rolesAllowed = {ServletSecurityUtils.RolesAllowed.AW_ASSESSMENT_USER}))
 public class ScaleServlet extends HttpServlet
 {
     private static final long serialVersionUID = 1L;
@@ -83,7 +82,7 @@ public class ScaleServlet extends HttpServlet
         String scalesJson = ServletUtils.getRequestBody(request);
         ScaleClientData clientData = (ScaleClientData) mRequestConverter.convert(scalesJson, ScaleClientData.class);
         ResponsePayload responsePayload = new ResponsePayload();
-        Long scaleId = ServletUtils.getResourceId(request);
+        Long scaleId = ServletUtils.getNumberResourceId(request);
 
         if (!ValidatorUtils.isResourceValid(scaleId, HttpMethod.PUT))
         {
@@ -91,7 +90,8 @@ public class ScaleServlet extends HttpServlet
             return;
         }
 
-        mScalesController.updateScale(scaleId, clientData, responsePayload);
+        mScalesController
+            .updateScale(scaleId, clientData, responsePayload, ServletSecurityUtils.getLoggedUser(request));
 
         if (responsePayload.getErrors().size() > 0)
         {
@@ -106,15 +106,14 @@ public class ScaleServlet extends HttpServlet
     }
 
     @Override
-    protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException,
-        IOException
+    protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException
     {
         String requestScalesJson = request.getParameter("scale");
         ScaleClientData clientData = (ScaleClientData) mRequestConverter.convert(requestScalesJson,
             ScaleClientData.class);
         ResponsePayload responsePayload = new ResponsePayload();
 
-        mScalesController.storeScale(clientData, responsePayload);
+        mScalesController.storeScale(clientData, responsePayload, ServletSecurityUtils.getLoggedUser(request));
 
         if (responsePayload.getErrors().size() > 0)
         {

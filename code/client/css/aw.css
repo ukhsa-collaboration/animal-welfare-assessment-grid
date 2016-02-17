@@ -35,8 +35,17 @@
     cursor: pointer;
 }
 
+.existing-assessment-info-panel {
+  margin-bottom: 1em;
+}
+
 .assessment-form#btns-panel {
     margin-top: 1em;
+    text-align: center;
+}
+
+.assessment-form#btns-panel button {
+  margin: 16px;
 }
 
 .big-checkbox {

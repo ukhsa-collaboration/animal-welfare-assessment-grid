@@ -18,6 +18,9 @@ import uk.gov.phe.erdst.sc.awag.exceptions.AWNoSuchEntityException;
 import uk.gov.phe.erdst.sc.awag.exceptions.AWNonUniqueException;
 import uk.gov.phe.erdst.sc.awag.service.factory.EntitySelectDtoFactory;
 import uk.gov.phe.erdst.sc.awag.service.factory.studygroup.StudyGroupFactory;
+import uk.gov.phe.erdst.sc.awag.service.logging.LoggedActions;
+import uk.gov.phe.erdst.sc.awag.service.logging.LoggedActivity;
+import uk.gov.phe.erdst.sc.awag.service.logging.LoggedUser;
 import uk.gov.phe.erdst.sc.awag.service.page.ResponsePager;
 
 @Stateless
@@ -39,7 +42,8 @@ public class StudyGroupControllerImpl implements StudyGroupController
     private ResponsePager mResponsePager;
 
     @Override
-    public void storeGroup(StudyGroupClientData clientData, ResponsePayload responsePayload)
+    @LoggedActivity(actionName = LoggedActions.STORE_STUDY_GROUP)
+    public void storeGroup(StudyGroupClientData clientData, ResponsePayload responsePayload, LoggedUser loggedUser)
     {
         Set<ConstraintViolation<StudyGroupClientData>> studyGroupConstraintViolations = mStudyGroupValidator
             .validate(clientData);
@@ -65,7 +69,9 @@ public class StudyGroupControllerImpl implements StudyGroupController
     }
 
     @Override
-    public void updateStudyGroup(Long studyGroupId, StudyGroupClientData clientData, ResponsePayload responsePayload)
+    @LoggedActivity(actionName = LoggedActions.UPDATE_STUDY_GROUP)
+    public void updateStudyGroup(Long studyGroupId, StudyGroupClientData clientData, ResponsePayload responsePayload,
+        LoggedUser loggedUser)
     {
         Set<ConstraintViolation<StudyGroupClientData>> studyGroupConstraintViolations = mStudyGroupValidator
             .validate(clientData);

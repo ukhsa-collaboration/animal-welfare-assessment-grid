@@ -22,6 +22,7 @@ import uk.gov.phe.erdst.sc.awag.exceptions.AWNoSuchEntityException;
 import uk.gov.phe.erdst.sc.awag.exceptions.AWNonUniqueException;
 import uk.gov.phe.erdst.sc.awag.utils.Constants;
 import uk.gov.phe.erdst.sc.awag.utils.DataRetrievalUtils;
+import uk.gov.phe.erdst.sc.awag.utils.UnitType;
 
 @Stateless
 public abstract class CommonDaoImpl<T> implements CommonDao<T>
@@ -32,23 +33,41 @@ public abstract class CommonDaoImpl<T> implements CommonDao<T>
     private static final String ENTITY_COMMON_IDS_FIELD = "ids";
 
     @PersistenceContext(unitName = Constants.PERSISTENCE_CONTEXT_DEFAULT_UNIT_NAME)
-    protected EntityManager mEntityManager;
+    private EntityManager mDefaultPuEntityManager;
+    @PersistenceContext(unitName = Constants.PERSISTENCE_CONTEXT_AUTH_UNIT_NAME)
+    private EntityManager mAuthPuEntityManager;
 
     private final Class<T> type;
     private final String mEntityIdField;
     private final String mEntityNameField;
     private final DaoErrorMessageProvider mErrorMessageProvider;
+    private final UnitType mUnitType;
 
     public CommonDaoImpl()
     {
-        type = null;
-        mEntityIdField = null;
-        mEntityNameField = null;
-        mErrorMessageProvider = null;
+        this.type = null;
+        this.mEntityIdField = null;
+        this.mEntityNameField = null;
+        this.mErrorMessageProvider = null;
+        this.mUnitType = null;
     }
 
     @SuppressWarnings({"unchecked", "rawtypes"})
     public CommonDaoImpl(String entityIdField, String entityNameField, DaoErrorMessageProvider daoErrorMessageProvider)
+    {
+        Type t = getClass().getGenericSuperclass();
+        ParameterizedType pt = (ParameterizedType) t;
+        this.type = (Class) pt.getActualTypeArguments()[0];
+
+        this.mEntityIdField = entityIdField;
+        this.mEntityNameField = entityNameField;
+        this.mErrorMessageProvider = daoErrorMessageProvider;
+        this.mUnitType = UnitType.DEFAULT;
+    }
+
+    @SuppressWarnings({"unchecked", "rawtypes"})
+    public CommonDaoImpl(String entityIdField, String entityNameField, DaoErrorMessageProvider daoErrorMessageProvider,
+        UnitType unitType)
     {
         Type t = getClass().getGenericSuperclass();
         ParameterizedType pt = (ParameterizedType) t;
@@ -57,6 +76,20 @@ public abstract class CommonDaoImpl<T> implements CommonDao<T>
         this.mEntityIdField = entityIdField;
         this.mEntityNameField = entityNameField;
         this.mErrorMessageProvider = daoErrorMessageProvider;
+        this.mUnitType = unitType;
+    }
+
+    protected EntityManager getEntityManager()
+    {
+        switch (mUnitType)
+        {
+            case DEFAULT:
+                return mDefaultPuEntityManager;
+            case AUTH:
+                return mAuthPuEntityManager;
+            default:
+                return null;
+        }
     }
 
     @Override
@@ -64,9 +97,9 @@ public abstract class CommonDaoImpl<T> implements CommonDao<T>
     {
         try
         {
-            mEntityManager.persist(entity);
+            getEntityManager().persist(entity);
             // Flush is needed to force the PersistenceException in case there's a duplicate
-            mEntityManager.flush();
+            getEntityManager().flush();
         }
         catch (PersistenceException ex)
         {
@@ -91,9 +124,9 @@ public abstract class CommonDaoImpl<T> implements CommonDao<T>
     {
         try
         {
-            T merged = mEntityManager.merge(entity);
+            T merged = getEntityManager().merge(entity);
             // Flush is needed to force the PersistenceException in case there's a duplicate
-            mEntityManager.flush();
+            getEntityManager().flush();
 
             return merged;
         }
@@ -118,7 +151,7 @@ public abstract class CommonDaoImpl<T> implements CommonDao<T>
     {
         final StringBuffer queryString = new StringBuffer("SELECT o FROM ");
         queryString.append(type.getSimpleName()).append(" o ");
-        final TypedQuery<T> query = mEntityManager.createQuery(queryString.toString(), type);
+        final TypedQuery<T> query = getEntityManager().createQuery(queryString.toString(), type);
         DaoUtils.setOffset(query, offset);
         DaoUtils.setLimit(query, limit);
         return query.getResultList();
@@ -128,9 +161,9 @@ public abstract class CommonDaoImpl<T> implements CommonDao<T>
     public Collection<T> getEntitiesByIds(Long... ids)
     {
         MessageFormat messageFormat = new MessageFormat("SELECT o FROM {0} o WHERE o.{1} IN :{2}");
-        String queryString = messageFormat.format(new String[] {type.getSimpleName(), mEntityIdField,
-                ENTITY_COMMON_IDS_FIELD});
-        return mEntityManager.createQuery(queryString, type)
+        String queryString = messageFormat
+            .format(new String[] {type.getSimpleName(), mEntityIdField, ENTITY_COMMON_IDS_FIELD});
+        return getEntityManager().createQuery(queryString, type)
             .setParameter(ENTITY_COMMON_IDS_FIELD, DaoUtils.formatIdsForInClause(ids)).getResultList();
     }
 
@@ -139,31 +172,31 @@ public abstract class CommonDaoImpl<T> implements CommonDao<T>
     {
         final StringBuffer queryString = new StringBuffer("SELECT count(o) FROM ");
         queryString.append(type.getSimpleName()).append(" o ");
-        final TypedQuery<T> query = mEntityManager.createQuery(queryString.toString(), type);
+        final TypedQuery<T> query = getEntityManager().createQuery(queryString.toString(), type);
         return (Long) query.getResultList().get(0);
     }
 
     @Override
     public T getReference(Long id)
     {
-        return mEntityManager.getReference(type, id);
+        return getEntityManager().getReference(type, id);
     }
 
     @Override
     public T getEntityById(Object id) throws AWNoSuchEntityException
     {
-        T entity = mEntityManager.find(type, id);
+        T entity = getEntityManager().find(type, id);
 
         if (entity == null)
         {
             if (id instanceof Long)
             {
-                String errorMsg = mErrorMessageProvider.getNoSuchEntityMessage((Long) id);
+                String errorMsg = mErrorMessageProvider.getNoSuchEntityMessage(id);
                 handleNoSuchEntityException(errorMsg);
             }
         }
 
-        mEntityManager.refresh(entity);
+        getEntityManager().refresh(entity);
 
         return entity;
     }
@@ -172,10 +205,10 @@ public abstract class CommonDaoImpl<T> implements CommonDao<T>
     public T getEntityByNameField(String name) throws AWNoSuchEntityException
     {
         MessageFormat messageFormat = new MessageFormat("SELECT o FROM {0} o WHERE o.{1} = :{2}");
-        String queryString = messageFormat.format(new String[] {type.getSimpleName(), mEntityNameField,
-                ENTITY_COMMON_NAME_FIELD});
+        String queryString = messageFormat
+            .format(new String[] {type.getSimpleName(), mEntityNameField, ENTITY_COMMON_NAME_FIELD});
 
-        List<T> entityResultList = mEntityManager.createQuery(queryString, type)
+        List<T> entityResultList = getEntityManager().createQuery(queryString, type)
             .setParameter(ENTITY_COMMON_NAME_FIELD, name).getResultList();
 
         T entity = DataRetrievalUtils.getEntityFromListResult(entityResultList);
@@ -193,18 +226,18 @@ public abstract class CommonDaoImpl<T> implements CommonDao<T>
     public void deleteEntityByNameField(String name) throws AWNoSuchEntityException
     {
         Object entity = getEntityByNameField(name);
-        mEntityManager.remove(entity);
+        getEntityManager().remove(entity);
     }
 
     @Override
-    public void deleteEntityById(Long id) throws AWNoSuchEntityException
+    public void deleteEntityById(Object id) throws AWNoSuchEntityException
     {
-        T object = this.mEntityManager.getReference(type, id);
+        T object = getEntityManager().getReference(type, id);
         if (object == null)
         {
             throw new AWNoSuchEntityException(mErrorMessageProvider.getNoSuchEntityMessage(id));
         }
-        this.mEntityManager.remove(object);
+        getEntityManager().remove(object);
     }
 
     @Override
@@ -214,7 +247,7 @@ public abstract class CommonDaoImpl<T> implements CommonDao<T>
             "SELECT o FROM {0} o WHERE LOWER(o.{1}) LIKE :like ORDER BY LENGTH(o.{1}) ASC," + " o.{1} ASC");
         String queryString = messageFormat.format(new String[] {type.getSimpleName(), mEntityNameField});
 
-        TypedQuery<T> query = mEntityManager.createQuery(queryString, type).setParameter(LIKE_SQL,
+        TypedQuery<T> query = getEntityManager().createQuery(queryString, type).setParameter(LIKE_SQL,
             DaoUtils.getLikeLowerCase(likeParam));
         DaoUtils.setOffset(query, offset);
         DaoUtils.setLimit(query, limit);
@@ -227,15 +260,15 @@ public abstract class CommonDaoImpl<T> implements CommonDao<T>
         MessageFormat messageFormat = new MessageFormat("SELECT COUNT(o) FROM {0} o WHERE LOWER(o.{1}) LIKE :like");
         String queryString = messageFormat.format(new String[] {type.getSimpleName(), mEntityNameField});
 
-        return mEntityManager.createQuery(queryString, Long.class)
+        return getEntityManager().createQuery(queryString, Long.class)
             .setParameter(LIKE_SQL, DaoUtils.getLikeLowerCase(likeParam)).getResultList().get(0);
     }
 
     @Override
     public void removeEntity(T entity)
     {
-        mEntityManager.remove(entity);
-        mEntityManager.flush();
+        getEntityManager().remove(entity);
+        getEntityManager().flush();
     }
 
     private static void handleNoSuchEntityException(String errorMsg) throws AWNoSuchEntityException

@@ -3,7 +3,7 @@
     <form name="reasonManagementForm" class="form-horizontal">
         <div class="form-group" ng-controller="MngmtReasonSelectionCtrl as reasonCtrl">
             <label for="{{reasonCtrl.selectId}}" class="col-xs-3 control-label">Reason name: </label>
-            <div class="col-xs-7">
+            <div ng-class="{'col-xs-7': reasonMngmtCtrl.isNewReason, 'col-xs-6': !reasonMngmtCtrl.isNewReason}">
                 <aw-search-select2 class="form-control" elem-id="{{reasonCtrl.selectId}}" controller="reasonCtrl"></aw-search-select2>
             </div>
             <div ng-click="reasonMngmtCtrl.startUpdate()" ng-hide="reasonMngmtCtrl.isNewReason">
@@ -14,7 +14,7 @@
         </div>
         <div class="form-group" ng-controller="MngmtReasonSelectionUpdateCtrl as reasonUpdateCtrl" ng-show="reasonMngmtCtrl.isUpdatingReason">
             <label for="{{reasonUpdateCtrl.selectId}}" class="col-xs-3 control-label">Update reason name: </label>
-            <div class="col-xs-7">
+            <div ng-class="{'col-xs-7': reasonMngmtCtrl.isNewReason, 'col-xs-6': !reasonMngmtCtrl.isNewReason}">
                 <aw-select2 elem-id="{{reasonUpdateCtrl.selectId}}" controller="reasonUpdateCtrl"></aw-select2>
             </div>
             <div ng-click="reasonMngmtCtrl.cancelUpdate()">
@@ -37,19 +37,15 @@
             <hr />
         </div>
         <div class="row">
-            <div class="col-xs-6" ng-show="reasonMngmtCtrl.isNewReason">
-                <button type="button" class="btn btn-success btn-sm pull-right" ng-click="reasonMngmtCtrl.submitReason()">
-                Create
+            <div class="text-center">
+                <button type="button" class="btn btn-lg btn-success" ng-click="reasonMngmtCtrl.submitReason()" ng-disabled="!reasonMngmtCtrl.isNewReason">
+                    Create
                 </button>
-            </div>
-            <div class="col-xs-6" ng-hide="reasonMngmtCtrl.isNewReason">
-                <button type="button" class="btn btn-primary btn-sm pull-right" ng-click="reasonMngmtCtrl.updateReason()">
-                Update
+                <button type="button" class="btn btn-lg btn-primary" ng-click="reasonMngmtCtrl.updateReason()" ng-disabled="reasonMngmtCtrl.isNewReason">
+                    Update
                 </button>
-            </div>
-            <div class="col-xs-6">
-                <button type="button" class="btn btn-danger btn-sm" ng-click="reasonMngmtCtrl.clearReason()">
-                Clear
+                <button type="button" class="btn btn-danger btn-lg" ng-click="reasonMngmtCtrl.clearReason()">
+                    Clear
                 </button>
             </div>
         </div>

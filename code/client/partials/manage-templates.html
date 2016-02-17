@@ -9,23 +9,23 @@
 			<form name="templateManagementForm" class="form-horizontal">
 				<div class="row form-group" ng-controller="MngmtTemplateSelectionCtrl as templateCtrl">
 					<label for="{{templateCtrl.selectId}}" class="col-xs-3">Template name: </label>
-					<div class="col-xs-7">
+					<div ng-class="{'col-xs-7': templateMngmtCtrl.isNewTemplate, 'col-xs-6': !templateMngmtCtrl.isNewTemplate}">
 						<aw-search-select2 class="form-control" elem-id="{{templateCtrl.selectId}}" controller="templateCtrl"></aw-search-select2>
 					</div>
 					<div class="col-xs-offset-1" ng-click="templateMngmtCtrl.startUpdate()" ng-hide="templateMngmtCtrl.isNewTemplate">
 						<button type="button" class="btn btn-default btn-sm">
-							<i class="glyphicon glyphicon-edit"></i>
+						<i class="glyphicon glyphicon-edit"></i>
 						</button>
-					</div>					
+					</div>
 				</div>
 				<div class="row form-group" ng-controller="MngmtTemplateSelectionUpdateCtrl as templateUpdateCtrl" ng-show="templateMngmtCtrl.isUpdatingTemplate">
 					<label for="{{templateUpdateCtrl.selectId}}" class="col-xs-3">Update template name: </label>
-					<div class="col-xs-7">
+					<div ng-class="{'col-xs-7': templateMngmtCtrl.isNewTemplate, 'col-xs-6': !templateMngmtCtrl.isNewTemplate}">
 						<aw-select2 elem-id="{{templateUpdateCtrl.selectId}}" controller="templateUpdateCtrl"></aw-select2>
 					</div>
 					<div class="col-xs-offset-1" ng-click="templateMngmtCtrl.cancelUpdate()">
 						<button type="button" class="btn btn-default btn-sm">
-							<i class="glyphicon glyphicon-remove"></i>
+						<i class="glyphicon glyphicon-remove"></i>
 						</button>
 					</div>
 				</div>
@@ -36,32 +36,26 @@
 					</div>
 				</div>
 				<div class="form-group">
-            		<div class="col-xs-12">
-                		<aw-success-display success="templateMngmtCtrl.isBasicInfoSuccess"></aw-success-display>
-            		</div>
-        		</div>
+					<div class="col-xs-12">
+						<aw-success-display success="templateMngmtCtrl.isBasicInfoSuccess"></aw-success-display>
+					</div>
+				</div>
 				<div class="form-group">
-            		<div class="col-xs-12">
-                		<aw-error-display errors="templateMngmtCtrl.basicInfoErrors"></aw-error-display>
-            		</div>
-        		</div>
-				<div class="form-group btn-toolbar col-xs-10" role="toolbar">
-					<div class="pull-right">
-						<div class="btn-group" role="group" style="padding-right: 10px">					
-							<button ng-show="templateMngmtCtrl.isNewTemplate" type="button" class="btn btn-success btn-sm" ng-click="templateMngmtCtrl.submitBasicInfo()">
-								Create
-							</button>
-						</div>
-						<div class="btn-group" role="group" style="padding-right: 10px">
-							<button ng-hide="templateMngmtCtrl.isNewTemplate" type="button" class="btn btn-primary btn-sm" ng-click="templateMngmtCtrl.updateBasicInfo()">
-								Update
-							</button>
-						</div>
-						<div class="btn-group" role="group">
-							<button type="button" class="btn btn-danger btn-sm" ng-click="templateMngmtCtrl.clearTemplate()">
-								Clear
-							</button>
-						</div>
+					<div class="col-xs-12">
+						<aw-error-display errors="templateMngmtCtrl.basicInfoErrors"></aw-error-display>
+					</div>
+				</div>
+				<div class="row">
+					<div class="text-center">
+						<button type="button" class="btn btn-lg btn-success" ng-click="templateMngmtCtrl.submitBasicInfo()" ng-disabled="!templateMngmtCtrl.isNewTemplate">
+						Create
+						</button>
+						<button type="button" class="btn btn-lg btn-primary" ng-click="templateMngmtCtrl.updateBasicInfo()" ng-disabled="templateMngmtCtrl.isNewTemplate">
+						Update
+						</button>
+						<button type="button" class="btn btn-danger btn-lg" ng-click="templateMngmtCtrl.clearTemplate()">
+						Clear
+						</button>
 					</div>
 				</div>
 			</form>
@@ -90,68 +84,67 @@
 								<aw-search-select2 elem-id="{{templateFactorsCtrl.selectId}}" controller="templateFactorsCtrl"></aw-search-select2>
 							</div>
 						</div>
-						<div class="btn-toolbar col-xs-10" role="toolbar">
-							<div class="pull-right">
-								<div class="btn-group" role="group" style="padding-right: 10px">					
-									<button type="button" class="btn btn-success btn-sm pull-right" ng-click="templateMngmtCtrl.addParameterAndFactors()">
-										Add Parameter
-									</button>
-								</div>					
+						<div class="row">
+							<div class="text-center">
+								<button type="button" class="btn btn-success btn-lg" ng-click="templateMngmtCtrl.addParameterAndFactors()">
+									Add Parameter
+								</button>
 							</div>
 						</div>
-						<div class="row form-group">
-            				<div class="col-xs-12" style="padding-left: 30px; padding-right: 30px; padding-top: 20px">
-            					<aw-error-display errors="templateMngmtCtrl.editParameterErrors"></aw-error-display>
-            					<aw-success-display success="templateMngmtCtrl.editParameterSuccess"></aw-success-display>
-            				</div>
-        				</div>
 					</div>
-					<hr/>
-				</form>
-				<div>
-					<h4>View / Edit parameters</h4>
-					<hr/>
-					<div ng-show="templateMngmtCtrl.template.templateParameters.length === 0"><span class="glyphicon glyphicon-info-sign pull-left" style="padding-right: 4px"></span>No parameters have been added to this template yet. Add them above.</div>
-					<table class="table table-striped" ng-show="templateMngmtCtrl.template.templateParameters.length > 0">
-                    	<thead>
-                        	<tr>
-                        		<th class="text-center"><strong>Parameter name</strong></th>
-                        		<th class="text-center"><strong>Factors</strong></th>
-                        		<th class="text-center"><strong>Delete</strong></th>
-                        	</tr>
-                    	</thead>
-                    	<tbody>
-                        	<tr ng-repeat="parameter in templateMngmtCtrl.template.templateParameters | orderAbc:'parameterName'">
-                           		<td class="text-center">{{parameter.parameterName}}</td>
-                            	<td class="text-center">
-                            		<p ng-repeat="factor in parameter.parameterFactors | orderAbc:'factorName'">
-                            			{{factor.factorName}}	                       		
-                            		</p>
-                            	</td>
-                            	<td class="text-center">
-                            		<div ng-hide="templateMngmtCtrl.isDeletingParameter(parameter)">
-                            			<button type="button" class="btn btn-default btn-sm" ng-disabled="templateMngmtCtrl.isTemplateLocked">
-											<i class="glyphicon glyphicon-remove" ng-click="templateMngmtCtrl.startDeleteParameter(parameter)"></i>
+					<div class="row form-group">
+						<div class="col-xs-12" style="padding-left: 30px; padding-right: 30px; padding-top: 20px">
+							<aw-error-display errors="templateMngmtCtrl.editParameterErrors"></aw-error-display>
+							<aw-success-display success="templateMngmtCtrl.editParameterSuccess"></aw-success-display>
+						</div>
+					</div>
+			</div>
+			<hr/>
+			</form>
+			<div>
+				<h4>View / Edit parameters</h4>
+				<hr/>
+				<div ng-show="templateMngmtCtrl.template.templateParameters.length === 0"><span class="glyphicon glyphicon-info-sign pull-left" style="padding-right: 4px"></span>No parameters have been added to this template yet. Add them above.</div>
+				<table class="table table-striped" ng-show="templateMngmtCtrl.template.templateParameters.length > 0">
+					<thead>
+						<tr>
+							<th class="text-center"><strong>Parameter name</strong></th>
+							<th class="text-center"><strong>Factors</strong></th>
+							<th class="text-center"><strong>Delete</strong></th>
+						</tr>
+					</thead>
+					<tbody>
+						<tr ng-repeat="parameter in templateMngmtCtrl.template.templateParameters | orderAbc:'parameterName'">
+							<td class="text-center">{{parameter.parameterName}}</td>
+							<td class="text-center">
+								<p ng-repeat="factor in parameter.parameterFactors | orderAbc:'factorName'">
+									{{factor.factorName}}	                       		
+								</p>
+							</td>
+							<td class="text-center">
+								<div ng-hide="templateMngmtCtrl.isDeletingParameter(parameter)">
+									<button type="button" class="btn btn-default btn-sm" ng-disabled="templateMngmtCtrl.isTemplateLocked">
+									<i class="glyphicon glyphicon-remove" ng-click="templateMngmtCtrl.startDeleteParameter(parameter)"></i>
+									</button>
+								</div>
+								<div ng-show="templateMngmtCtrl.isDeletingParameter(parameter)">
+									<div ng-click="templateMngmtCtrl.finishDeleteParameter()" style="padding-bottom: 5px">
+										<button type="button" class="btn btn-success btn-sm" ng-disabled="templateMngmtCtrl.isTemplateLocked">
+										<i class="glyphicon glyphicon-ok"></i>
 										</button>
-                            		</div>
-									<div ng-show="templateMngmtCtrl.isDeletingParameter(parameter)">
-										<div ng-click="templateMngmtCtrl.finishDeleteParameter()" style="padding-bottom: 5px">
-											<button type="button" class="btn btn-success btn-sm" ng-disabled="templateMngmtCtrl.isTemplateLocked">
-												<i class="glyphicon glyphicon-ok"></i>
-											</button>
-										</div>
-										<div ng-click="templateMngmtCtrl.cancelDeleteParameter()">
-											<button type="button" class="btn btn-danger btn-sm" ng-disabled="templateMngmtCtrl.isTemplateLocked">
-												<i class="glyphicon glyphicon-remove"></i>
-											</button>
-										</div>
-                            		</div>
-                            	</td>
-                        	</tr>
-                    	</tbody>                       
-                	</table>				
-				</div>
-			</div>			
-		</accordion-group>
-	</accordion>
+									</div>
+									<div ng-click="templateMngmtCtrl.cancelDeleteParameter()">
+										<button type="button" class="btn btn-danger btn-sm" ng-disabled="templateMngmtCtrl.isTemplateLocked">
+										<i class="glyphicon glyphicon-remove"></i>
+										</button>
+									</div>
+								</div>
+							</td>
+						</tr>
+					</tbody>
+				</table>
+			</div>
+</div>
+</accordion-group>
+</accordion>
 </div>

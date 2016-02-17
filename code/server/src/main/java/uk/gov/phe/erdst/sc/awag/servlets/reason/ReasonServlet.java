@@ -19,16 +19,16 @@ import uk.gov.phe.erdst.sc.awag.datamodel.response.ResponsePayload;
 import uk.gov.phe.erdst.sc.awag.exceptions.AWInvalidParameterException;
 import uk.gov.phe.erdst.sc.awag.exceptions.AWInvalidResourceIdException;
 import uk.gov.phe.erdst.sc.awag.exceptions.AWNoSuchEntityException;
-import uk.gov.phe.erdst.sc.awag.service.page.ResponsePager;
 import uk.gov.phe.erdst.sc.awag.service.validation.utils.ValidatorUtils;
 import uk.gov.phe.erdst.sc.awag.servlets.utils.RequestConverter;
 import uk.gov.phe.erdst.sc.awag.servlets.utils.ResponseFormatter;
 import uk.gov.phe.erdst.sc.awag.servlets.utils.ServletConstants;
 import uk.gov.phe.erdst.sc.awag.servlets.utils.ServletSecurityUtils;
 import uk.gov.phe.erdst.sc.awag.servlets.utils.ServletUtils;
+
 @SuppressWarnings("serial")
 @WebServlet(name = "reason", urlPatterns = {"/reason/*"})
-@ServletSecurity(@HttpConstraint(rolesAllowed = {ServletSecurityUtils.RolesAllowed.AW_ADMIN}))
+@ServletSecurity(@HttpConstraint(rolesAllowed = {ServletSecurityUtils.RolesAllowed.AW_ASSESSMENT_USER}))
 public class ReasonServlet extends HttpServlet
 {
     @Inject
@@ -44,15 +44,14 @@ public class ReasonServlet extends HttpServlet
     private Validator mRequestValidator;
 
     @Override
-    protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException,
-        IOException
+    protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException
     {
         String reasonJson = request.getParameter("reason");
         AssessmentReasonClientData clientData = (AssessmentReasonClientData) mRequestConverter.convert(reasonJson,
             AssessmentReasonClientData.class);
         ResponsePayload responsePayload = new ResponsePayload();
 
-        mAssessReasonController.storeReason(clientData, responsePayload);
+        mAssessReasonController.storeReason(clientData, responsePayload, ServletSecurityUtils.getLoggedUser(request));
 
         if (responsePayload.getErrors().size() > 0)
         {
@@ -72,7 +71,7 @@ public class ReasonServlet extends HttpServlet
         AssessmentReasonClientData clientData = (AssessmentReasonClientData) mRequestConverter.convert(reasonJson,
             AssessmentReasonClientData.class);
         ResponsePayload responsePayload = new ResponsePayload();
-        Long reasonId = ServletUtils.getResourceId(request);
+        Long reasonId = ServletUtils.getNumberResourceId(request);
 
         if (!ValidatorUtils.isResourceValid(reasonId, HttpMethod.PUT))
         {
@@ -80,7 +79,8 @@ public class ReasonServlet extends HttpServlet
             return;
         }
 
-        mAssessReasonController.updateReason(reasonId, clientData, responsePayload);
+        mAssessReasonController.updateReason(reasonId, clientData, responsePayload,
+            ServletSecurityUtils.getLoggedUser(request));
 
         if (responsePayload.getErrors().size() > 0)
         {

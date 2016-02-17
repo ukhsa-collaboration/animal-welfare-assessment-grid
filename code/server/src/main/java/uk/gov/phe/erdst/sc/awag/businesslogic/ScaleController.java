@@ -9,13 +9,13 @@ import uk.gov.phe.erdst.sc.awag.datamodel.response.ResponsePayload;
 import uk.gov.phe.erdst.sc.awag.dto.EntitySelectDto;
 import uk.gov.phe.erdst.sc.awag.dto.ScaleDto;
 import uk.gov.phe.erdst.sc.awag.exceptions.AWNoSuchEntityException;
+import uk.gov.phe.erdst.sc.awag.service.logging.LoggedUser;
 
 public interface ScaleController
 {
+    void updateScale(Long scaleId, ScaleClientData clientData, ResponsePayload responsePayload, LoggedUser loggedUser);
 
-    void updateScale(Long scaleId, ScaleClientData clientData, ResponsePayload responsePayload);
-
-    void storeScale(ScaleClientData clientData, ResponsePayload responsePayload);
+    void storeScale(ScaleClientData clientData, ResponsePayload responsePayload, LoggedUser loggedUser);
 
     Collection<Scale>
         getScales(Integer offset, Integer limit, ResponsePayload responsePayload, boolean includeMetadata);

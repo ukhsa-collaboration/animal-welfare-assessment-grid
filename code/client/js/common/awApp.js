@@ -1,12 +1,12 @@
 'use strict';
 /* App Module */
-var awApp = angular.module('awApp', ['ngRoute', 'indexControllers', 'manageTemplateControllers', 'manageFactorControllers', 'manageParameterControllers',
+var awApp = angular.module('awApp', ['ngRoute', 'indexControllers', 'manageUsersControllers','manageTemplateControllers', 'manageFactorControllers', 'manageParameterControllers',
   'assessmentFormControllers', 'existingAssessmentFormControllers', 'graphsControllers', 'manageHousingControllers',
-   'manageReasonControllers', 'manageScaleControllers', 'manageStudyControllers', 'manageAnimalControllers', 'aboutControllers',
+   'manageReasonControllers', 'manageScaleControllers', 'manageStudyControllers', 'manageAnimalControllers', 'aboutControllers', 'activityLogsControllers',
     'manageSpeciesControllers', 'manageSourceControllers', 'manageStudyControllers', 'manageStudyGroupControllers', 'manageAccordionControllers',
-     'dataServices', 'entityServices', 'parameterServices', 'factorServices', 'formServices', 'animalServices', 'reasonServices',
+     'dataServices', 'entityServices', 'userAuthServices', 'parameterServices', 'factorServices', 'formServices', 'animalServices', 'reasonServices',
       'housingServices', 'userServices', 'assessmentServices', 'sexServices', 'speciesServices', 'sourceServices',
-       'templateServices', 'studyServices', 'studyGroupServices', 'ui.bootstrap', 'graphDrawServices', 'formatServices', 'ngTable',
+       'templateServices', 'studyServices', 'studyGroupServices', 'activityLogServices','ui.bootstrap', 'graphDrawServices', 'formatServices', 'ngTable',
         'tableServices', 'graphUtilsModule']);
 awApp.config(['$routeProvider',
     function($routeProvider) {
@@ -42,6 +42,10 @@ awApp.config(['$routeProvider',
             templateUrl: 'partials/manage-parameters.html',
         }).when('/manage-templates', {
             templateUrl: 'partials/manage-templates.html',
+        }).when('/activity-logs', {
+            templateUrl: 'partials/activity-logs.html',
+        }).when('/manage-users', {
+            templateUrl: 'partials/manage-users.html',
         }).otherwise({
             redirectTo: '/main'
         });
