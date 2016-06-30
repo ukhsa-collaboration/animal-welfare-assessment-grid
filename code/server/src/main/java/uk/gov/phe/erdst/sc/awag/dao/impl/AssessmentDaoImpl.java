@@ -1,8 +1,10 @@
 package uk.gov.phe.erdst.sc.awag.dao.impl;
 
+import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
+import java.util.Set;
 
 import javax.ejb.Stateless;
 import javax.persistence.EntityManager;
@@ -12,8 +14,12 @@ import javax.persistence.Query;
 import javax.persistence.TypedQuery;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
+import javax.persistence.criteria.Expression;
 import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
+import javax.persistence.criteria.Subquery;
+import javax.persistence.metamodel.EntityType;
+import javax.persistence.metamodel.Metamodel;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -26,6 +32,7 @@ import uk.gov.phe.erdst.sc.awag.datamodel.Assessment;
 import uk.gov.phe.erdst.sc.awag.datamodel.AssessmentReason;
 import uk.gov.phe.erdst.sc.awag.datamodel.AssessmentScore;
 import uk.gov.phe.erdst.sc.awag.datamodel.Study;
+import uk.gov.phe.erdst.sc.awag.datamodel.StudyGroup;
 import uk.gov.phe.erdst.sc.awag.datamodel.User;
 import uk.gov.phe.erdst.sc.awag.exceptions.AWNoSuchEntityException;
 import uk.gov.phe.erdst.sc.awag.utils.Constants;
@@ -35,6 +42,7 @@ import uk.gov.phe.erdst.sc.awag.utils.DataRetrievalUtils;
 public class AssessmentDaoImpl implements AssessmentDao
 {
     private static final Logger LOGGER = LogManager.getLogger(AssessmentDaoImpl.class.getName());
+    private static final String ENTITY_COMMON_IDS_FIELD = "ids";
 
     @PersistenceContext(unitName = Constants.PERSISTENCE_CONTEXT_DEFAULT_UNIT_NAME)
     private EntityManager mEntityManager;
@@ -107,7 +115,7 @@ public class AssessmentDaoImpl implements AssessmentDao
     {
         TypedQuery<Assessment> query = mEntityManager.createNamedQuery(Assessment.Q_FIND_PREV_ANIMAL_ASSESSMENT,
             Assessment.class);
-        query.setParameter("animalId", animalId);
+        query.setParameter(Assessment.Q_ANIMAL_ID_PARAM_NAME, animalId);
         query.setMaxResults(1);
 
         List<Assessment> result = query.getResultList();
@@ -137,6 +145,23 @@ public class AssessmentDaoImpl implements AssessmentDao
     }
 
     @Override
+    public Long getAssessmentsByCompleteness(boolean isComplete)
+    {
+        return getAssessmentsCount(null, null, null, null, null, null, isComplete);
+    }
+
+    @Override
+    public Collection<Assessment> getAssessmentsByIds(Long... ids)
+    {
+        // CS:OFF: LineLength
+        MessageFormat messageFormat = new MessageFormat("SELECT o FROM {0} o WHERE o.{1} IN :{2} ORDER BY o.mDate DESC");
+        // CS:ON
+        String queryString = messageFormat.format(new String[] {"Assessment", "mId", ENTITY_COMMON_IDS_FIELD});
+        return mEntityManager.createQuery(queryString, Assessment.class)
+            .setParameter(ENTITY_COMMON_IDS_FIELD, DaoUtils.formatIdsForInClause(ids)).getResultList();
+    }
+
+    @Override
     public Long getCountAnimalAssessmentsBetween(String dateFrom, String dateTo, Long animalId)
     {
         Query getCountQuery = mEntityManager.createNamedQuery(Assessment.Q_COUNT_ANIMAL_ASSESSMENT_BETWEEN, Long.class)
@@ -161,20 +186,74 @@ public class AssessmentDaoImpl implements AssessmentDao
         return query.getResultList();
     }
 
-    // TODO: introduce metamodel to avoid using hardcoded fields
+    @Override
+    public Collection<Assessment> getAssessments(Long studyId, Long studyGroupId, Long animalId, String dateFrom,
+        String dateTo, Long userId, Long reasonId)
+    {
+        if (studyGroupId == null || (studyId != null && animalId != null))
+        {
+            return getAssessments(animalId, dateFrom, dateTo, userId, reasonId, studyId, Boolean.TRUE, null, null);
+        }
+
+        Metamodel metamodel = mEntityManager.getMetamodel();
+        EntityType<StudyGroup> studyGroupClass = metamodel.entity(StudyGroup.class);
+        EntityType<Assessment> assessmentClass = metamodel.entity(Assessment.class);
+
+        CriteriaBuilder builder = mEntityManager.getCriteriaBuilder();
+
+        CriteriaQuery<Assessment> criteriaQuery = builder.createQuery(Assessment.class);
+        Root<Assessment> assessment = criteriaQuery.from(Assessment.class);
+
+        Subquery<StudyGroup> sq = criteriaQuery.subquery(StudyGroup.class);
+        Root<StudyGroup> group = sq.from(StudyGroup.class);
+        sq.select(group);
+
+        Expression<Set<Animal>> groupAnimals = group.get(studyGroupClass.getDeclaredSet(
+            StudyGroup.F_ANIMALS_FIELD_NAME, Animal.class));
+
+        Predicate groupRestriction = builder.equal(group.get(studyGroupClass.getId(Long.class)), studyGroupId);
+
+        Predicate animalsIsMemberRestriction = builder.isMember(
+            assessment.get(assessmentClass.getSingularAttribute(Assessment.F_ANIMAL_FIELD_NAME, Animal.class)),
+            groupAnimals);
+
+        // Study + study group + animal + [restriction]* should be handled by if clause at the top
+        final Long animalPredicate = null;
+
+        Collection<Predicate> restrictions = getSelectedPredicatesForAssessment(animalPredicate, dateFrom, dateTo,
+            userId, reasonId, studyId, Boolean.TRUE, builder, assessment, assessmentClass);
+
+        restrictions.add(animalsIsMemberRestriction);
+        restrictions.add(groupRestriction);
+
+        criteriaQuery.where(builder.and(restrictions.toArray(new Predicate[] {})));
+
+        TypedQuery<Assessment> query = mEntityManager.createQuery(criteriaQuery);
+        Collection<Assessment> assessments = query.getResultList();
+
+        return assessments;
+    }
+
     @Override
     public Assessment getPreviousAssessmentByDate(Long animalId, String date, Long currentAssessmentId)
     {
+        Metamodel metamodel = mEntityManager.getMetamodel();
+        EntityType<Assessment> assessmentClass = metamodel.entity(Assessment.class);
+
         CriteriaBuilder builder = mEntityManager.getCriteriaBuilder();
         CriteriaQuery<Assessment> criteria = builder.createQuery(Assessment.class);
         Root<Assessment> root = criteria.from(Assessment.class);
 
-        Predicate animalRestriction = builder.equal(root.get("mAnimal"), getAnimal(animalId));
-        Predicate dateRestriction = builder.lessThanOrEqualTo(root.<String> get("mDate"), date);
-        Predicate idRestriction = builder.not(builder.equal(root.<Long> get("mId"), currentAssessmentId));
+        Predicate animalRestriction = builder.equal(root.get(Assessment.F_ANIMAL_FIELD_NAME), getAnimal(animalId));
+
+        Predicate dateRestriction = builder.lessThanOrEqualTo(
+            root.get(assessmentClass.getSingularAttribute(Assessment.F_DATE_FIELD_NAME, String.class)), date);
+
+        Predicate idRestriction = builder.not(builder.equal(root.get(assessmentClass.getId(Long.class)),
+            currentAssessmentId));
 
         criteria.where(builder.and(animalRestriction, dateRestriction, idRestriction)).orderBy(
-            builder.desc(root.get("mId")));
+            builder.desc(root.get(assessmentClass.getId(Long.class))));
 
         TypedQuery<Assessment> query = mEntityManager.createQuery(criteria);
         query.setMaxResults(1);
@@ -183,20 +262,23 @@ public class AssessmentDaoImpl implements AssessmentDao
         return DataRetrievalUtils.getEntityFromListResult(result);
     }
 
-    // TODO: introduce metamodel to avoid using hardcoded fields
     @Override
     public Collection<Assessment> getAssessments(Long animalId, String dateFrom, String dateTo, Long userId,
         Long reasonId, Long studyId, Boolean isComplete, Integer offset, Integer limit)
     {
+        Metamodel metamodel = mEntityManager.getMetamodel();
+        EntityType<Assessment> assessmentClass = metamodel.entity(Assessment.class);
+
         CriteriaBuilder builder = mEntityManager.getCriteriaBuilder();
         CriteriaQuery<Assessment> criteria = builder.createQuery(Assessment.class);
         Root<Assessment> root = criteria.from(Assessment.class);
         Collection<Predicate> restrictions = new ArrayList<>();
 
         setSearchCriteria(animalId, dateFrom, dateTo, userId, reasonId, studyId, isComplete, builder, criteria, root,
-            restrictions);
+            restrictions, assessmentClass);
 
-        criteria.orderBy(builder.asc(root.get("mId")));
+        criteria.orderBy(builder.desc(root.get(assessmentClass.getSingularAttribute(Assessment.F_DATE_FIELD_NAME,
+            String.class))));
 
         TypedQuery<Assessment> query = mEntityManager.createQuery(criteria);
         DaoUtils.setOffset(query, offset);
@@ -205,11 +287,13 @@ public class AssessmentDaoImpl implements AssessmentDao
         return query.getResultList();
     }
 
-    // TODO: introduce metamodel to avoid using hardcoded fields
     @Override
     public Long getAssessmentsCount(Long animalId, String dateFrom, String dateTo, Long userId, Long reasonId,
         Long studyId, Boolean isComplete)
     {
+        Metamodel metamodel = mEntityManager.getMetamodel();
+        EntityType<Assessment> assessmentClass = metamodel.entity(Assessment.class);
+
         CriteriaBuilder builder = mEntityManager.getCriteriaBuilder();
         CriteriaQuery<Long> criteria = builder.createQuery(Long.class);
         Root<Assessment> root = criteria.from(Assessment.class);
@@ -218,7 +302,7 @@ public class AssessmentDaoImpl implements AssessmentDao
         criteria.select(builder.count(root));
 
         setSearchCriteria(animalId, dateFrom, dateTo, userId, reasonId, studyId, isComplete, builder, criteria, root,
-            restrictions);
+            restrictions, assessmentClass);
 
         TypedQuery<Long> query = mEntityManager.createQuery(criteria);
 
@@ -229,48 +313,66 @@ public class AssessmentDaoImpl implements AssessmentDao
 
     private void setSearchCriteria(Long animalId, String dateFrom, String dateTo, Long userId, Long reasonId,
         Long studyId, Boolean isComplete, CriteriaBuilder builder, CriteriaQuery<? extends Object> criteria,
-        Root<Assessment> root, Collection<Predicate> restrictions)
+        Root<Assessment> root, Collection<Predicate> restrictions, EntityType<Assessment> assessmentClass)
     {
+        Collection<Predicate> selectedPredicates = getSelectedPredicatesForAssessment(animalId, dateFrom, dateTo,
+            userId, reasonId, studyId, isComplete, builder, root, assessmentClass);
+
+        restrictions.addAll(selectedPredicates);
+
+        criteria.where(builder.and(restrictions.toArray(new Predicate[] {})));
+    }
+
+    private Collection<Predicate> getSelectedPredicatesForAssessment(Long animalId, String dateFrom, String dateTo,
+        Long userId, Long reasonId, Long studyId, Boolean isComplete, CriteriaBuilder builder, Root<Assessment> root,
+        EntityType<Assessment> assessmentClass)
+    {
+        Collection<Predicate> predicates = new ArrayList<>();
+
         if (animalId != null)
         {
-            restrictions.add(builder.equal(root.get("mAnimal"), getAnimal(animalId)));
+            predicates.add(builder.equal(root.get(Assessment.F_ANIMAL_FIELD_NAME), getAnimal(animalId)));
         }
 
         if (userId != null)
         {
-            restrictions.add(builder.equal(root.get("mPerformedBy"), getUser(userId)));
+            predicates.add(builder.equal(root.get(Assessment.F_PERFORMED_BY_FIELD_NAME), getUser(userId)));
         }
 
         if (reasonId != null)
         {
-            restrictions.add(builder.equal(root.get("mReason"), getReason(reasonId)));
+            predicates.add(builder.equal(root.get(Assessment.F_REASON_FIELD_NAME), getReason(reasonId)));
         }
 
         if (studyId != null)
         {
-            restrictions.add(builder.equal(root.get("mStudy"), getStudy(studyId)));
+            predicates.add(builder.equal(root.get(Assessment.F_STUDY_FIELD_NAME), getStudy(studyId)));
         }
 
         if (isComplete != null)
         {
-            restrictions.add(builder.equal(root.get("mIsComplete"), isComplete));
+            predicates.add(builder.equal(root.get(Assessment.F_IS_COMPLETE_FIELD_NAME), isComplete));
         }
 
         if (dateFrom != null && dateTo != null)
         {
-            restrictions.add(builder.between(root.<String> get("mDate"), dateFrom, dateTo));
+            predicates.add(builder.between(
+                root.get(assessmentClass.getSingularAttribute(Assessment.F_DATE_FIELD_NAME, String.class)), dateFrom,
+                dateTo));
         }
 
         if (dateFrom != null && dateTo == null)
         {
-            restrictions.add(builder.greaterThanOrEqualTo(root.<String> get("mDate"), dateFrom));
+            predicates.add(builder.greaterThanOrEqualTo(
+                root.get(assessmentClass.getSingularAttribute(Assessment.F_DATE_FIELD_NAME, String.class)), dateFrom));
         }
         if (dateFrom == null && dateTo != null)
         {
-            restrictions.add(builder.lessThanOrEqualTo(root.<String> get("mDate"), dateTo));
+            predicates.add(builder.lessThanOrEqualTo(
+                root.get(assessmentClass.getSingularAttribute(Assessment.F_DATE_FIELD_NAME, String.class)), dateTo));
         }
 
-        criteria.where(builder.and(restrictions.toArray(new Predicate[] {})));
+        return predicates;
     }
 
     private static Animal getAnimal(Long id)
@@ -310,13 +412,13 @@ public class AssessmentDaoImpl implements AssessmentDao
     public long getCountAnimalAssessments(Long animalId)
     {
         return mEntityManager.createNamedQuery(Assessment.Q_COUNT_ANIMAL_ASSESSMENTS, Long.class)
-            .setParameter("animalId", animalId).getResultList().get(0);
+            .setParameter(Assessment.Q_ANIMAL_ID_PARAM_NAME, animalId).getResultList().get(0);
     }
 
     @Override
     public Long getCountAssessmentsByTemplateId(Long templateId)
     {
         return mEntityManager.createNamedQuery(Assessment.Q_COUNT_TEMPLATE_ASSESSMENTS, Long.class)
-            .setParameter("templateId", templateId).getResultList().get(0);
+            .setParameter(Assessment.Q_TEMPLATE_ID_PARAM_NAME, templateId).getResultList().get(0);
     }
 }

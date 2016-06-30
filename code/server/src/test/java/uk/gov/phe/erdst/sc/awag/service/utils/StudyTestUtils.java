@@ -24,12 +24,21 @@ public final class StudyTestUtils
 
     public static Study getStudyWithStudyGroups()
     {
+        return getStudyWithStudyGroups(TEST_STUDY_GROUP_IN_STUDY, "");
+    }
+
+    public static Study getStudyWithStudyGroups(Long groupId, String groupNumber)
+    {
         Study study = new Study();
         setProperties(study);
-        StudyGroup studyGroup = new StudyGroup(TEST_STUDY_GROUP_IN_STUDY);
+
+        StudyGroup studyGroup = new StudyGroup(groupId);
+        studyGroup.setStudyGroupNumber(groupNumber);
+
         Set<StudyGroup> studyGroups = new HashSet<StudyGroup>(1);
         studyGroups.add(studyGroup);
         study.setStudyGroups(studyGroups);
+
         return study;
     }
 

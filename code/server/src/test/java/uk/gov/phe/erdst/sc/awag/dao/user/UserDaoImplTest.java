@@ -19,6 +19,8 @@ import uk.gov.phe.erdst.sc.awag.utils.GlassfishTestsHelper;
 @Test(groups = {TestConstants.TESTNG_CONTAINER_TESTS_GROUP})
 public class UserDaoImplTest
 {
+    public static final Long USER_1_ID = 10000L;
+    public static final Long USER_2_ID = 10001L;
     private static final String INITIAL_USER_1_NAME = "User 1";
     private static final String TEST_USER_1_NAME = "Test User 1";
     private static final String TEST_NON_EXISTENT_USER_NAME = "Non existent user";
@@ -31,7 +33,6 @@ public class UserDaoImplTest
     @BeforeClass
     public static void setUpClass()
     {
-        // GlassfishTestsHelper.eclipsePropertiesTest();
         GlassfishTestsHelper.preTestSetup();
     }
 

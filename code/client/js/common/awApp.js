@@ -1,7 +1,7 @@
 'use strict';
 /* App Module */
 var awApp = angular.module('awApp', ['ngRoute', 'indexControllers', 'manageUsersControllers','manageTemplateControllers', 'manageFactorControllers', 'manageParameterControllers',
-  'assessmentFormControllers', 'existingAssessmentFormControllers', 'graphsControllers', 'manageHousingControllers',
+  'assessmentFormControllers', 'existingAssessmentFormControllers', 'graphsControllers', 'exportAssessmentsControllers','manageHousingControllers',
    'manageReasonControllers', 'manageScaleControllers', 'manageStudyControllers', 'manageAnimalControllers', 'aboutControllers', 'activityLogsControllers',
     'manageSpeciesControllers', 'manageSourceControllers', 'manageStudyControllers', 'manageStudyGroupControllers', 'manageAccordionControllers',
      'dataServices', 'entityServices', 'userAuthServices', 'parameterServices', 'factorServices', 'formServices', 'animalServices', 'reasonServices',
@@ -20,6 +20,8 @@ awApp.config(['$routeProvider',
             templateUrl: 'partials/existing-assessment.html',
         }).when('/graphs', {
             templateUrl: 'partials/graphs.html',
+        }).when('/export-assessments', {
+            templateUrl: 'partials/export-assessments.html',
         }).when('/manage-animals', {
             templateUrl: 'partials/manage-animals.html',
         }).when('/manage-study-study-groups', {

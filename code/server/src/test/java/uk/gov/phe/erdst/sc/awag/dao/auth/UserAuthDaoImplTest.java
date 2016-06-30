@@ -23,7 +23,6 @@ public class UserAuthDaoImplTest
     @BeforeClass
     public static void setUpClass()
     {
-        // GlassfishTestsHelper.eclipsePropertiesTest();
         GlassfishTestsHelper.preTestSetup();
     }
 

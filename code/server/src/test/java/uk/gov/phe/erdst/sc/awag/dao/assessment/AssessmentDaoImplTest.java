@@ -1,7 +1,6 @@
 package uk.gov.phe.erdst.sc.awag.dao.assessment;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
@@ -10,6 +9,7 @@ import java.util.Map;
 
 import org.testng.Assert;
 import org.testng.annotations.AfterClass;
+import org.testng.annotations.AfterMethod;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
@@ -26,6 +26,7 @@ import uk.gov.phe.erdst.sc.awag.exceptions.AWAssessmentCreationException;
 import uk.gov.phe.erdst.sc.awag.exceptions.AWNoSuchEntityException;
 import uk.gov.phe.erdst.sc.awag.shared.test.AssessmentProvider;
 import uk.gov.phe.erdst.sc.awag.shared.test.TestConstants;
+import uk.gov.phe.erdst.sc.awag.utils.AssessmentBasedTestsUtils;
 import uk.gov.phe.erdst.sc.awag.utils.GlassfishTestsHelper;
 
 @Test(groups = {TestConstants.TESTNG_CONTAINER_TESTS_GROUP})
@@ -44,7 +45,6 @@ public class AssessmentDaoImplTest
     @BeforeClass
     public static void setUpClass()
     {
-        GlassfishTestsHelper.eclipsePropertiesTest();
         GlassfishTestsHelper.preTestSetup();
     }
 
@@ -60,19 +60,25 @@ public class AssessmentDaoImplTest
             "AssessmentTemplateDaoImpl", AssessmentTemplateDao.class);
     }
 
+    @AfterMethod
+    public void tearDownMethod()
+    {
+        AssessmentBasedTestsUtils.deleteAllAssessments(mAssessmentDao);
+    }
+
     @AfterClass
     public static void tearDownClass()
     {
         GlassfishTestsHelper.onTestFinished();
     }
 
-    private void deleteAssessments(Collection<Assessment> assessments)
-    {
-        for (Assessment a : assessments)
-        {
-            mAssessmentDao.deleteAssessment(a);
-        }
-    }
+    // private void deleteAssessments(Collection<Assessment> assessments)
+    // {
+    // for (Assessment a : assessments)
+    // {
+    // mAssessmentDao.deleteAssessment(a);
+    // }
+    // }
 
     @Test
     public void testStoreAssessment() throws Exception
@@ -82,11 +88,6 @@ public class AssessmentDaoImplTest
 
         Collection<Assessment> assessments = mAssessmentDao.getAssessments(null, null);
         Assert.assertEquals(assessments.size(), EXPECTED_NO_OF_ASSESSMENTS_IN_CREATION_TESTS);
-
-        deleteAssessments(assessments);
-
-        assessments = mAssessmentDao.getAssessments(null, null);
-        Assert.assertEquals(assessments.size(), 0);
     }
 
     @Test
@@ -104,17 +105,17 @@ public class AssessmentDaoImplTest
         mAssessmentDao.update(assessment);
 
         Assert.assertNotEquals(initialDate, assessment.getDate());
-        deleteAssessments(Arrays.asList(assessment));
     }
 
     @Test
     public void testDeleteAssessment() throws Exception
     {
+        Assessment assessment = createDefaultAssessment();
+        mAssessmentDao.store(assessment);
+
+        mAssessmentDao.deleteAssessment(mAssessmentDao.getAssessment(assessment.getId()));
+
         Collection<Assessment> assessments = mAssessmentDao.getAssessments(null, null);
-
-        deleteAssessments(assessments);
-
-        assessments = mAssessmentDao.getAssessments(null, null);
         Assert.assertEquals(assessments.size(), 0);
     }
 
@@ -145,8 +146,6 @@ public class AssessmentDaoImplTest
 
         Assert.assertNotNull(prevAssessment);
         Assert.assertEquals(prevAssessment.getId(), expectedId);
-
-        deleteAssessments(assessments);
     }
 
     @Test
@@ -187,8 +186,6 @@ public class AssessmentDaoImplTest
 
         Assert.assertEquals(mAssessmentDao.getPreviousAssessmentByDate(animalId, dateC, ids.get(dateC)).getId(),
             expectedId);
-
-        deleteAssessments(mAssessmentDao.getAssessments(null, null));
     }
 
     @Test
@@ -208,8 +205,6 @@ public class AssessmentDaoImplTest
         result = mAssessmentDao.getAssessments(null, null, null, null, null, null, null, null, null);
 
         Assert.assertEquals(result.size(), expectedResults);
-
-        deleteAssessments(result);
     }
 
     @Test
@@ -230,8 +225,6 @@ public class AssessmentDaoImplTest
         result = mAssessmentDao.getAssessments(id, null, null, null, null, null, null, null, null);
 
         Assert.assertEquals(result.size(), expectedResults);
-
-        deleteAssessments(result);
     }
 
     @Test
@@ -273,11 +266,11 @@ public class AssessmentDaoImplTest
         assessment.setDate(dateTo);
         mAssessmentDao.store(assessment);
 
+        // CS:OFF: MagicNumber
         singleDateExpectedResults = 3;
         result = mAssessmentDao.getAssessments(null, null, dateTo, null, null, null, null, null, null);
         Assert.assertEquals(result.size(), singleDateExpectedResults);
-
-        deleteAssessments(result);
+        // CS:ON
     }
 
     @Test
@@ -298,8 +291,6 @@ public class AssessmentDaoImplTest
         result = mAssessmentDao.getAssessments(null, null, null, null, id, null, null, null, null);
 
         Assert.assertEquals(result.size(), expectedResults);
-
-        deleteAssessments(result);
     }
 
     @Test
@@ -320,8 +311,6 @@ public class AssessmentDaoImplTest
         result = mAssessmentDao.getAssessments(null, null, null, null, null, id, null, null, null);
 
         Assert.assertEquals(result.size(), expectedResults);
-
-        deleteAssessments(result);
     }
 
     @Test
@@ -354,9 +343,6 @@ public class AssessmentDaoImplTest
         result = mAssessmentDao.getAssessments(animalId, null, dateTo, null, reasonId, studyId, null, null, null);
 
         Assert.assertEquals(result.size(), expectedResults);
-
-        result.add(assessment);
-        deleteAssessments(result);
     }
 
     @Test
@@ -391,9 +377,6 @@ public class AssessmentDaoImplTest
         result = mAssessmentDao.getAssessments(null, null, null, null, null, null, isComplete, null, null);
 
         Assert.assertEquals(result.size(), expectedResults);
-
-        result = mAssessmentDao.getAssessments(null, null);
-        deleteAssessments(result);
     }
 
     @Test
@@ -414,8 +397,6 @@ public class AssessmentDaoImplTest
         result = mAssessmentDao.getAssessmentsCount(null, null, null, null, null, null, null);
 
         Assert.assertEquals(result.longValue(), expectedResults);
-
-        deleteAssessments(assessments);
     }
 
     @Test
@@ -424,8 +405,6 @@ public class AssessmentDaoImplTest
         boolean isComplete = true;
         int expectedResults = 1;
 
-        Collection<Assessment> assessments = new ArrayList<>();
-
         Long result = mAssessmentDao.getAssessmentsCount(null, null, null, null, null, null, isComplete);
         Assert.assertEquals(result.longValue(), 0);
 
@@ -433,7 +412,6 @@ public class AssessmentDaoImplTest
         assessment.setIsComplete(isComplete);
 
         mAssessmentDao.store(assessment);
-        assessments.add(assessment);
 
         result = mAssessmentDao.getAssessmentsCount(null, null, null, null, null, null, isComplete);
         Assert.assertEquals(result.longValue(), expectedResults);
@@ -447,14 +425,11 @@ public class AssessmentDaoImplTest
             assessment.setIsComplete(isComplete);
 
             mAssessmentDao.store(assessment);
-            assessments.add(assessment);
         }
 
         result = mAssessmentDao.getAssessmentsCount(null, null, null, null, null, null, isComplete);
 
         Assert.assertEquals(result.longValue(), expectedResults);
-
-        deleteAssessments(assessments);
     }
 
     @Test
@@ -477,23 +452,24 @@ public class AssessmentDaoImplTest
         mAssessmentDao.deleteAssessmentScore(score);
         scores = mAssessmentDao.getAssessmentScores();
         Assert.assertTrue(scores.isEmpty());
-
-        assessments = mAssessmentDao.getAssessments(null, null);
-        deleteAssessments(assessments);
     }
 
     @Test
     public void testGetCountAssessmentsByAnimalId()
     {
+        // CS:OFF: MagicNumber
         long assessmentCountForAnimal = mAssessmentDao.getCountAnimalAssessments(10000L);
         Assert.assertEquals(assessmentCountForAnimal, 0);
+        // CS:ON
     }
 
     @Test
     public void testGetCountAssessmentsByTemplateId()
     {
+        // CS:OFF: MagicNumber
         long assessmentCountForTemplate = mAssessmentDao.getCountAssessmentsByTemplateId(10000L);
         Assert.assertEquals(assessmentCountForTemplate, 0);
+        // CS:ON
     }
 
     private Assessment createDefaultAssessment() throws AWNoSuchEntityException, AWAssessmentCreationException

@@ -32,7 +32,6 @@ public class AnimalHousingDaoImplTest
     @BeforeClass
     public static void setUpClass()
     {
-        GlassfishTestsHelper.eclipsePropertiesTest();
         GlassfishTestsHelper.preTestSetup();
     }
 

@@ -3,6 +3,9 @@ package uk.gov.phe.erdst.sc.awag.businesslogic;
 import java.util.List;
 import java.util.Set;
 
+import uk.gov.phe.erdst.sc.awag.datamodel.Animal;
+import uk.gov.phe.erdst.sc.awag.datamodel.Study;
+import uk.gov.phe.erdst.sc.awag.datamodel.StudyGroup;
 import uk.gov.phe.erdst.sc.awag.datamodel.client.StudyGroupClientData;
 import uk.gov.phe.erdst.sc.awag.datamodel.response.ResponsePayload;
 import uk.gov.phe.erdst.sc.awag.dto.EntitySelectDto;
@@ -26,5 +29,7 @@ public interface StudyGroupController
 
     Set<StudyGroupClientData> getStudyGroups(Integer offset, Integer limit, ResponsePayload responsePayload,
         boolean includeMetadata);
+
+    StudyGroup getStudyGroup(Animal animal, Study study);
 
 }

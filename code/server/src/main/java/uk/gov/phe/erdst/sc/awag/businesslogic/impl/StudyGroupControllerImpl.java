@@ -10,6 +10,8 @@ import javax.validation.Validator;
 
 import uk.gov.phe.erdst.sc.awag.businesslogic.StudyGroupController;
 import uk.gov.phe.erdst.sc.awag.dao.StudyGroupDao;
+import uk.gov.phe.erdst.sc.awag.datamodel.Animal;
+import uk.gov.phe.erdst.sc.awag.datamodel.Study;
 import uk.gov.phe.erdst.sc.awag.datamodel.StudyGroup;
 import uk.gov.phe.erdst.sc.awag.datamodel.client.StudyGroupClientData;
 import uk.gov.phe.erdst.sc.awag.datamodel.response.ResponsePayload;
@@ -140,5 +142,19 @@ public class StudyGroupControllerImpl implements StudyGroupController
             mResponsePager.setPagingTotalsMetadata(offset, limit, studyGroupCount, responsePayload);
         }
         return mStudyGroupFactory.create(studyGroups);
+    }
+
+    @Override
+    public StudyGroup getStudyGroup(Animal animal, Study study)
+    {
+        for (StudyGroup group : study.getStudyGroups())
+        {
+            if (group.getAnimals().contains(animal))
+            {
+                return group;
+            }
+        }
+
+        return null;
     }
 }

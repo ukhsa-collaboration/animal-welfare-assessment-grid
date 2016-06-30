@@ -6,7 +6,7 @@
     <groupId>uk.gov.phe.erdst.sc.awag</groupId>
 	<artifactId>animal-welfare-system</artifactId>
 	<packaging>war</packaging>
-	<version>4</version>
+	<version>5</version>
 	<name>animal-welfare-system</name>
 
 	<properties>

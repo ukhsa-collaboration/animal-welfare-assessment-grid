@@ -39,12 +39,12 @@
   margin-bottom: 1em;
 }
 
-.assessment-form#btns-panel {
+.aw-btns-panel {
     margin-top: 1em;
     text-align: center;
 }
 
-.assessment-form#btns-panel button {
+.aw-btns-panel button {
   margin: 16px;
 }
 

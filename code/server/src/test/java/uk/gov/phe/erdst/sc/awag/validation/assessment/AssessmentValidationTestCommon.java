@@ -29,7 +29,6 @@ public class AssessmentValidationTestCommon
 
     protected static void setUpClass()
     {
-        GlassfishTestsHelper.eclipsePropertiesTest();
         GlassfishTestsHelper.preTestSetup();
     }
 

@@ -1,4 +1,5 @@
 package uk.gov.phe.erdst.sc.awag.validation.animal;
+
 /*package uk.gov.phe.erdst.sc.awag.validation;
 
 import org.testng.annotations.AfterClass;
@@ -27,7 +28,6 @@ public class AnimalValidationTest
     @BeforeClass
     public static void setUpClass()
     {
-        GlassfishTestsHelper.eclipsePropertiesTest();
         GlassfishTestsHelper.preTestSetup();
     }
 

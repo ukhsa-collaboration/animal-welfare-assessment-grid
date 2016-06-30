@@ -21,10 +21,13 @@ public final class ServletConstants
     public static final String REQ_PARAM_STUDY_ID = "studyId";
     public static final String REQ_PARAM_HOUSING = "housing";
     public static final String REQ_PARAM_STUDY_GROUP = "study-group";
+    public static final String REQ_PARAM_STUDY_GROUP_ID = "studyGroupId";
     public static final String REQ_PARAM_ASSESS_IS_COMPLETE = "isComplete";
     public static final String REQ_PARAM_STUDY_WITH_ANIMAL = "study-with-animal";
     public static final String REQ_PARAM_ASSESS_BETWEEN = "assessments-between";
     public static final String REQ_PARAM_ASSESS_SEARCH = "assessments-search";
+    public static final String REQ_PARAM_ASSESS_DYNAMIC_SEARCH = "assessment-dynamic-search";
+    public static final String REQ_PARAM_COUNT_BY_COMPLETENESS = "assessments-count-by-completeness";
     public static final String REQ_PARAM_ASSESS_IS_SUBMIT = "isSubmit";
     public static final String REQ_PARAM_ANIMAL_TEMPLATE = "animal-template";
     public static final String REQ_PARAM_DATE_TO = "date-to";
@@ -36,6 +39,14 @@ public final class ServletConstants
     public static final String REQ_PARAM_COUNT = "count";
     public static final String REQ_PARAM_COUNT_BY_ANIMAL_ID = "count-by-animal-id";
     public static final String REQ_PARAM_COUNT_BY_TEMPLATE_ID = "count-by-template-id";
+
+    public static final String REQ_PARAM_EXPORT_TYPE = "export-type";
+    public static final String EXPORT_TYPE_ACTIVITY_LOGS = "activitylogs";
+    public static final String EXPORT_TYPE_ASSESSMENTS = "assessments";
+    public static final String REQ_PARAM_EXPORT_DATA = "exportData";
+
+    public static final int DEFAULT_DOWNLOAD_STATUS_COOKIE_EXPIRATION_TIME_SEC = 10;
+    public static final String DEFAULT_DOWNLOAD_STATUS_COOKIE_VALUE = "finished";
 
     private ServletConstants()
     {

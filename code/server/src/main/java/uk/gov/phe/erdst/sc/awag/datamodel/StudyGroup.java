@@ -31,6 +31,9 @@ public class StudyGroup implements Serializable, EntitySelect
     public static final String Q_COUNT_ALL_STUDY_GROUPS_LIKE = "findCountAllStudyGroupsLike";
     public static final String Q_FIND_ALL = "findAllStudyGroups";
     public static final String Q_FIND_COUNT_ALL = "findCountAllStudyGroups";
+
+    public static final String F_ANIMALS_FIELD_NAME = "mAnimals";
+
     private static final long serialVersionUID = 1L;
 
     @Id

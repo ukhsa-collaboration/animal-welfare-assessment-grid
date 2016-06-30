@@ -35,6 +35,8 @@ public final class LoggedActions
     public static final String STORE_USER_ACCOUNT = "STORE USER ACCOUNT";
     public static final String UPDATE_USER_ACCOUNT = "UPDATE USER ACCOUNT";
     public static final String DELETE_USER_ACCOUNT = "DELETE USER ACCOUNT";
+    public static final String EXPORT_ACTIVITY_LOGS = "EXPORT ACTIVITY LOGS";
+    public static final String EXPORT_ASSESSMENTS = "EXPORT ASSESSMENTS";
 
     private LoggedActions()
     {

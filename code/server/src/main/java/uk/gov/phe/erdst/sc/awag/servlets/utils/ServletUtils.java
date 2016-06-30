@@ -223,8 +223,7 @@ public final class ServletUtils
 
     public static String getCallbackParameter(HttpServletRequest request) throws AWInvalidParameterException
     {
-        return getNonNullParameter(request, ServletConstants.REQ_PARAM_CALLBACK,
-            ValidationConstants.ERR_CALLBACK_PARAM);
+        return getNonNullParameter(request, ServletConstants.REQ_PARAM_CALLBACK, ValidationConstants.ERR_CALLBACK_PARAM);
     }
 
     public static String getSelectActionParameter(HttpServletRequest request) throws AWInvalidParameterException
@@ -391,4 +390,15 @@ public final class ServletUtils
 
         return params;
     }
+
+    public static void setContentTypeToCsv(HttpServletResponse response)
+    {
+        response.setHeader("Content-Type", "text/csv");
+    }
+
+    public static void setContentDispositionHeader(HttpServletResponse response, String fileName)
+    {
+        response.setHeader("Content-Disposition", "attachment;filename=\"" + fileName + "\"");
+    }
+
 }

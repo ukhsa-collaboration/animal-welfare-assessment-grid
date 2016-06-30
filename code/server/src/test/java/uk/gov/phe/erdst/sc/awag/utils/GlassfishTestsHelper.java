@@ -15,6 +15,7 @@ public final class GlassfishTestsHelper
 {
     private static final String APP_NAME_SYS_PROPERTY = "awProjectName";
     private static final String GLASSFISH_INSTALL_ROOT_SYS_PROPERTY = "glassfishIntallationRoot";
+    private static final String ECLIPSE_IDE_DEBUGGING_ENABLED = "eclipseIdeDebuggingEnabled";
 
     private static String sClassLookupLocation;
     private static EJBContainer sContainer;
@@ -24,17 +25,14 @@ public final class GlassfishTestsHelper
     {
     }
 
-    /**
-     * Use when running / debugging container-based tests in Eclipse.
-     */
-    public static void eclipsePropertiesTest()
-    {
-        System.setProperty(GLASSFISH_INSTALL_ROOT_SYS_PROPERTY, "C:/glassfish4/glassfish");
-        System.setProperty(APP_NAME_SYS_PROPERTY, "animal-welfare-system");
-    }
-
     public static void preTestSetup()
     {
+        if (System.getProperty(ECLIPSE_IDE_DEBUGGING_ENABLED) != null)
+        {
+            System.setProperty(GLASSFISH_INSTALL_ROOT_SYS_PROPERTY, "C:/glassfish4/glassfish");
+            System.setProperty(APP_NAME_SYS_PROPERTY, "animal-welfare-system");
+        }
+
         sClassLookupLocation = "java:global/" + System.getProperty(APP_NAME_SYS_PROPERTY) + "/classes/";
 
         setLoggingLevel(Level.SEVERE);

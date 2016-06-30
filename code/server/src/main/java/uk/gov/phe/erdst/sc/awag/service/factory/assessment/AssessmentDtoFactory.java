@@ -1,5 +1,6 @@
 package uk.gov.phe.erdst.sc.awag.service.factory.assessment;
 
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.LinkedHashSet;
@@ -15,20 +16,23 @@ import uk.gov.phe.erdst.sc.awag.datamodel.AssessmentReason;
 import uk.gov.phe.erdst.sc.awag.datamodel.AssessmentScore;
 import uk.gov.phe.erdst.sc.awag.datamodel.ParameterScore;
 import uk.gov.phe.erdst.sc.awag.dto.AnimalDto;
-import uk.gov.phe.erdst.sc.awag.dto.AssessmentDto;
-import uk.gov.phe.erdst.sc.awag.dto.AssessmentFullDto;
-import uk.gov.phe.erdst.sc.awag.dto.AssessmentSearchPreviewDto;
-import uk.gov.phe.erdst.sc.awag.dto.AssessmentsDto;
 import uk.gov.phe.erdst.sc.awag.dto.ParameterScoredDto;
-import uk.gov.phe.erdst.sc.awag.dto.PreviousAssessmentDto;
+import uk.gov.phe.erdst.sc.awag.dto.assessment.AssessmentDto;
+import uk.gov.phe.erdst.sc.awag.dto.assessment.AssessmentFullDto;
+import uk.gov.phe.erdst.sc.awag.dto.assessment.AssessmentSearchPreviewDto;
+import uk.gov.phe.erdst.sc.awag.dto.assessment.AssessmentsDto;
+import uk.gov.phe.erdst.sc.awag.dto.assessment.ParametersOrdering;
+import uk.gov.phe.erdst.sc.awag.dto.assessment.PreviousAssessmentDto;
 import uk.gov.phe.erdst.sc.awag.service.factory.animal.AnimalDtoFactory;
 import uk.gov.phe.erdst.sc.awag.service.factory.housing.AnimalHousingDtoFactory;
 import uk.gov.phe.erdst.sc.awag.service.factory.parameter.ParameterScoredDtoFactory;
 import uk.gov.phe.erdst.sc.awag.service.factory.study.StudyDtoFactory;
 import uk.gov.phe.erdst.sc.awag.service.factory.user.UserDtoFactory;
 
+// CS:OFF: ClassDataAbstractionCoupling
 @Stateless
 public class AssessmentDtoFactory
+// CS:ON
 {
     @Inject
     private ParameterScoredDtoFactory mParameterDtoFactory;
@@ -48,21 +52,21 @@ public class AssessmentDtoFactory
     @Inject
     private StudyDtoFactory mStudyDtoFactory;
 
-    public AssessmentsDto createAssessmentsDto(List<Assessment> assessments)
+    public AssessmentsDto createAssessmentsDto(List<Assessment> assessments, ParametersOrdering ordering)
     {
 
         Set<AssessmentDto> assessmentDtos = new LinkedHashSet<AssessmentDto>(assessments.size());
 
         for (Assessment assessment : assessments)
         {
-            AssessmentDto assessmentDto = createAssessmentDto(assessment);
+            AssessmentDto assessmentDto = createAssessmentDto(assessment, ordering);
             assessmentDtos.add(assessmentDto);
         }
 
         return new AssessmentsDto(assessmentDtos);
     }
 
-    public AssessmentDto createAssessmentDto(Assessment assessment)
+    public AssessmentDto createAssessmentDto(Assessment assessment, ParametersOrdering ordering)
     {
         AssessmentDto assessmentDto = new AssessmentDto();
 
@@ -73,7 +77,7 @@ public class AssessmentDtoFactory
             assessmentDto.assessmentDate = assessment.getDate();
 
             setAssessmentReason(assessmentDto, assessment);
-            setAssessmentScore(assessmentDto, assessment);
+            setAssessmentScore(assessmentDto, assessment, ordering);
             setAnimal(assessmentDto, assessment);
 
         }
@@ -96,9 +100,9 @@ public class AssessmentDtoFactory
         return dto;
     }
 
-    public AssessmentFullDto createAssessmentFullDto(Assessment assessment)
+    public AssessmentFullDto createAssessmentFullDto(Assessment assessment, ParametersOrdering ordering)
     {
-        AssessmentDto simpleDto = createAssessmentDto(assessment);
+        AssessmentDto simpleDto = createAssessmentDto(assessment, ordering);
         AssessmentFullDto dto = new AssessmentFullDto();
 
         dto.assessmentId = simpleDto.assessmentId;
@@ -155,7 +159,8 @@ public class AssessmentDtoFactory
 
     private void setAnimal(AssessmentDto assessmentDto, Assessment assessment)
     {
-        // FIXME: why is there an animal null check if uk.gov.phe.erdst.sc.awag.validation prevents that?
+        // FIXME: why is there an animal null check if uk.gov.phe.erdst.sc.awag.validation prevents
+        // that?
         Animal animal = assessment.getAnimal();
         AnimalDto animalDto = new AnimalDto();
         if (animal != null)
@@ -166,7 +171,7 @@ public class AssessmentDtoFactory
         assessmentDto.animal = animalDto;
     }
 
-    private void setAssessmentScore(AssessmentDto assessmentDto, Assessment assessment)
+    private void setAssessmentScore(AssessmentDto assessmentDto, Assessment assessment, ParametersOrdering ordering)
     {
         AssessmentScore assessmentScore = assessment.getScore();
 
@@ -175,13 +180,17 @@ public class AssessmentDtoFactory
         if (assessmentScore != null)
         {
             Collection<ParameterScore> parametersScored = assessmentScore.getParametersScored();
-            parameterDtos = new HashSet<ParameterScoredDto>(parametersScored.size());
+
+            ParameterScoredDto[] orderedParameterDtos = new ParameterScoredDto[parametersScored.size()];
 
             for (ParameterScore parameterScore : parametersScored)
             {
                 ParameterScoredDto parameterDto = mParameterDtoFactory.createParameterDto(parameterScore);
-                parameterDtos.add(parameterDto);
+                int idx = ordering.getIndex(parameterDto.parameterId);
+                orderedParameterDtos[idx] = parameterDto;
             }
+
+            parameterDtos = new LinkedHashSet<>(Arrays.asList(orderedParameterDtos));
         }
         else
         {

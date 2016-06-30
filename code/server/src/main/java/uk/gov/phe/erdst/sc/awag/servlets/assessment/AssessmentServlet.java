@@ -15,6 +15,7 @@ import javax.ws.rs.HttpMethod;
 
 import uk.gov.phe.erdst.sc.awag.businesslogic.AssessmentController;
 import uk.gov.phe.erdst.sc.awag.datamodel.client.AssessmentClientData;
+import uk.gov.phe.erdst.sc.awag.datamodel.client.AssessmentDynamicSearchRequestParams;
 import uk.gov.phe.erdst.sc.awag.datamodel.client.AssessmentSearchRequestParams;
 import uk.gov.phe.erdst.sc.awag.datamodel.client.AssessmentsGetRequestParams;
 import uk.gov.phe.erdst.sc.awag.datamodel.response.ResponsePayload;
@@ -91,7 +92,7 @@ public class AssessmentServlet extends HttpServlet
                 action = ServletUtils.getSelectActionParameter(request);
                 executeAction(action, request, responsePayload);
             }
-            catch (AWInvalidParameterException | AWInvalidResourceIdException ex)
+            catch (AWInvalidParameterException | AWInvalidResourceIdException | AWNoSuchEntityException ex)
             {
                 responsePayload.addError(ex.getMessage());
             }
@@ -164,7 +165,7 @@ public class AssessmentServlet extends HttpServlet
     }
 
     private void executeAction(String action, HttpServletRequest request, ResponsePayload responsePayload)
-        throws AWInvalidParameterException, AWInvalidResourceIdException
+        throws AWInvalidParameterException, AWInvalidResourceIdException, AWNoSuchEntityException
     {
         Object payload = ServletUtils.getNoResponse();
         boolean includeMetadata = ServletUtils.getIncludeMetadataParameter(request);
@@ -212,6 +213,16 @@ public class AssessmentServlet extends HttpServlet
             case ServletConstants.REQ_PARAM_COUNT:
                 payload = mAssessmentController.getAssessmentsCount();
                 break;
+            case ServletConstants.REQ_PARAM_COUNT_BY_COMPLETENESS:
+                Boolean isComplete = ServletUtils.getBooleanParameterFromString(ServletUtils.getParameter(request,
+                    ServletConstants.REQ_PARAM_ASSESS_IS_COMPLETE));
+
+                if (isComplete != null)
+                {
+                    payload = mAssessmentController.getAssessmentsCountByCompleteness(isComplete);
+                }
+
+                break;
             case ServletConstants.REQ_PARAM_COUNT_BY_ANIMAL_ID:
                 payload = mAssessmentController.getAssessmentsCountByAnimalId(ServletUtils
                     .getParseResourceId(ServletUtils.getAnimalIdParameter(request)));
@@ -220,12 +231,37 @@ public class AssessmentServlet extends HttpServlet
                 payload = mAssessmentController.getAssessmentsCountByTemplateId(ServletUtils
                     .getParseResourceId(ServletUtils.getTemplateIdParameter(request)));
                 break;
+            case ServletConstants.REQ_PARAM_ASSESS_DYNAMIC_SEARCH:
+                AssessmentDynamicSearchRequestParams searchParams = extractAssessmentDynamicSearchParams(request);
+
+                validateDynamicSearchRequestParams(searchParams, responsePayload);
+                ValidatorUtils.validateRequest(searchParams, responsePayload, mRequestValidator);
+
+                // Currently no support for paging or metadata
+
+                if (!responsePayload.hasErrors())
+                {
+                    payload = mAssessmentController.getAssessmentsDynamicSearchDto(searchParams.studyId,
+                        searchParams.studyGroupId, searchParams.animalId, searchParams.dateFrom, searchParams.dateTo,
+                        searchParams.userId, searchParams.reasonId, responsePayload);
+                }
+
+                break;
             default:
                 payload = ServletUtils.getNoResponse();
                 break;
         }
 
         responsePayload.setData(payload);
+    }
+
+    private void validateDynamicSearchRequestParams(AssessmentDynamicSearchRequestParams searchParams,
+        ResponsePayload responsePayload)
+    {
+        if (searchParams.studyId == null && searchParams.studyGroupId != null)
+        {
+            responsePayload.addError("Specified a study group without specifying a study");
+        }
     }
 
     private AssessmentSearchRequestParams extractAssessmentSearchParams(HttpServletRequest request)
@@ -259,6 +295,28 @@ public class AssessmentServlet extends HttpServlet
         params.isComplete = isComplete;
 
         return params;
+    }
+
+    private AssessmentDynamicSearchRequestParams extractAssessmentDynamicSearchParams(HttpServletRequest request)
+        throws AWInvalidParameterException, AWInvalidResourceIdException
+    {
+        AssessmentSearchRequestParams standardParams = extractAssessmentSearchParams(request);
+        AssessmentDynamicSearchRequestParams dynamicParams = new AssessmentDynamicSearchRequestParams();
+
+        Long studyGroupId = ServletUtils.getIdParameterFromString(ServletUtils.getParameter(request,
+            ServletConstants.REQ_PARAM_STUDY_GROUP_ID));
+
+        dynamicParams.studyId = standardParams.studyId;
+        dynamicParams.studyGroupId = studyGroupId;
+        dynamicParams.animalId = standardParams.animalId;
+        dynamicParams.dateFrom = standardParams.dateFrom;
+        dynamicParams.dateTo = standardParams.dateTo;
+        dynamicParams.reasonId = standardParams.reasonId;
+        dynamicParams.userId = standardParams.userId;
+
+        dynamicParams.isComplete = true;
+
+        return dynamicParams;
     }
 
     private void validateGetAssessmentsBetweenRequest(String dateFrom, String dateTo, Long animalId,

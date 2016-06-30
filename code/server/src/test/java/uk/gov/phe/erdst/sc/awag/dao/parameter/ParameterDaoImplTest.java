@@ -26,15 +26,14 @@ public class ParameterDaoImplTest
     @BeforeClass
     public static void setUpClass()
     {
-        // GlassfishTestsHelper.eclipsePropertiesTest();
         GlassfishTestsHelper.preTestSetup();
     }
 
     @BeforeMethod
     public void setUp() throws Exception
     {
-        mParameterDao = (ParameterDao) GlassfishTestsHelper.lookupMultiInterface("ParameterDaoImpl",
-            ParameterDao.class);
+        mParameterDao = (ParameterDao) GlassfishTestsHelper
+            .lookupMultiInterface("ParameterDaoImpl", ParameterDao.class);
     }
 
     @Test

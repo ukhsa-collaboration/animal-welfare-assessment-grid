@@ -183,8 +183,12 @@ manageStudyControllers.controller('MngmtStudyManagementCtrl', ['$scope', 'studyS
         };
 
         this.onStudyStudyGroupSelected = function(choice) {
-            var studyGroup = studyGroupService.getBasicStudyGroup(choice.id, choice.text);
-            this.addStudyGroupToStudy(studyGroup);
+            var studyGroup = studyGroupService.getStudyGroup(choice.id, onStudyGetStudyGroupSuccess);
+            //var studyGroup = studyGroupService.getBasicStudyGroup(choice.id, choice.text);
+        };
+
+        var onStudyGetStudyGroupSuccess = function(data){
+            that.addStudyGroupToStudy(data);
         };
 
         this.onStudyStudyGroupRemoved = function(choice) {

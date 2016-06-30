@@ -46,7 +46,6 @@ public class StudyDaoImplTest
     @BeforeClass
     public static void setUpClass()
     {
-        GlassfishTestsHelper.eclipsePropertiesTest();
         GlassfishTestsHelper.preTestSetup();
     }
 
@@ -212,8 +211,8 @@ public class StudyDaoImplTest
     }
 
     @Test(expectedExceptions = {AWMultipleResultException.class})
-    public void testGetStudyWithAnimalMultipleStudyException()
-        throws AWNoSuchEntityException, AWNonUniqueException, AWMultipleResultException
+    public void testGetStudyWithAnimalMultipleStudyException() throws AWNoSuchEntityException, AWNonUniqueException,
+        AWMultipleResultException
     {
         Animal animal = mAnimalDao.getAnimal(ID_ANIMAL_IN_STUDY);
         Study study = mStudyDao.getEntityById(STUDY_TWO_ID);

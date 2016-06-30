@@ -31,7 +31,6 @@ public class SpeciesDaoImplTest
     @BeforeClass
     public static void setUpClass()
     {
-        // GlassfishTestsHelper.eclipsePropertiesTest();
         GlassfishTestsHelper.preTestSetup();
     }
 

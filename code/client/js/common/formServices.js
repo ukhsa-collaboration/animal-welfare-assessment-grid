@@ -176,6 +176,26 @@ formServices.factory('formService', ['dataService', 'appConfig', '$timeout',
             element.datepicker("setDate", null);
         };
 
+        var setDatePickerStartDate = function(date, element)
+        {
+            element.datepicker("setStartDate", date);
+        };
+
+        var resetDatePickerStartDate = function(element)
+        {
+            element.datepicker("setStartDate", false);
+        };
+
+        var setDatePickerEndDate = function(date, element)
+        {
+            element.datepicker("setEndDate", date);
+        };
+
+        var resetDatePickerEndDate = function(element)
+        {
+            element.datepicker("setEndDate", false);
+        };
+
         var enableDatePicker = function(element) {
             element.removeProp("disabled");
         };
@@ -205,6 +225,10 @@ formServices.factory('formService', ['dataService', 'appConfig', '$timeout',
             initSearchSelect2: initSearchSelect2,
             destroySelect2: destroySelect2,
             clearDatePickerField: clearDatePickerField,
+            setDatePickerStartDate : setDatePickerStartDate,
+            setDatePickerEndDate : setDatePickerEndDate,
+            resetDatePickerStartDate : resetDatePickerStartDate,
+            resetDatePickerEndDate : resetDatePickerEndDate,
             enableDatePicker : enableDatePicker,
             disableDatePicker : disableDatePicker,
             enableSelect2 : enableSelect2,

@@ -22,6 +22,8 @@ function()
             animalAssessLine : "assessments-between",
             animalTemplate : "animal-template",
             assessmentsSearch : "assessments-search",
+            assessmentDynamicSearch : "assessment-dynamic-search",
+            assessmentsCountByCompleteness : "assessments-count-by-completeness",
             countByAnimalId : "count-by-animal-id",
             countByTemplateId : "count-by-template-id"
         },
@@ -34,7 +36,8 @@ function()
             templateId : "templateId",
             dateFrom : "date-from",
             dateTo : "date-to",
-            count : "count"
+            count : "count",
+            exportData : "exportData"
         },
         pagingParams : {
             offset : "offset",
@@ -51,6 +54,10 @@ function()
             },
             all : "all"
         },
+        exportTypes : {
+            activityLogs : 'activityLogs',
+            assessments : 'assessments'
+        }
     };
 
     var auth = {

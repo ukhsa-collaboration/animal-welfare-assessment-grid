@@ -1,11 +1,16 @@
 package uk.gov.phe.erdst.sc.awag.businesslogic;
 
+import java.util.Collection;
+
 import org.testng.Assert;
 import org.testng.annotations.AfterClass;
+import org.testng.annotations.AfterMethod;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 
+import uk.gov.phe.erdst.sc.awag.dao.AssessmentDao;
+import uk.gov.phe.erdst.sc.awag.datamodel.Assessment;
 import uk.gov.phe.erdst.sc.awag.datamodel.client.AssessmentClientData;
 import uk.gov.phe.erdst.sc.awag.datamodel.response.ResponsePayload;
 import uk.gov.phe.erdst.sc.awag.service.logging.LoggedUser;
@@ -19,11 +24,11 @@ public class AssessmentControllerImplTest
     private static final String USER_PRINCIPAL_NAME = "testUser";
     private AssessmentProvider mAssessmentProvider;
     private AssessmentController mAssessmentCtrl;
+    private AssessmentDao mAssessmentDao;
 
     @BeforeClass
     public static void setUpClass()
     {
-        // GlassfishTestsHelper.eclipsePropertiesTest();
         GlassfishTestsHelper.preTestSetup();
     }
 
@@ -33,6 +38,19 @@ public class AssessmentControllerImplTest
         mAssessmentCtrl = (AssessmentController) GlassfishTestsHelper.lookup("AssessmentControllerImpl");
 
         mAssessmentProvider = (AssessmentProvider) GlassfishTestsHelper.lookup("AssessmentProvider");
+
+        mAssessmentDao = (AssessmentDao) GlassfishTestsHelper.lookupMultiInterface("AssessmentDaoImpl",
+            AssessmentDao.class);
+    }
+
+    @AfterMethod
+    public void tearDownMethod()
+    {
+        Collection<Assessment> all = mAssessmentDao.getAssessments(null, null);
+        for (Assessment a : all)
+        {
+            mAssessmentDao.deleteAssessment(a);
+        }
     }
 
     @AfterClass

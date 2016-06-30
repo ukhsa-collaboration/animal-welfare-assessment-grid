@@ -115,16 +115,18 @@ public final class ValidatorUtils
 
         if (dateFrom != null && !ValidatorUtils.isDateValid(dateFrom))
         {
-            context.buildConstraintViolationWithTemplate(
-                String.format(ValidationConstants.ERR_DATE_FORMAT, ValidationConstants.DATE_FROM))
+            context
+                .buildConstraintViolationWithTemplate(
+                    String.format(ValidationConstants.ERR_DATE_FORMAT, ValidationConstants.DATE_FROM))
                 .addConstraintViolation();
             errCount++;
         }
 
         if (dateTo != null && !ValidatorUtils.isDateValid(dateTo))
         {
-            context.buildConstraintViolationWithTemplate(
-                String.format(ValidationConstants.ERR_DATE_FORMAT, ValidationConstants.DATE_TO))
+            context
+                .buildConstraintViolationWithTemplate(
+                    String.format(ValidationConstants.ERR_DATE_FORMAT, ValidationConstants.DATE_TO))
                 .addConstraintViolation();
             errCount++;
         }

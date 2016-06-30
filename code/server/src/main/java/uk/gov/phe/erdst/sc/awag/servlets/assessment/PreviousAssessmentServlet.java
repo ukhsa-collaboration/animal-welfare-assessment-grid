@@ -13,7 +13,7 @@ import javax.servlet.http.HttpServletResponse;
 
 import uk.gov.phe.erdst.sc.awag.businesslogic.AssessmentController;
 import uk.gov.phe.erdst.sc.awag.datamodel.response.ResponsePayload;
-import uk.gov.phe.erdst.sc.awag.dto.PreviousAssessmentDto;
+import uk.gov.phe.erdst.sc.awag.dto.assessment.PreviousAssessmentDto;
 import uk.gov.phe.erdst.sc.awag.exceptions.AWInvalidParameterException;
 import uk.gov.phe.erdst.sc.awag.exceptions.AWInvalidResourceIdException;
 import uk.gov.phe.erdst.sc.awag.service.validation.utils.ValidationConstants;

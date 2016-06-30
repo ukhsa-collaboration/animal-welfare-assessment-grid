@@ -23,15 +23,14 @@ public class AssessmentTemplateDaoImplTest
     @BeforeClass
     public static void setUpClass()
     {
-        // GlassfishTestsHelper.eclipsePropertiesTest();
         GlassfishTestsHelper.preTestSetup();
     }
 
     @BeforeMethod
     public void setUp() throws Exception
     {
-        mAssessmentTemplateDao = (AssessmentTemplateDao) GlassfishTestsHelper
-            .lookupMultiInterface("AssessmentTemplateDaoImpl", AssessmentTemplateDao.class);
+        mAssessmentTemplateDao = (AssessmentTemplateDao) GlassfishTestsHelper.lookupMultiInterface(
+            "AssessmentTemplateDaoImpl", AssessmentTemplateDao.class);
     }
 
     @Test

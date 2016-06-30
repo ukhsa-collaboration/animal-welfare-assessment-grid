@@ -9,9 +9,9 @@ import uk.gov.phe.erdst.sc.awag.datamodel.Animal;
 import uk.gov.phe.erdst.sc.awag.datamodel.StudyGroup;
 import uk.gov.phe.erdst.sc.awag.datamodel.client.AnimalClientData;
 import uk.gov.phe.erdst.sc.awag.datamodel.client.StudyGroupClientData;
-import uk.gov.phe.erdst.sc.awag.dto.AssessmentDto;
 import uk.gov.phe.erdst.sc.awag.dto.FactorScoredDto;
 import uk.gov.phe.erdst.sc.awag.dto.ParameterScoredDto;
+import uk.gov.phe.erdst.sc.awag.dto.assessment.AssessmentDto;
 import uk.gov.phe.erdst.sc.awag.shared.test.TestConstants;
 
 @Test(groups = {TestConstants.TESTNG_UNIT_TESTS_GROUP})

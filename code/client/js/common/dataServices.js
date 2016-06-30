@@ -1,13 +1,32 @@
-var dataServices = angular.module('dataServices', ['appConfigModule']);
+var dataServices = angular.module('dataServices', ['appConfigModule', 'cookieUtilsModule']);
 
-dataServices.factory('dataService', ['$http', 'appConfig',
-function($http, appConfig) {
+dataServices.factory('dataService', ['$http', 'appConfig', 'cookieUtils',
+function($http, appConfig, cookieUtils) {
 
 	var pathSeparator = "/";
 
-	var downloadFileViaIframe = function(iframeElem, options) {
-		var url = __getUrl(options);
-		iframeElem.attr("src", url);
+	var exportDataAsFile = function(options, exportType) {
+		var url = __getUrl({servlet : 'exportdata'});
+
+		if (!options.parameters) {
+			options.parameters = {};
+		}
+
+		var params = options.parameters;
+		params['export-type'] = exportType;
+
+		var form = '<form action="' + url + '" method="POST">';
+		for (key in params)
+		{
+			var value = params[key];
+			if (value != null || value != undefined)
+			{
+				form += '<input type="hidden" name=' + key + ' value=' + angular.toJson(value) + ' />';
+			}
+		}
+		form += '</form>';
+
+		jQuery(form).submit();
 	};
 
 	var dataConnection = function(options) {
@@ -181,12 +200,33 @@ function($http, appConfig) {
 		return dataStr;
 	};
 
+    var getDownloadHandler = function(fnSuccessCallback, downloadCookie, downloadCookieExpectedValue){
+
+    	var handler = function(fnSuccessCallback, downloadCookie, downloadCookieExpectedValue) {
+	        var attempts = 15;
+	        downloadTimer = window.setInterval( function() {
+	            var cookie = cookieUtils.getCookie(downloadCookie);
+	            
+	            if( cookie === downloadCookieExpectedValue || (attempts == 0) ) {
+	                window.clearInterval(downloadTimer);
+	                fnSuccessCallback();
+	            }
+
+	            attempts--;
+
+	        }, 1000 );
+	    };
+
+	    return handler;
+    };
+
 	return {
 		dataConnection : dataConnection,
 		dataConnectionNextPage : dataConnectionNextPage,
 		postData : postData,
 		putData : putData,
 		deleteData : deleteData,
-		downloadFileViaIframe : downloadFileViaIframe
+		getDownloadHandler : getDownloadHandler,
+		exportDataAsFile : exportDataAsFile
 	};
 }]);

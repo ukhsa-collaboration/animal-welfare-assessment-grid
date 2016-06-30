@@ -7,30 +7,37 @@ import org.testng.Assert;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 
-import com.google.inject.Inject;
-
 import uk.gov.phe.erdst.sc.awag.datamodel.Animal;
 import uk.gov.phe.erdst.sc.awag.datamodel.AnimalHousing;
 import uk.gov.phe.erdst.sc.awag.datamodel.Assessment;
 import uk.gov.phe.erdst.sc.awag.datamodel.AssessmentReason;
+import uk.gov.phe.erdst.sc.awag.datamodel.AssessmentScore;
 import uk.gov.phe.erdst.sc.awag.datamodel.AssessmentTemplate;
+import uk.gov.phe.erdst.sc.awag.datamodel.Parameter;
+import uk.gov.phe.erdst.sc.awag.datamodel.ParameterScore;
 import uk.gov.phe.erdst.sc.awag.datamodel.Sex;
 import uk.gov.phe.erdst.sc.awag.datamodel.Source;
 import uk.gov.phe.erdst.sc.awag.datamodel.Species;
 import uk.gov.phe.erdst.sc.awag.datamodel.Study;
 import uk.gov.phe.erdst.sc.awag.datamodel.User;
-import uk.gov.phe.erdst.sc.awag.dto.AssessmentDto;
-import uk.gov.phe.erdst.sc.awag.dto.AssessmentFullDto;
-import uk.gov.phe.erdst.sc.awag.dto.AssessmentSearchPreviewDto;
-import uk.gov.phe.erdst.sc.awag.dto.AssessmentsDto;
+import uk.gov.phe.erdst.sc.awag.dto.ParameterScoredDto;
+import uk.gov.phe.erdst.sc.awag.dto.assessment.AssessmentDto;
+import uk.gov.phe.erdst.sc.awag.dto.assessment.AssessmentFullDto;
+import uk.gov.phe.erdst.sc.awag.dto.assessment.AssessmentSearchPreviewDto;
+import uk.gov.phe.erdst.sc.awag.dto.assessment.AssessmentsDto;
+import uk.gov.phe.erdst.sc.awag.dto.assessment.ParametersOrdering;
 import uk.gov.phe.erdst.sc.awag.service.factory.assessment.AssessmentDtoFactory;
 import uk.gov.phe.erdst.sc.awag.service.utils.AnimalTestUtils;
 import uk.gov.phe.erdst.sc.awag.service.validation.utils.ValidationConstants;
 import uk.gov.phe.erdst.sc.awag.shared.test.TestConstants;
 import uk.gov.phe.erdst.sc.awag.utils.GuiceHelper;
 
+import com.google.inject.Inject;
+
+// CS:OFF: ClassDataAbstractionCoupling
 @Test(groups = {TestConstants.TESTNG_UNIT_TESTS_GROUP})
 public class AssessmentDtoFactoryTest
+// CS:ON
 {
     private static final String TEST_REASON = "Test reason";
     private static final String TEST_ANIMAL_NUMBER = "Test animal number";
@@ -40,6 +47,8 @@ public class AssessmentDtoFactoryTest
     private AssessmentDtoFactory mAssessmentDtoFactory;
 
     private Assessment mAssessment;
+
+    private ParametersOrdering mParametersOrdering = new ParametersOrdering();
 
     @BeforeMethod
     public void setUp() throws Exception
@@ -53,7 +62,7 @@ public class AssessmentDtoFactoryTest
     @Test
     public void testCreateValidAssessment()
     {
-        AssessmentDto assessmentDto = mAssessmentDtoFactory.createAssessmentDto(mAssessment);
+        AssessmentDto assessmentDto = mAssessmentDtoFactory.createAssessmentDto(mAssessment, mParametersOrdering);
 
         Assert.assertEquals(assessmentDto.assessmentId, mAssessment.getId());
         Assert.assertEquals(assessmentDto.assessmentDate, mAssessment.getDate());
@@ -64,7 +73,7 @@ public class AssessmentDtoFactoryTest
     {
         mAssessment.setAnimal(null);
 
-        AssessmentDto assessmentDto = mAssessmentDtoFactory.createAssessmentDto(mAssessment);
+        AssessmentDto assessmentDto = mAssessmentDtoFactory.createAssessmentDto(mAssessment, mParametersOrdering);
 
         Assert.assertEquals(assessmentDto.assessmentId, mAssessment.getId());
         Assert.assertEquals(assessmentDto.assessmentDate, mAssessment.getDate());
@@ -76,7 +85,7 @@ public class AssessmentDtoFactoryTest
     {
         mAssessment.setScore(null);
 
-        AssessmentDto assessmentDto = mAssessmentDtoFactory.createAssessmentDto(mAssessment);
+        AssessmentDto assessmentDto = mAssessmentDtoFactory.createAssessmentDto(mAssessment, mParametersOrdering);
 
         Assert.assertEquals(assessmentDto.assessmentId, mAssessment.getId());
         Assert.assertEquals(assessmentDto.assessmentDate, mAssessment.getDate());
@@ -88,7 +97,7 @@ public class AssessmentDtoFactoryTest
     {
         mAssessment.setReason(null);
 
-        AssessmentDto assessmentDto = mAssessmentDtoFactory.createAssessmentDto(mAssessment);
+        AssessmentDto assessmentDto = mAssessmentDtoFactory.createAssessmentDto(mAssessment, mParametersOrdering);
 
         Assert.assertEquals(assessmentDto.assessmentReason, "");
     }
@@ -150,7 +159,7 @@ public class AssessmentDtoFactoryTest
 
         mAssessment.setIsComplete(true);
 
-        AssessmentFullDto dto = mAssessmentDtoFactory.createAssessmentFullDto(mAssessment);
+        AssessmentFullDto dto = mAssessmentDtoFactory.createAssessmentFullDto(mAssessment, mParametersOrdering);
 
         Assert.assertEquals(dto.assessmentId, mAssessment.getId());
         Assert.assertEquals(dto.assessmentDate, mAssessment.getDate());
@@ -166,7 +175,7 @@ public class AssessmentDtoFactoryTest
         mAssessment.setStudy(null);
         mAssessment.setIsComplete(false);
 
-        dto = mAssessmentDtoFactory.createAssessmentFullDto(mAssessment);
+        dto = mAssessmentDtoFactory.createAssessmentFullDto(mAssessment, mParametersOrdering);
 
         Assert.assertNull(dto.reason);
         Assert.assertNull(dto.housing);
@@ -207,8 +216,56 @@ public class AssessmentDtoFactoryTest
         assessments.add(assessment1);
         assessments.add(assessment2);
 
-        AssessmentsDto assessmentsDataDto = mAssessmentDtoFactory.createAssessmentsDto(assessments);
+        AssessmentsDto assessmentsDataDto = mAssessmentDtoFactory
+            .createAssessmentsDto(assessments, mParametersOrdering);
 
         Assert.assertEquals(assessmentsDataDto.assessments.size(), assessments.size());
+    }
+
+    @Test
+    public void testCreateAssessmentsDtoWithParametersOrdering()
+    {
+        AssessmentScore score = new AssessmentScore();
+        List<ParameterScore> parameterScores = new ArrayList<>();
+
+        ParametersOrdering ordering = new ParametersOrdering();
+        final int limit = 7;
+        for (int i = 0, j = limit - 1; i < limit; i++, j--)
+        {
+            Long id = Long.valueOf(i);
+
+            Parameter parameter = new Parameter();
+            parameter.setId(id);
+
+            ParameterScore parameterScore = new ParameterScore();
+            parameterScore.setParameterScored(parameter);
+
+            parameterScores.add(parameterScore);
+            ordering.add(id, j);
+        }
+
+        score.setParametersScored(parameterScores);
+
+        Assessment assessment = new Assessment();
+        assessment.setScore(score);
+
+        setSecondaryProperties(assessment);
+
+        AssessmentFullDto fullDto = mAssessmentDtoFactory.createAssessmentFullDto(assessment, ordering);
+
+        List<ParameterScoredDto> scoreDtos = new ArrayList<>(fullDto.assessmentParameters);
+
+        for (int i = 0; i < scoreDtos.size(); i++)
+        {
+            ParameterScoredDto scoreDto = scoreDtos.get(i);
+            int orderingIdx = ordering.getIndex(scoreDto.parameterId);
+            Assert.assertEquals(i, orderingIdx);
+        }
+    }
+
+    private void setSecondaryProperties(Assessment assessment)
+    {
+        Animal animal = createAnimal();
+        assessment.setAnimal(animal);
     }
 }

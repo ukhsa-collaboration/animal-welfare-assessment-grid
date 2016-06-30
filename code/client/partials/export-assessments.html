@@ -1,0 +1,183 @@
+<div class="container-fluid" ng-controller="ExportAssessMainCtrl as mainCtrl">
+    <div>
+        <h1 class="page-header text-center">Export animal assessments</h1>
+        <div class="form-group row">
+            <div class="col-xs-12">
+                <accordion close-others="false">
+                    <accordion-group is-open="searchingnotes.open" ng-class="'panel-info'">
+                        <accordion-heading>
+                            <span class="glyphicon glyphicon-info-sign pull-left" style="padding-right: 4px"></span>Notes on searching <i class="pull-right glyphicon" ng-class="{'glyphicon-chevron-down': searchingnotes.open, 'glyphicon-chevron-right': !searchingnotes.open}"></i>
+                        </accordion-heading>
+                        <div>
+                            <ul>
+                                <li>Search is performed as soon as a single search value is specified.</li>
+                                <li>After specifying one of the search criteria, other search fields are adjusted to display only relevant data, e.g.:
+                                    <ol>
+                                        <li>Search assessments by a study.</li>
+                                        <li>Only study groups and animals which are part of that study will be available as further search filters.</li>
+                                        <li>Date ranges will also be adjusted to dates of the oldest and most recent assessments.</li>
+                                    </ol>
+                                </li>
+                                <li>When study and animal are specified, study group selection is ignored. This is because an animal cannot be in more than one group within a particular study.</li>
+                            </ul>
+                        </div>
+                    </accordion-group>
+                    <accordion-group is-open="exportingnotes.open" ng-class="'panel-info'">
+                        <accordion-heading>
+                            <span class="glyphicon glyphicon-info-sign pull-left" style="padding-right: 4px"></span>Notes on export <i class="pull-right glyphicon" ng-class="{'glyphicon-chevron-down': exportingnotes.open, 'glyphicon-chevron-right': !exportingnotes.open}"></i>
+                        </accordion-heading>
+                        <div>
+                            <ul>
+                                <li>Comma Separated Values (CSV) format only supported for now.</li>
+                                <li>Duplicate assessments are filtered automatically.</li>
+                                <li>Data which is not present is represented by '-' (hyphen) in export files.</li>
+                                <li>Ignored factors have a score of 0 (they are not included in parameter average calculation).</li>
+                                <li>Assessments in export files are ordered by date, starting from the most recent assessment.</li>
+                                <li>Exporting assessments based on different templates in a single export is not supported.</li>
+                            </ul>
+                        </div>
+                    </accordion-group>
+                </accordion>
+            </div>
+        </div>
+        <div>
+            <div>
+                <div class="form-group row" ng-controller="ExportAssessStudySelectionCtrl as searchStudyCtrl">
+                    <label class="col-xs-12 col-md-3" for="{{searchStudyCtrl.selectId}}">Study: </label>
+                    <div class="col-xs-12 col-md-9">
+                        <aw-search-select2 elem-id="{{searchStudyCtrl.selectId}}" controller="searchStudyCtrl"></aw-search-select2>
+                    </div>
+                </div>
+                <div class="form-group row" ng-controller="ExportAssessStudyGroupSelectionCtrl as searchStudyGroupCtrl">
+                    <div ng-show="searchStudyGroupCtrl.disabled">
+                        <label class="col-xs-12 col-md-3" for="searchStudyGroupDummySelect">Study group: </label>
+                        <div class="col-xs-12 col-md-9">
+                            <input type="text" disabled="disabled" placeholder="To enable select a study first" class="form-control input-sm" id="searchStudyGroupDummySelect">
+                        </div>
+                    </div>
+                    <div ng-hide="searchStudyGroupCtrl.disabled">
+                        <label class="col-xs-12 col-md-3" for="{{searchStudyGroupCtrl.selectId}}">Study group: </label>
+                        <div class="col-xs-12 col-md-9">
+                            <aw-search-select2 elem-id="{{searchStudyGroupCtrl.selectId}}" controller="searchStudyGroupCtrl"></aw-search-select2>
+                        </div>
+                    </div>
+                </div>
+                <div class="form-group row" ng-controller="ExportAssessAnimalSelectionCtrl as searchAnimalCtrl">
+                    <label class="col-xs-12 col-md-3" for="{{searchAnimalCtrl.selectId}}">Animal: </label>
+                    <div class="col-xs-12 col-md-9">
+                        <aw-search-select2 elem-id="{{searchAnimalCtrl.selectId}}" controller="searchAnimalCtrl"></aw-search-select2>
+                    </div>
+                </div>
+                <div class="form-group row" ng-controller="ExportAssessDateFromSelectionCtrl as searchDateFromCtrl">
+                    <label class="col-xs-12 col-md-3" for="{{searchDateFromCtrl.selectId}}">Date from: </label>
+                    <div class="col-xs-6 col-md-2">
+                        <aw-date-picker elem-id="{{searchDateFromCtrl.selectId}}" today-highlight="false" controller="searchDateFromCtrl"></aw-date-picker>
+                    </div>
+                    <div class="col-xs-6 col-md-1">
+                        <button type="button" class="btn btn-default" ng-click="searchDateFromCtrl.clearDate()">Clear date</button>
+                    </div>
+                </div>
+                <div class="form-group row" ng-controller="ExportAssessDateToSelectionCtrl as searchDateToCtrl">
+                    <label class="col-xs-12 col-md-3" for="{{searchDateToCtrl.selectId}}">Date to: </label>
+                    <div class="col-xs-6 col-md-2">
+                        <aw-date-picker elem-id="{{searchDateToCtrl.selectId}}" today-highlight="false" controller="searchDateToCtrl"></aw-date-picker>
+                    </div>
+                    <div class="col-xs-6 col-md-1">
+                        <button type="button" class="btn btn-default" ng-click="searchDateToCtrl.clearDate()">Clear date</button>
+                    </div>
+                </div>
+                <div class="form-group row" ng-controller="ExportAssessReasonSelectionCtrl as searchReasonCtrl">
+                    <label class="col-xs-12 col-md-3" for="{{searchReasonCtrl.selectId}}">Reason: </label>
+                    <div class="col-xs-12 col-md-9">
+                        <aw-search-select2 elem-id="{{searchReasonCtrl.selectId}}" controller="searchReasonCtrl"></aw-search-select2>
+                    </div>
+                </div>
+                <div class="form-group row" ng-controller="ExportAssessUserSelectionCtrl as searchUserCtrl">
+                    <label class="col-xs-12 col-md-3" for="{{searchUserCtrl.selectId}}">Performed by: </label>
+                    <div class="col-xs-12 col-md-9">
+                        <aw-search-select2 elem-id="{{searchUserCtrl.selectId}}" controller="searchUserCtrl"></aw-search-select2>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div>
+            <aw-error-display errors="mainCtrl.errors"></aw-error-display>
+        </div>
+        <div class="row" ng-hide="mainCtrl.isCriteriaSpecified">
+            <div class="bg-info">
+                <span class="glyphicon glyphicon-info-sign pull-left" style="padding-right: 4px"></span>
+                <p>If no search criteria are specified, all complete assessments are selected. Specify search criteria to choose specific assessments to be exported.</p>
+            </div>
+        </div>
+        <div ng-controller="ExportAssessExportCtrl as exportCtrl">
+            <div class="row" ng-hide="model.assessmentsCounter">
+                <div class="bg-warning">
+                    <span class="glyphicon glyphicon-info-sign pull-left" style="padding-right: 4px"></span>
+                    <p>There seem to be no complete assessments meeting the search criteria. Please adjust the criteria.</p>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-sm-12"><h3>Assessments that can be exported based on the search criteria: <span class="label label-success">{{model.assessmentsCounter}}</span></h3></div>
+            </div>
+            <div>
+                <aw-error-display errors="exportCtrl.errors"></aw-error-display>
+            </div>
+            <hr />
+            <div class="form-group row aw-btns-panel">
+                <div class="col-xs-12">
+                    <button type="button" class="btn btn-primary btn-lg" ng-disabled="!model.assessmentsCounter" ng-click="exportCtrl.onAddExportBtnClick()">
+                        Add selection to export
+                    </button>
+                    <button type="button" class="btn btn-danger btn-lg" ng-click="mainCtrl.clearCriteria()">
+                        Clear search criteria
+                    </button>
+                </div>
+            </div>
+            <div class="form-group row aw-btns-panel">
+                <div class="col-xs-12">
+                    <button type="button" class="btn btn-success btn-lg" ng-click="exportCtrl.onExportBtnClick()" ng-disabled="!exportCtrl.exports.length" ng-hide="exportCtrl.exports.length">Export assessments - add selection to enable export</button>
+                    <button type="button" class="btn btn-success btn-lg" ng-click="exportCtrl.onExportBtnClick()" ng-show="exportCtrl.exports.length">Export assessments</button>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-xs-12" style="margin-bottom: 1em;" ng-show="exportCtrl.exports.length">
+                    <h4 style="margin-bottom:0">Selections to be included in the export:</h4>
+                </div>
+                <div class="col-xs-12" style="margin-bottom: 1em;" ng-show="exportCtrl.exports.length">
+                    <button class="btn btn-danger" ng-click="exportCtrl.removeAllFromExport()">Remove all from export</button>
+                </div>                
+                <div class="col-xs-12" ng-hide="exportCtrl.exports.length">
+                    <h4>Each selection will be displayed below once added</h4>
+                </div>
+                <div ng-show="exportCtrl.exports.length && !exportCtrl.isExporting">
+                    <div class="table-responsive">
+                        <table class="table table-striped table-bordered table-condensed">
+                            <thead>
+                                <th>#</th>
+                                <th>Search criteria</th>
+                                <th>Assessments matching criteria</th>
+                                <th></th>
+                            </thead>
+                            <tbody>
+                                <tr ng-repeat="export in exportCtrl.exports">
+                                    <td>{{$index + 1}}</td>
+                                    <td>{{export.searchCriteriaSummary}}</td>
+                                    <td><span class="badge">{{export.noOfAssessments}}</span></td>
+                                    <td><button class="btn btn-danger" ng-click="exportCtrl.removeFromExport(export.searchCriteriaSummary)">Remove from export</button></td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+                <div class="col-xs-12" ng-show="exportCtrl.isExporting">
+                    <progressbar class="progress-striped" max="100" value="100" type="warning"><b style="color:black;">Exporting assessments...</b></progressbar>
+                </div>
+            </div>
+            <div class="form-group row aw-btns-panel" ng-show="exportCtrl.exports.length >= 10">
+                <div class="col-xs-12">
+                    <button type="button" class="btn btn-success btn-lg" ng-click="exportCtrl.onExportBtnClick()">Export assessments</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

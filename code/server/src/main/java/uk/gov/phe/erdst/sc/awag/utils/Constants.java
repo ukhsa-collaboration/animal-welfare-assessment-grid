@@ -20,6 +20,9 @@ public final class Constants
     public static final String OUTPUT_ENCODING_UTF_8 = "UTF-8";
     public static final String OUTPUT_DATE_FORMAT = "yyyyMMdd'T'HHmmss'Z'";
     public static final String OUTPUT_FILES_PREFIX = "awag";
+    public static final String OUTPUT_NUMERICAL_VALUES_FORMAT = "#.##";
+    public static final CharSequence ARR_START = "[";
+    public static final CharSequence ARR_END = "]";
 
     private Constants()
     {

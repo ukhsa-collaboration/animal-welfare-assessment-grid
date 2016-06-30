@@ -2,6 +2,7 @@ package uk.gov.phe.erdst.sc.awag.businesslogic.impl;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
 import java.util.Set;
 
@@ -19,16 +20,25 @@ import uk.gov.phe.erdst.sc.awag.datamodel.AssessmentScore;
 import uk.gov.phe.erdst.sc.awag.datamodel.AssessmentTemplate;
 import uk.gov.phe.erdst.sc.awag.datamodel.client.AssessmentClientData;
 import uk.gov.phe.erdst.sc.awag.datamodel.response.ResponsePayload;
-import uk.gov.phe.erdst.sc.awag.dto.AssessmentFullDto;
-import uk.gov.phe.erdst.sc.awag.dto.AssessmentSearchPreviewDto;
-import uk.gov.phe.erdst.sc.awag.dto.AssessmentsDto;
-import uk.gov.phe.erdst.sc.awag.dto.PreviousAssessmentDto;
+import uk.gov.phe.erdst.sc.awag.dto.EntitySelectDto;
+import uk.gov.phe.erdst.sc.awag.dto.assessment.AssessmentFullDto;
+import uk.gov.phe.erdst.sc.awag.dto.assessment.AssessmentSearchPreviewDto;
+import uk.gov.phe.erdst.sc.awag.dto.assessment.AssessmentsDto;
+import uk.gov.phe.erdst.sc.awag.dto.assessment.AssessmentsDynamicSearchDto;
+import uk.gov.phe.erdst.sc.awag.dto.assessment.ParametersOrdering;
+import uk.gov.phe.erdst.sc.awag.dto.assessment.PreviousAssessmentDto;
 import uk.gov.phe.erdst.sc.awag.exceptions.AWAssessmentCreationException;
 import uk.gov.phe.erdst.sc.awag.exceptions.AWNoSuchEntityException;
+import uk.gov.phe.erdst.sc.awag.service.CwasCalculator;
+import uk.gov.phe.erdst.sc.awag.service.extractor.assessment.AssessmentUniqueValuesExtractor;
+import uk.gov.phe.erdst.sc.awag.service.extractor.assessment.AssessmentUniqueValuesExtractor.DatesBorderValues;
+import uk.gov.phe.erdst.sc.awag.service.extractor.assessment.UniqueEntitySelectCollectionDto;
+import uk.gov.phe.erdst.sc.awag.service.factory.EntitySelectDtoFactory;
 import uk.gov.phe.erdst.sc.awag.service.factory.assessment.AssessmentDtoFactory;
 import uk.gov.phe.erdst.sc.awag.service.factory.assessment.AssessmentFactory;
 import uk.gov.phe.erdst.sc.awag.service.factory.assessment.AssessmentPartsFactory;
 import uk.gov.phe.erdst.sc.awag.service.factory.impl.AssessmentPartsFactoryImpl.AssessmentParts;
+import uk.gov.phe.erdst.sc.awag.service.factory.template.ParametersOrderingFactory;
 import uk.gov.phe.erdst.sc.awag.service.logging.LoggedActions;
 import uk.gov.phe.erdst.sc.awag.service.logging.LoggedActivity;
 import uk.gov.phe.erdst.sc.awag.service.logging.LoggedUser;
@@ -50,6 +60,9 @@ public class AssessmentControllerImpl implements AssessmentController
     private AssessmentDtoFactory mAssessmentDtoFactory;
 
     @Inject
+    private EntitySelectDtoFactory mEntitySelectDtoFactory;
+
+    @Inject
     private AssessmentDao mAssessmentDao;
 
     @EJB
@@ -61,10 +74,25 @@ public class AssessmentControllerImpl implements AssessmentController
     @Inject
     private ResponsePager mResponsePager;
 
+    @Inject
+    private AssessmentUniqueValuesExtractor mAssessmentUniqueValuesExtractor;
+
+    @Inject
+    private CwasCalculator mCwasCalculator;
+
+    @Inject
+    private ParametersOrderingFactory mParametersOrderingFactory;
+
     @Override
     public Long getAssessmentsCount()
     {
         return mAssessmentDao.getCountAssessments();
+    }
+
+    @Override
+    public Long getAssessmentsCountByCompleteness(boolean isComplete)
+    {
+        return mAssessmentDao.getAssessmentsByCompleteness(isComplete);
     }
 
     @Override
@@ -104,6 +132,59 @@ public class AssessmentControllerImpl implements AssessmentController
         }
 
         return dtos;
+    }
+
+    @Override
+    public AssessmentsDynamicSearchDto getAssessmentsDynamicSearchDto(Long studyId, Long studyGroupId, Long animalId,
+        String dateFrom, String dateTo, Long userId, Long reasonId, ResponsePayload responsePayload)
+    {
+        Collection<Assessment> assessments = Collections.emptyList();
+
+        final boolean isFiltersSet = checkIsFiltersSet(studyId, studyGroupId, animalId, dateFrom, dateTo, userId,
+            reasonId);
+
+        assessments = mAssessmentDao
+            .getAssessments(studyId, studyGroupId, animalId, dateFrom, dateTo, userId, reasonId);
+
+        UniqueEntitySelectCollectionDto values;
+        DatesBorderValues dateValues;
+
+        final boolean isStudySet = studyId != null;
+
+        if (isFiltersSet)
+        {
+            values = mAssessmentUniqueValuesExtractor.extract(assessments, isStudySet);
+            dateValues = mAssessmentUniqueValuesExtractor.extractDatesBorderValues(assessments);
+        }
+        else
+        {
+            Collection<Assessment> empty = Collections.emptyList();
+            values = mAssessmentUniqueValuesExtractor.extract(empty, isStudySet);
+            dateValues = mAssessmentUniqueValuesExtractor.extractDatesBorderValues(empty);
+        }
+
+        Collection<EntitySelectDto> assessmentDtos = mEntitySelectDtoFactory.createEntitySelectDtos(assessments);
+
+        AssessmentsDynamicSearchDto dto = new AssessmentsDynamicSearchDto();
+        dto.assessments = assessmentDtos;
+        dto.filterValues = values;
+        dto.dateOfFirstAssessment = dateValues.dateOfFirstAssessment;
+        dto.dateOfLastAssessment = dateValues.dateOfLastAssessment;
+
+        return dto;
+    }
+
+    private boolean checkIsFiltersSet(Object... filters)
+    {
+        for (Object filter : filters)
+        {
+            if (filter != null)
+            {
+                return true;
+            }
+        }
+
+        return false;
     }
 
     @Override
@@ -224,7 +305,7 @@ public class AssessmentControllerImpl implements AssessmentController
 
     @Override
     public AssessmentsDto getAnimalAssessmentsBetween(String dateFrom, String dateTo, Long animalId, Integer offset,
-        Integer limit, ResponsePayload responsePayload, boolean includeMetadata)
+        Integer limit, ResponsePayload responsePayload, boolean includeMetadata) throws AWNoSuchEntityException
     {
         List<Assessment> assessments = mAssessmentDao.getAnimalAssessmentsBetween(dateFrom, dateTo, animalId, true,
             offset, limit);
@@ -236,7 +317,10 @@ public class AssessmentControllerImpl implements AssessmentController
             mResponsePager.setPagingTotalsMetadata(offset, limit, assessmentsCount, responsePayload);
         }
 
-        AssessmentsDto assessmentsDto = mAssessmentDtoFactory.createAssessmentsDto(assessments);
+        AssessmentTemplate template = mAssessmentTemplateController.getAssessmentTemplateByAnimalId(animalId);
+        ParametersOrdering parametersOrdering = mParametersOrderingFactory.getParameterOrdering(template);
+
+        AssessmentsDto assessmentsDto = mAssessmentDtoFactory.createAssessmentsDto(assessments, parametersOrdering);
 
         return assessmentsDto;
     }
@@ -247,7 +331,10 @@ public class AssessmentControllerImpl implements AssessmentController
         try
         {
             Assessment assessment = mAssessmentDao.getAssessment(assessmentId);
-            return mAssessmentDtoFactory.createAssessmentFullDto(assessment);
+            AssessmentTemplate template = mAssessmentTemplateController.getAssessmentTemplateByAnimalId(assessment
+                .getAnimal().getId());
+            ParametersOrdering parametersOrdering = mParametersOrderingFactory.getParameterOrdering(template);
+            return mAssessmentDtoFactory.createAssessmentFullDto(assessment, parametersOrdering);
         }
         catch (AWNoSuchEntityException e)
         {
@@ -275,5 +362,17 @@ public class AssessmentControllerImpl implements AssessmentController
     {
         Assessment assessment = mAssessmentDao.getAssessment(assessmentId);
         mAssessmentDao.deleteAssessment(assessment);
+    }
+
+    @Override
+    public Collection<Assessment> getAssessments(Long[] ids)
+    {
+        return mAssessmentDao.getAssessmentsByIds(ids);
+    }
+
+    @Override
+    public double getCwasForAssessment(AssessmentFullDto assessmentFullDto)
+    {
+        return mCwasCalculator.calculateCwas(assessmentFullDto);
     }
 }

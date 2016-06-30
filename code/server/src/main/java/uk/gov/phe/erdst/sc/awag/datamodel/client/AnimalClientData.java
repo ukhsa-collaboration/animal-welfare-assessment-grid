@@ -76,6 +76,12 @@ public class AnimalClientData
         this.id = id;
     }
 
+    public AnimalClientData(Long id, String animalNumber)
+    {
+        this.id = id;
+        this.number = animalNumber;
+    }
+
     @Override
     public int hashCode()
     {

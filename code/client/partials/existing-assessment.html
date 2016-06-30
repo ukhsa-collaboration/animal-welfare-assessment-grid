@@ -82,8 +82,9 @@
                     </accordion-heading>
                     <div ng-controller="ExistAssessFormResultsCtrl as resultsCtrl">
                         <div class="row">
-                            <div ng-show="resultsCtrl.availableAssessments != 0" style="margin-left:1em;">
+                            <div ng-show="resultsCtrl.availableAssessments != 0" style="margin-left:1em; margin-bottom: 0.5em;">
                                 <h4>Found: {{resultsCtrl.availableAssessments}} assessments</h4>
+                                <div>Assessments are ordered by date, starting from the most recent assessment.</div>
                             </div>
                         </div>
                         <div ng-show="mainCtrl.resultsDirty" class="row">

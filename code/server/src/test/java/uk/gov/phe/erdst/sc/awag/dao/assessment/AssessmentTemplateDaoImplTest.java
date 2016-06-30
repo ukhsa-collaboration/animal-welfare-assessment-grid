@@ -25,22 +25,21 @@ public class AssessmentTemplateDaoImplTest
     @BeforeClass
     public static void setUpClass()
     {
-        // GlassfishTestsHelper.eclipsePropertiesTest();
         GlassfishTestsHelper.preTestSetup();
     }
 
     @BeforeMethod
     public void setUp() throws Exception
     {
-        mAssessmentTemplateDao = (AssessmentTemplateDao) GlassfishTestsHelper
-            .lookupMultiInterface("AssessmentTemplateDaoImpl", AssessmentTemplateDao.class);
+        mAssessmentTemplateDao = (AssessmentTemplateDao) GlassfishTestsHelper.lookupMultiInterface(
+            "AssessmentTemplateDaoImpl", AssessmentTemplateDao.class);
     }
 
     @Test
     public void testGetAssessmentTemplatesLike()
     {
-        List<AssessmentTemplate> assessmentTemplates = mAssessmentTemplateDao
-            .getEntitiesLike(ASSESSMENT_TEMPLATE_LIKE_TERM, null, null);
+        List<AssessmentTemplate> assessmentTemplates = mAssessmentTemplateDao.getEntitiesLike(
+            ASSESSMENT_TEMPLATE_LIKE_TERM, null, null);
         Assert.assertEquals(assessmentTemplates.size(), EXPECTED_TEMPLATE_LIKE);
     }
 

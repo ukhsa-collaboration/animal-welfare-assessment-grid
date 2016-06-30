@@ -2,40 +2,22 @@ var activityLogServices = angular.module('activityLogServices', ['dataServices',
 
 activityLogServices.factory('activityLogService', ['dataService', 'appConfig', 'cookieUtils', 
 function(dataService, appConfig, cookieUtils) {
-	var activityLogServlet = "activitylog";
 	var downloadCookie = "activityLogDownloadStatus";
 	var downloadCookieExpectedValue = "finished";
 
-	var getActivityLogBetween = function(dateFrom, dateTo, fnSuccessCallback){
+	var exportActivityLogBetween = function(dateFrom, dateTo, fnSuccessCallback){
 		var parameters = {};
 		parameters[appConfig.services.actionParams.dateFrom] = dateFrom;
 		parameters[appConfig.services.actionParams.dateTo] = dateTo;
+		var exportType = 'activitylogs';
 
-		_onDownloadStarted(fnSuccessCallback);
+        var downloadHandler = dataService.getDownloadHandler(fnSuccessCallback, downloadCookie, downloadCookieExpectedValue);
+        downloadHandler(fnSuccessCallback, downloadCookie, downloadCookieExpectedValue);
 
-		var iFrameElem = jQuery("#activityLogIframe");
-		dataService.downloadFileViaIframe(iFrameElem, {
-			servlet : activityLogServlet,
-			parameters : parameters
-		});
-	};
-
-	var _onDownloadStarted = function(fnSuccessCallback) {
-	  	var attempts = 15;
-	    downloadTimer = window.setInterval( function() {
-			var cookie = cookieUtils.getCookie(downloadCookie);
-			
-			if( cookie === downloadCookieExpectedValue || (attempts == 0) ) {
-				window.clearInterval(downloadTimer);
-				fnSuccessCallback();
-			}
-
-			attempts--;
-
-		}, 1000 );
+		dataService.exportDataAsFile({parameters : parameters}, exportType);
 	};
 
 	return {
-		getActivityLogBetween : getActivityLogBetween
+		exportActivityLogBetween : exportActivityLogBetween
 	};
 }]);

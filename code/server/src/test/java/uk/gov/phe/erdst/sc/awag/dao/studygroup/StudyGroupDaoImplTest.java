@@ -23,8 +23,10 @@ import uk.gov.phe.erdst.sc.awag.utils.GlassfishTestsHelper;
 @Test(groups = {TestConstants.TESTNG_CONTAINER_TESTS_GROUP})
 public class StudyGroupDaoImplTest
 {
+    public static final Long STUDY_GROUP_ONE_ID = 10000L;
+    public static final Long STUDY_GROUP_TWO_ID = 10001L;
+
     private static final String STUDY_GROUP_LIKE_TERM = "Stu";
-    private static final Long STUDY_GROUP_ONE_ID = 10000L;
     private static final String STUDY_GROUP_ONE_NAME = "Study group 1";
     private static final String STUDY_GROUP_FOUR_NAME = "Study group 4";
     private static final String STUDY_GROUP_ONE_NAME_NEW = "New study group 2";
@@ -38,7 +40,6 @@ public class StudyGroupDaoImplTest
     @BeforeClass
     public static void setUpClass()
     {
-        // GlassfishTestsHelper.eclipsePropertiesTest();
         GlassfishTestsHelper.preTestSetup();
     }
 
@@ -67,30 +68,30 @@ public class StudyGroupDaoImplTest
     @Test
     public void testGetStudyGroupsLikePagedNoLimit()
     {
-        List<StudyGroup> allStudyGroups = new ArrayList<StudyGroup>(
-            mStudyGroupDao.getStudyGroupsLike(STUDY_GROUP_LIKE_TERM, null, null));
-        List<StudyGroup> pagedStudyGroups = new ArrayList<StudyGroup>(
-            mStudyGroupDao.getStudyGroupsLike(STUDY_GROUP_LIKE_TERM, TestConstants.TEST_OFFSET, null));
+        List<StudyGroup> allStudyGroups = new ArrayList<StudyGroup>(mStudyGroupDao.getStudyGroupsLike(
+            STUDY_GROUP_LIKE_TERM, null, null));
+        List<StudyGroup> pagedStudyGroups = new ArrayList<StudyGroup>(mStudyGroupDao.getStudyGroupsLike(
+            STUDY_GROUP_LIKE_TERM, TestConstants.TEST_OFFSET, null));
         PageTestAsserter.assertPagedNoLimit(allStudyGroups, pagedStudyGroups);
     }
 
     @Test
     public void testGetStudyGroupsLikePagedNoOffset()
     {
-        List<StudyGroup> allStudyGroups = new ArrayList<StudyGroup>(
-            mStudyGroupDao.getStudyGroupsLike(STUDY_GROUP_LIKE_TERM, null, null));
-        List<StudyGroup> pagedStudyGroups = new ArrayList<StudyGroup>(
-            mStudyGroupDao.getStudyGroupsLike(STUDY_GROUP_LIKE_TERM, null, TestConstants.TEST_LIMIT));
+        List<StudyGroup> allStudyGroups = new ArrayList<StudyGroup>(mStudyGroupDao.getStudyGroupsLike(
+            STUDY_GROUP_LIKE_TERM, null, null));
+        List<StudyGroup> pagedStudyGroups = new ArrayList<StudyGroup>(mStudyGroupDao.getStudyGroupsLike(
+            STUDY_GROUP_LIKE_TERM, null, TestConstants.TEST_LIMIT));
         PageTestAsserter.assertPagedNoOffset(allStudyGroups, pagedStudyGroups);
     }
 
     @Test
     public void testGetStudyGroupsLikeValidOffsetLimit()
     {
-        List<StudyGroup> allStudyGroups = new ArrayList<StudyGroup>(
-            mStudyGroupDao.getStudyGroupsLike(STUDY_GROUP_LIKE_TERM, null, null));
-        List<StudyGroup> pagedStudyGroups = new ArrayList<StudyGroup>(mStudyGroupDao
-            .getStudyGroupsLike(STUDY_GROUP_LIKE_TERM, TestConstants.TEST_OFFSET, TestConstants.TEST_LIMIT));
+        List<StudyGroup> allStudyGroups = new ArrayList<StudyGroup>(mStudyGroupDao.getStudyGroupsLike(
+            STUDY_GROUP_LIKE_TERM, null, null));
+        List<StudyGroup> pagedStudyGroups = new ArrayList<StudyGroup>(mStudyGroupDao.getStudyGroupsLike(
+            STUDY_GROUP_LIKE_TERM, TestConstants.TEST_OFFSET, TestConstants.TEST_LIMIT));
         PageTestAsserter.assertPagedValidOffsetLimit(allStudyGroups, pagedStudyGroups);
     }
 

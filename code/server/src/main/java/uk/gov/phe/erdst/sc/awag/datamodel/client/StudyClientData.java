@@ -8,8 +8,10 @@ import javax.validation.constraints.Pattern;
 import javax.validation.constraints.Size;
 
 import uk.gov.phe.erdst.sc.awag.service.validation.annotations.ValidId;
+import uk.gov.phe.erdst.sc.awag.service.validation.annotations.ValidStudy;
 import uk.gov.phe.erdst.sc.awag.service.validation.utils.ValidationConstants;
 
+@ValidStudy
 public class StudyClientData
 {
     @ValidId(message = ValidationConstants.STUDY_ENTITY_NAME, payload = ValidationConstants.ValidIdRange.class)

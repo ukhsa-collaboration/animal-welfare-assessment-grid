@@ -20,6 +20,7 @@ import uk.gov.phe.erdst.sc.awag.utils.GlassfishTestsHelper;
 public class AssessmentReasonDaoImplTest
 {
     public static final Long REASON_1_ID = 10000L;
+    public static final Long REASON_2_ID = 10001L;
     private static final String REASON_1_NAME = "Reason 1";
     private static final String REASON_1_NEW_NAME = "Test Reason 1";
     private static final Long NON_EXISTENT_REASON_ID = 10004L;
@@ -33,15 +34,14 @@ public class AssessmentReasonDaoImplTest
     @BeforeClass
     public static void setUpClass()
     {
-        // GlassfishTestsHelper.eclipsePropertiesTest();
         GlassfishTestsHelper.preTestSetup();
     }
 
     @BeforeMethod
     public void setUp() throws Exception
     {
-        mAssessmentReasonDao = (AssessmentReasonDao) GlassfishTestsHelper
-            .lookupMultiInterface("AssessmentReasonDaoImpl", AssessmentReasonDao.class);
+        mAssessmentReasonDao = (AssessmentReasonDao) GlassfishTestsHelper.lookupMultiInterface(
+            "AssessmentReasonDaoImpl", AssessmentReasonDao.class);
     }
 
     @Test

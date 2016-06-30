@@ -13,11 +13,13 @@ public final class ValidationConstants
     public static final String VALID_ANIMAL_ANNOT_DEFAULT_MSG = "Invalid animal";
     public static final String VALID_SCALE_ANNOT_DEFAULT_MSG = "Invalid scale";
     public static final String VALID_DATE_ANNOT_DEFAULT_MSG = "Invalid date";
+    public static final String VALID_STUDY_ANNOT_DEFAUL_MSG = "Invalid study";
     public static final String VALID_ASSESSMENT_SCORE_ANNOT_DEFAULT_MSG = "Invalid score";
     public static final String SIMPLE_TEXT_INPUT_ANNOT_DEFAULT_MSG = "Invalid text input";
     public static final String VALID_ASSESSMENTS_GET_REQUEST_ANNOT_DEFAULT_MSG = "Invalid assessments get request";
     public static final String VALID_ACTIVITY_LOG_GET_REQUEST_ANNOT_DEFAULT_MSG = "Invalid activity log get request";
     public static final String VALID_USER_AUTH_ANNOT_DEFAULT_MSG = "Invalid authentication details";
+    public static final String VALID_IDS_ARRAY_ANNOT_DEFAULT_MESSAGE = "Invalid Id in array";
 
     public static final String NO_ERR_TEMPLATE = "No error template set";
 
@@ -175,14 +177,14 @@ public final class ValidationConstants
         + "scale (min: %s, max: %s)";
 
     public static final String ERR_ASSESSMENT_TEMPLATE_MISMATCH_FORMAT = "%s %s do not match template used";
-    public static final String ERR_ASSESSMENT_TEMPLATE_FACTORS_MISMATCH = String
-        .format(ERR_ASSESSMENT_TEMPLATE_MISMATCH_FORMAT, "Sent", "factors");
-    public static final String ERR_ASSESSMENT_TEMPLATE_PARAMETERS_MISMATCH = String
-        .format(ERR_ASSESSMENT_TEMPLATE_MISMATCH_FORMAT, "Sent", "parameters");
-    public static final String ERR_ASSESSMENT_TEMPLATE_SUBMITTED_FACTORS_MISMATCH = String
-        .format(ERR_ASSESSMENT_TEMPLATE_MISMATCH_FORMAT, "Submitted", "factors");
-    public static final String ERR_ASSESSMENT_TEMPLATE_SUBMITTED_PARAMETERS_MISMATCH = String
-        .format(ERR_ASSESSMENT_TEMPLATE_MISMATCH_FORMAT, "Submitted", "parameters");
+    public static final String ERR_ASSESSMENT_TEMPLATE_FACTORS_MISMATCH = String.format(
+        ERR_ASSESSMENT_TEMPLATE_MISMATCH_FORMAT, "Sent", "factors");
+    public static final String ERR_ASSESSMENT_TEMPLATE_PARAMETERS_MISMATCH = String.format(
+        ERR_ASSESSMENT_TEMPLATE_MISMATCH_FORMAT, "Sent", "parameters");
+    public static final String ERR_ASSESSMENT_TEMPLATE_SUBMITTED_FACTORS_MISMATCH = String.format(
+        ERR_ASSESSMENT_TEMPLATE_MISMATCH_FORMAT, "Submitted", "factors");
+    public static final String ERR_ASSESSMENT_TEMPLATE_SUBMITTED_PARAMETERS_MISMATCH = String.format(
+        ERR_ASSESSMENT_TEMPLATE_MISMATCH_FORMAT, "Submitted", "parameters");
 
     public static final String PAGING_OFFSET_NAME = "Offset";
     public static final String PAGING_LIMIT_NAME = "Limit";
@@ -200,8 +202,8 @@ public final class ValidationConstants
 
     public static final String ERR_SEX_PARAM = String.format("Sex parameter %s should be set to %s or %s.",
         ServletConstants.REQ_PARAM_SEX, ServletConstants.REQ_PARAM_SEX_F, ServletConstants.REQ_PARAM_SEX_M);
-    public static final String ERR_CALLBACK_PARAM = String
-        .format("The callback parameter %s must be provided for GET requests.", ServletConstants.REQ_PARAM_CALLBACK);
+    public static final String ERR_CALLBACK_PARAM = String.format(
+        "The callback parameter %s must be provided for GET requests.", ServletConstants.REQ_PARAM_CALLBACK);
     public static final String ERR_ACTION_PARAM = String.format("The action parameter %s must be provided.",
         ServletConstants.REQ_PARAM_ACTION);
     public static final String ERR_LIKE_PARAM = String.format(
@@ -228,6 +230,7 @@ public final class ValidationConstants
         ServletConstants.REQ_PARAM_STUDY_GROUP);
     public static final String ERR_TEMPLATE_ID_PARAM = String.format("The template id parameter %s must be provided.",
         ServletConstants.REQ_PARAM_TEMPLATE_ID);
+    public static final String ERR_STUDY_DUP_ANIMALS = "Study groups in this study contain the following duplicate animals: %s.";
 
     public static final String ERR_ASSESSMENTS_GET_DATE_PARAMS = ERR_FROM_TO_DATE_PARAMS;
 

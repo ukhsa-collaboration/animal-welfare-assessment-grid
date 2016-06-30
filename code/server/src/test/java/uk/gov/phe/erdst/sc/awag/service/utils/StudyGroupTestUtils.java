@@ -22,6 +22,13 @@ public final class StudyGroupTestUtils
         return studyGroup;
     }
 
+    public static StudyGroup getStudyGroupWithoutAnimals(Long id, String groupNumber)
+    {
+        StudyGroup studyGroup = new StudyGroup(id);
+        studyGroup.setStudyGroupNumber(groupNumber);
+        return studyGroup;
+    }
+
     public static StudyGroup getStudyGroupWithAnimals()
     {
         StudyGroup studyGroup = new StudyGroup();

@@ -36,6 +36,9 @@ public interface AssessmentDao
     Collection<Assessment> getAssessments(Long animalId, String dateFrom, String dateTo, Long userId, Long reasonId,
         Long studyId, Boolean isComplete, Integer offset, Integer limit);
 
+    Collection<Assessment> getAssessments(Long studyId, Long studyGroupId, Long animalId, String dateFrom,
+        String dateTo, Long userId, Long reasonId);
+
     Long getAssessmentsCount(Long animalId, String dateFrom, String dateTo, Long userId, Long reasonId, Long studyId,
         Boolean isComplete);
 
@@ -52,4 +55,8 @@ public interface AssessmentDao
     long getCountAnimalAssessments(Long animalId);
 
     Long getCountAssessmentsByTemplateId(Long templateId);
+
+    Long getAssessmentsByCompleteness(boolean isComplete);
+
+    Collection<Assessment> getAssessmentsByIds(Long... ids);
 }

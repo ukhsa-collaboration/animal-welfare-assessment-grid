@@ -32,7 +32,7 @@ function($rootScope, $scope, $timeout, dateUtils, formService, activityLogServic
 
         this.onDownloadStart();
 
-        activityLogService.getActivityLogBetween(c.dateFrom, c.dateTo, onSearchSuccess);
+        activityLogService.exportActivityLogBetween(c.dateFrom, c.dateTo, onSearchSuccess);
     };
 
     var onSearchSuccess = function() {
