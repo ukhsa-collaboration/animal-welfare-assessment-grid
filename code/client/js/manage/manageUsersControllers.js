@@ -211,7 +211,7 @@ function($scope, userAuthService, appConfig, $timeout, logonService)
     {
         that.isSuccess = false;
         that.errors = errors;
-    }
+    };
 
     var submitUserCallback = function(data)
     {

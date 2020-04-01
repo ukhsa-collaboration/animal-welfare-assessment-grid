@@ -3,7 +3,8 @@ package uk.gov.phe.erdst.sc.awag.service.factory.assessment;
 import javax.ejb.Stateless;
 
 import uk.gov.phe.erdst.sc.awag.datamodel.AssessmentReason;
-import uk.gov.phe.erdst.sc.awag.datamodel.client.AssessmentReasonClientData;
+import uk.gov.phe.erdst.sc.awag.datamodel.ImportAssessmentReason;
+import uk.gov.phe.erdst.sc.awag.webapi.request.AssessmentReasonClientData;
 
 @Stateless
 public class AssessmentReasonFactory
@@ -12,6 +13,13 @@ public class AssessmentReasonFactory
     {
         AssessmentReason reason = new AssessmentReason();
         reason.setName(clientData.reasonName);
+        return reason;
+    }
+
+    public AssessmentReason create(ImportAssessmentReason importReason)
+    {
+        AssessmentReason reason = new AssessmentReason();
+        reason.setName(importReason.getAssessmentReasonName());
         return reason;
     }
 

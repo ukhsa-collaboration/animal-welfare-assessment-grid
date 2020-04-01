@@ -10,14 +10,16 @@ import javax.validation.ConstraintValidator;
 import javax.validation.ConstraintValidatorContext;
 
 import uk.gov.phe.erdst.sc.awag.dao.AssessmentTemplateDao;
+import uk.gov.phe.erdst.sc.awag.datamodel.Assessment;
 import uk.gov.phe.erdst.sc.awag.datamodel.AssessmentTemplate;
 import uk.gov.phe.erdst.sc.awag.datamodel.Scale;
-import uk.gov.phe.erdst.sc.awag.datamodel.client.AssessmentClientData;
-import uk.gov.phe.erdst.sc.awag.datamodel.client.AssessmentClientFactor;
+import uk.gov.phe.erdst.sc.awag.exceptions.AWInputValidationException;
 import uk.gov.phe.erdst.sc.awag.exceptions.AWNoSuchEntityException;
 import uk.gov.phe.erdst.sc.awag.service.validation.annotations.ValidAssessmentScore;
 import uk.gov.phe.erdst.sc.awag.service.validation.utils.ValidationConstants;
 import uk.gov.phe.erdst.sc.awag.service.validation.utils.ValidatorUtils;
+import uk.gov.phe.erdst.sc.awag.webapi.request.AssessmentClientData;
+import uk.gov.phe.erdst.sc.awag.webapi.request.AssessmentClientFactor;
 
 @Stateless
 public class AssessmentScoreValidator implements ConstraintValidator<ValidAssessmentScore, AssessmentClientData>
@@ -60,6 +62,22 @@ public class AssessmentScoreValidator implements ConstraintValidator<ValidAssess
         return false;
     }
 
+    public static void validateIsScoresVerifiedFlag(boolean isScoresVerified) throws AWInputValidationException
+    {
+        if (!isScoresVerified)
+        {
+            throw new AWInputValidationException(ValidationConstants.ERR_ASSESSMENT_EQUAL_SCORES_NOT_VERIFIED);
+        }
+    }
+
+    public static void validateIsNotCompleteOnUpdate(Assessment assessment) throws AWInputValidationException
+    {
+        if (assessment.isComplete())
+        {
+            throw new AWInputValidationException(ValidationConstants.ERR_ASSESSMENT_UPDATE_COMPLETED_ATTEMPT);
+        }
+    }
+
     private boolean isDataNotNull(AssessmentClientData data, ConstraintValidatorContext context)
     {
         if (data.score == null || data.averageScores == null || data.parameterComments == null)
@@ -98,9 +116,8 @@ public class AssessmentScoreValidator implements ConstraintValidator<ValidAssess
             {
                 violations++;
 
-                context.buildConstraintViolationWithTemplate(
-                    String.format(ValidationConstants.ERR_NOT_NEGATIVE_VALUES,
-                        ValidationConstants.ASSESSMENT_AVERAGE_SCORES)).addConstraintViolation();
+                context.buildConstraintViolationWithTemplate(String.format(ValidationConstants.ERR_NOT_NEGATIVE_VALUES,
+                    ValidationConstants.ASSESSMENT_AVERAGE_SCORES)).addConstraintViolation();
             }
         }
 
@@ -140,9 +157,10 @@ public class AssessmentScoreValidator implements ConstraintValidator<ValidAssess
                 {
                     violations++;
 
-                    context.buildConstraintViolationWithTemplate(
-                        String.format(ValidationConstants.ERR_NOT_NEGATIVE_VALUES,
-                            ValidationConstants.ASSESSMENT_PARAMETER_SCORES)).addConstraintViolation();
+                    context
+                        .buildConstraintViolationWithTemplate(String.format(ValidationConstants.ERR_NOT_NEGATIVE_VALUES,
+                            ValidationConstants.ASSESSMENT_PARAMETER_SCORES))
+                        .addConstraintViolation();
                 }
                 else if (factor.isIgnored)
                 {
@@ -152,16 +170,17 @@ public class AssessmentScoreValidator implements ConstraintValidator<ValidAssess
                 {
                     violations++;
 
-                    context.buildConstraintViolationWithTemplate(
-                        ValidationConstants.ERR_ASSESSMENT_ZERO_NONIGNORED_SCORE).addConstraintViolation();
+                    context
+                        .buildConstraintViolationWithTemplate(ValidationConstants.ERR_ASSESSMENT_ZERO_NONIGNORED_SCORE)
+                        .addConstraintViolation();
                 }
                 else if (factor.score < scale.getMin() || factor.score > scale.getMax())
                 {
                     violations++;
 
-                    context.buildConstraintViolationWithTemplate(
-                        String.format(ValidationConstants.ERR_ASSESSMENT_SCORE_OUTSIDE_SCALE_FORMAT, scale.getMin(),
-                            scale.getMax())).addConstraintViolation();
+                    context.buildConstraintViolationWithTemplate(String.format(
+                        ValidationConstants.ERR_ASSESSMENT_SCORE_OUTSIDE_SCALE_FORMAT, scale.getMin(), scale.getMax()))
+                        .addConstraintViolation();
                 }
             }
         }
@@ -183,8 +202,9 @@ public class AssessmentScoreValidator implements ConstraintValidator<ValidAssess
             {
                 violations++;
 
-                context.buildConstraintViolationWithTemplate(
-                    ValidationConstants.ERR_ASSESSMENT_SCORES_AVERAGES_INCORRECT).addConstraintViolation();
+                context
+                    .buildConstraintViolationWithTemplate(ValidationConstants.ERR_ASSESSMENT_SCORES_AVERAGES_INCORRECT)
+                    .addConstraintViolation();
             }
         }
 
@@ -214,20 +234,18 @@ public class AssessmentScoreValidator implements ConstraintValidator<ValidAssess
                 {
                     violations++;
 
-                    context.buildConstraintViolationWithTemplate(
-                        String.format(ValidationConstants.TEXT_SIZE_CHECK_TEMPLATE,
-                            ValidationConstants.ASSESSMENT_PARAMETER_COMMENTS,
-                            ValidationConstants.SIMPLE_TEXT_INPUT_SIZE_MIN,
-                            ValidationConstants.EXTENDED_SIMPLE_TEXT_INPUT_SIZE_MAX)).addConstraintViolation();
+                    context.buildConstraintViolationWithTemplate(String.format(
+                        ValidationConstants.TEXT_SIZE_CHECK_TEMPLATE, ValidationConstants.ASSESSMENT_PARAMETER_COMMENTS,
+                        ValidationConstants.SIMPLE_TEXT_INPUT_SIZE_MIN,
+                        ValidationConstants.EXTENDED_SIMPLE_TEXT_INPUT_SIZE_MAX)).addConstraintViolation();
                 }
 
                 if (!sIllegalCharactersPattern.matcher(comment).matches())
                 {
                     violations++;
 
-                    context.buildConstraintViolationWithTemplate(
-                        String.format(ValidationConstants.NAME_REGEX_TEMPLATE,
-                            ValidationConstants.ASSESSMENT_PARAMETER_COMMENTS)).addConstraintViolation();
+                    context.buildConstraintViolationWithTemplate(String.format(ValidationConstants.NAME_REGEX_TEMPLATE,
+                        ValidationConstants.ASSESSMENT_PARAMETER_COMMENTS)).addConstraintViolation();
                 }
             }
         }

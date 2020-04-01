@@ -22,6 +22,8 @@ public class FactorDaoImplTest
     private static final Long FACTOR_1_ID = 10000L;
     private static final String FACTOR_1_NAME = "Factor 1";
     private static final String FACTOR_1_NEW_NAME = "Factor 1 (new)";
+    private static final String FACTOR_1_NEW_NAME_WITH_DESC = "Factor 1 (desc)";
+    private static final String FACTOR_1_NEW_DESC = "Description context";
     private static final Long NON_EXISTENT_FACTOR_ID = 10004L;
     private static final String NON_EXISTENT_FACTOR_NAME = "Non existent factor";
     private static final String FACTORS_LIKE_TERM = "Factor";
@@ -131,11 +133,36 @@ public class FactorDaoImplTest
         PageTestAsserter.assertPagedNoLimit(allFactors, pagedFactors);
     }
 
-    private static Factor createFactor(String name)
+    @Test
+    public void testStoreFactorWithDesc() throws AWNonUniqueException, AWNoSuchEntityException
     {
-        Factor factor = new Factor();
-        factor.setName(name);
-        return factor;
+        // TODO validate
+
+        Factor factor = createFactorWithDescription(FACTOR_1_NEW_NAME_WITH_DESC, FACTOR_1_NEW_DESC);
+
+        mFactorDao.store(factor);
+
+        Assert.assertNotEquals(factor.getId(), TestConstants.NON_PERSISTED_ID);
+        Assert.assertEquals(factor.getName(), NON_EXISTENT_FACTOR_NAME);
+
+        mFactorDao.deleteEntityById(factor.getId());
+    }
+
+    @Test
+    public void testUpdateFactorWithDesc() throws AWNoSuchEntityException, AWNonUniqueException
+    {
+        // TODO validate
+
+        Factor factor = createFactorWithDescription(FACTOR_1_NEW_NAME, FACTOR_1_NEW_DESC);
+        factor.setId(FACTOR_1_ID);
+
+        mFactorDao.update(factor);
+
+        Factor updatedFactor = mFactorDao.getEntityById(FACTOR_1_ID);
+        Assert.assertEquals(updatedFactor.getName(), FACTOR_1_NEW_NAME);
+
+        factor.setName(FACTOR_1_NAME);
+        mFactorDao.update(factor);
     }
 
     @AfterClass
@@ -143,4 +170,20 @@ public class FactorDaoImplTest
     {
         GlassfishTestsHelper.onTestFinished();
     }
+
+    private static Factor createFactor(String name)
+    {
+        Factor factor = new Factor();
+        factor.setName(name);
+        return factor;
+    }
+
+    private static Factor createFactorWithDescription(String name, String description)
+    {
+        Factor factor = new Factor();
+        factor.setName(name);
+        factor.setFactorDescription(name);
+        return factor;
+    }
+
 }

@@ -1,95 +1,68 @@
-var studyGroupServices = angular.module('studyGroupServices', ['dataServices', 'appConfigModule', 'pagingUtilsModule']);
+var studyGroupServices = angular.module('studyGroupServices', ['appConfigModule', 'pagingUtilsModule', 'webApiConfigModule', 'newDataServices']);
 
-studyGroupServices.factory('studyGroupService', ['dataService', 'appConfig', 'pagingUtils',
-function(dataService, appConfig, pagingUtils) {
-	var studyGroupServlet = "study-group";
+studyGroupServices.factory('studyGroupService', ['appConfig', 'pagingUtils', 'newDataService', 'webApiConfig',
+  function(appConfig, pagingUtils, newDataService, webApiConfig) {
 
-	var saveStudyGroup = function(studyGroup, successCallback, errCallback) {
-		var parameters = _getStoreDataParameters(studyGroup);
-		dataService.postData({
-			servlet : studyGroupServlet,
-			parameters : parameters,
-			callback : {
-				success : successCallback,
-				error : errCallback
-			}
-		});
-	};
+    var URLS = webApiConfig.webApiUrls.entity.studyGroup;
+    var STUDY_GROUP_NAME_KEY = 'studyGroupName';
+    var STUDY_GROUP_ID_KEY = 'studyGroupId';
 
-	var updateStudyGroup = function(studyGroup, successCallback, errCallback) {
-		dataService.putData({
-			servlet : studyGroupServlet,
-			resourceId : studyGroup.studyGroupId,
-			data : studyGroup,
-			callback : {
-				success : successCallback,
-				error : errCallback
-			}
-		});
-	};
+    var saveStudyGroup = function(studyGroup, successCallback, errCallback) {
+      var onSuccess = function(data) {
+        var response = {};
+        response[STUDY_GROUP_NAME_KEY] = data.value;
+        response[STUDY_GROUP_ID_KEY] = data.id;
+        successCallback(response);
+      }
 
-	var getStudyGroup = function(studyGroupId, successCallback, errCallback) {
-		var parameters = {};
-		parameters[appConfig.services.selectAction] = appConfig.services.selectActions.id;
-		parameters[appConfig.services.actionParams.id] = studyGroupId;
-		dataService.dataConnection({
-			servlet : studyGroupServlet,
-			parameters : parameters,
-			callback : {
-				success : successCallback,
-				error : errCallback
-			}
-		});
-	};
+      newDataService.httpPost(URLS.create, studyGroup, onSuccess, errCallback);
+    };
 
-	var getStudyGroupsLike = function(callback, likeTerm, pagingOptions) {
-		var parameters = {};
-		parameters[appConfig.services.selectAction] = appConfig.services.selectActions.like;
-		parameters[appConfig.services.actionParams.like] = likeTerm;
-		pagingUtils.setPagingParameters(parameters, pagingOptions);	
-		dataService.dataConnection({
-			servlet : studyGroupServlet,
-			parameters : parameters,
-			callback : {
-				success : callback
-			}
-		});
-	};
+    var updateStudyGroup = function(studyGroup, successCallback, errCallback) {
+      var url = URLS.update + studyGroup.studyGroupId;
+      newDataService.httpPut(url, studyGroup, successCallback, errCallback);
+    };
 
-	var getFullStudyGroupsLike = function(callback, likeTerm, pagingOptions) {
-		var parameters = {};
-		parameters[appConfig.services.selectAction] = appConfig.services.selectActions.like;
-		parameters[appConfig.services.actionParams.like] = likeTerm;
-		parameters[appConfig.services.actionParams.all] = appConfig.services.actionParamsValues.all;
-		pagingUtils.setPagingParameters(parameters, pagingOptions);	
-		dataService.dataConnection({
-			servlet : studyGroupServlet,
-			parameters : parameters,
-			callback : {
-				success : callback
-			}
-		});
-	};
+    var uploadStudyGroup = function(data, successCallback, errCallback) {
+      var url = URLS.upload;
+      newDataService.httpPostWithHeaderContentType(url, data, successCallback, errCallback);
+    };    
 
-	var _getStoreDataParameters = function(studyGroup) {
-		return {
-			"study-group" : studyGroup
-		};
-	};
+    var getStudyGroup = function(studyGroupId, successCallback, errCallback) {
+      var parameters = {};
+      var url = URLS.getById + studyGroupId;
+      newDataService.httpGet(url, parameters, successCallback);
+    };
 
-	var getBasicStudyGroup = function(id, name){
-		return {
-			studyGroupId : id,
-			studyGroupName : name
-		};
-	};
+    var getStudyGroupsLike = function(callback, likeTerm, pagingOptions) {
+      var parameters = {};
 
-	return {
-		getStudyGroup : getStudyGroup,
-		getStudyGroupsLike : getStudyGroupsLike,
-		updateStudyGroup : updateStudyGroup,
-		saveStudyGroup : saveStudyGroup,
-		getFullStudyGroupsLike : getFullStudyGroupsLike,
-		getBasicStudyGroup : getBasicStudyGroup
-	};
-}]); 
+      parameters[webApiConfig.webApiParameters.likeFilter] = likeTerm;
+      pagingUtils.newApiSetPagingParameters(parameters, pagingOptions);
+
+      var onSuccess = function(data) {
+        var metadata = pagingUtils.buildPagingMetadata(
+          data[webApiConfig.webApiResponseKeys.pagingInfo], STUDY_GROUP_NAME_KEY, STUDY_GROUP_ID_KEY);
+        callback(data.studyGroups, metadata);
+      };
+
+      newDataService.httpGet(URLS.getLike, parameters, onSuccess);
+    };
+
+    var getBasicStudyGroup = function(id, name) {
+      return {
+        studyGroupId: id,
+        studyGroupName: name
+      };
+    };
+
+    return {
+      getStudyGroup: getStudyGroup,
+      getStudyGroupsLike: getStudyGroupsLike,
+      updateStudyGroup: updateStudyGroup,
+      saveStudyGroup: saveStudyGroup,
+      getBasicStudyGroup: getBasicStudyGroup,
+      uploadStudyGroup: uploadStudyGroup
+    };
+  }
+]);

@@ -17,9 +17,13 @@ public interface SourceDao
 
     Source getSource(Long sourceId) throws AWNoSuchEntityException;
 
+    Source getSource(String sourceName) throws AWNoSuchEntityException; // TODO integration test
+
     void realDelete(Long id);
 
     Long getCountSourcesLike(String like);
 
     Long getCountSources();
+
+    void upload(Collection<Source> sources) throws AWNonUniqueException;
 }

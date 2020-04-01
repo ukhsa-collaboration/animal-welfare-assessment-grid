@@ -5,6 +5,7 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Set;
 
+import javax.validation.ClockProvider;
 import javax.validation.Configuration;
 import javax.validation.ConstraintValidator;
 import javax.validation.ConstraintValidatorContext;
@@ -116,8 +117,8 @@ public final class ValidationTestHelper
     {
         Configuration<?> config = Validation.byDefaultProvider().configure();
 
-        config.constraintValidatorFactory(new CustomConstraintValidatorFactory(config
-            .getDefaultConstraintValidatorFactory(), provider));
+        config.constraintValidatorFactory(
+            new CustomConstraintValidatorFactory(config.getDefaultConstraintValidatorFactory(), provider));
 
         return config.buildValidatorFactory();
     }
@@ -195,6 +196,14 @@ public final class ValidationTestHelper
                 {
                     return null;
                 }
+
+                @Override
+                public ContainerElementNodeBuilderCustomizableContext addContainerElementNode(String name,
+                    Class<?> containerType, Integer typeArgumentIndex)
+                {
+                    return null;
+                }
+
             };
         }
 
@@ -214,5 +223,12 @@ public final class ValidationTestHelper
         {
             return null;
         }
+
+        @Override
+        public ClockProvider getClockProvider()
+        {
+            return null;
+        }
+
     }
 }

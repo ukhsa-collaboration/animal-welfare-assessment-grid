@@ -5,9 +5,11 @@ import java.util.List;
 
 import javax.ejb.Stateless;
 import javax.persistence.EntityManager;
+import javax.persistence.NoResultException;
 import javax.persistence.PersistenceContext;
 import javax.persistence.PersistenceException;
 import javax.persistence.Query;
+import javax.persistence.TypedQuery;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -35,6 +37,25 @@ public class SpeciesDaoImpl implements SpeciesDao
         DaoUtils.setOffset(getSpeciesQuery, offset);
         DaoUtils.setLimit(getSpeciesQuery, limit);
         return getSpeciesQuery.getResultList();
+    }
+
+    @Override
+    public Species getSpecies(String speciesName) throws AWNoSuchEntityException // TODO integration test
+    {
+        TypedQuery<Species> query = mEntityManager.createNamedQuery(Species.Q_FIND_SPECIES_BY_NAME, Species.class)
+            .setParameter("speciesName", speciesName);
+
+        try
+        {
+            return query.getSingleResult();
+        }
+        catch (NoResultException e)
+        {
+            final String errMsg = getNoSuchSpeciesMessage(0L); // TODO test
+            LOGGER.error(errMsg);
+            throw new AWNoSuchEntityException(errMsg);
+        }
+
     }
 
     @SuppressWarnings("unchecked")
@@ -107,16 +128,6 @@ public class SpeciesDaoImpl implements SpeciesDao
         return species;
     }
 
-    private static String getNoSuchSpeciesMessage(Long speciesId)
-    {
-        return DaoUtils.getNoSuchEntityMessage(Species.class.getName(), speciesId);
-    }
-
-    private static String getNonUniqueSpeciesMessage(Species species)
-    {
-        return DaoUtils.getUniqueConstraintViolationMessage(DaoConstants.PROP_SPECIES_NAME, species.getName());
-    }
-
     @Override
     public Long getCountSpecies()
     {
@@ -129,4 +140,44 @@ public class SpeciesDaoImpl implements SpeciesDao
         return mEntityManager.createNamedQuery(Species.Q_FIND_COUNT_ALL_NON_DELETED_LIKE_ORDERED, Long.class)
             .setParameter("like", DaoUtils.getLikeLowerCase(like)).getResultList().get(0);
     }
+
+    @Override
+    public void upload(Collection<Species> speciess) throws AWNonUniqueException
+    {
+        Species lastSpecies = null;
+        try
+        {
+            for (Species species : speciess)
+            {
+                lastSpecies = species;
+                mEntityManager.persist(species);
+            }
+            mEntityManager.flush();
+        }
+        catch (PersistenceException ex)
+        {
+            if (DaoUtils.isUniqueConstraintViolation(ex))
+            {
+                String errMsg = getNonUniqueSpeciesMessage(lastSpecies);
+                LOGGER.error(errMsg);
+                throw new AWNonUniqueException(errMsg);
+            }
+            else
+            {
+                LOGGER.error(ex.getMessage());
+                throw ex;
+            }
+        }
+    }
+
+    private static String getNoSuchSpeciesMessage(Long speciesId)
+    {
+        return DaoUtils.getNoSuchEntityMessage(Species.class.getName(), speciesId);
+    }
+
+    private static String getNonUniqueSpeciesMessage(Species species)
+    {
+        return DaoUtils.getUniqueConstraintViolationMessage(DaoConstants.PROP_SPECIES_NAME, species.getName());
+    }
+
 }

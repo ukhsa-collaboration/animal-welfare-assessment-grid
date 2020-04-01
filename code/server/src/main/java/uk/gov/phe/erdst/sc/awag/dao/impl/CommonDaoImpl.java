@@ -92,6 +92,16 @@ public abstract class CommonDaoImpl<T> implements CommonDao<T>
         }
     }
 
+    protected Logger getLogger()
+    {
+        return LOGGER;
+    }
+
+    protected DaoErrorMessageProvider getMessageProvider()
+    {
+        return mErrorMessageProvider;
+    }
+
     @Override
     public T store(T entity) throws AWNonUniqueException
     {

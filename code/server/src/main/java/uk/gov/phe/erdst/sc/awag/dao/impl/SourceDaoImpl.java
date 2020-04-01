@@ -5,9 +5,11 @@ import java.util.List;
 
 import javax.ejb.Stateless;
 import javax.persistence.EntityManager;
+import javax.persistence.NoResultException;
 import javax.persistence.PersistenceContext;
 import javax.persistence.PersistenceException;
 import javax.persistence.Query;
+import javax.persistence.TypedQuery;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -81,11 +83,6 @@ public class SourceDaoImpl implements SourceDao
         mEntityManager.createNamedQuery(Source.Q_DELETE_SOURCE_BY_ID).setParameter("id", id).executeUpdate();
     }
 
-    private static String getNonUniqueSourceMessage(Source source)
-    {
-        return DaoUtils.getUniqueConstraintViolationMessage(DaoConstants.PROP_SOURCE_NAME, source.getName());
-    }
-
     @Override
     public Source getSource(Long sourceId) throws AWNoSuchEntityException
     {
@@ -99,9 +96,23 @@ public class SourceDaoImpl implements SourceDao
         return source;
     }
 
-    private static String getNoSuchSourceMessage(Long sourceId)
+    @Override
+    public Source getSource(String sourceName) throws AWNoSuchEntityException // TODO integration test
     {
-        return DaoUtils.getNoSuchEntityMessage(Source.class.getName(), sourceId);
+        TypedQuery<Source> query = mEntityManager.createNamedQuery(Source.Q_FIND_SOURCE_BY_NAME, Source.class)
+            .setParameter("sourceName", sourceName);
+
+        try
+        {
+            return query.getSingleResult();
+        }
+        catch (NoResultException e)
+        {
+            String errMsg = getNoSuchSourceMessage(0L); // TODO what to do?
+            LOGGER.error(errMsg);
+            throw new AWNoSuchEntityException(errMsg);
+        }
+
     }
 
     @Override
@@ -117,4 +128,44 @@ public class SourceDaoImpl implements SourceDao
     {
         return mEntityManager.createNamedQuery(Source.Q_FIND_COUNT_ALL, Long.class).getResultList().get(0);
     }
+
+    @Override
+    public void upload(Collection<Source> sources) throws AWNonUniqueException
+    {
+        Source lastSource = null;
+        try
+        {
+            for (Source source : sources)
+            {
+                lastSource = source;
+                mEntityManager.persist(source);
+            }
+            mEntityManager.flush();
+        }
+        catch (PersistenceException ex)
+        {
+            if (DaoUtils.isUniqueConstraintViolation(ex))
+            {
+                String errMsg = getNonUniqueSourceMessage(lastSource);
+                LOGGER.error(errMsg);
+                throw new AWNonUniqueException(errMsg);
+            }
+            else
+            {
+                LOGGER.error(ex.getMessage());
+                throw ex;
+            }
+        }
+    }
+
+    private static String getNoSuchSourceMessage(Long sourceId)
+    {
+        return DaoUtils.getNoSuchEntityMessage(Source.class.getName(), sourceId);
+    }
+
+    private static String getNonUniqueSourceMessage(Source source)
+    {
+        return DaoUtils.getUniqueConstraintViolationMessage(DaoConstants.PROP_SOURCE_NAME, source.getName());
+    }
+
 }

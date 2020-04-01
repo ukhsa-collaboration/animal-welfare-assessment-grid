@@ -3,7 +3,7 @@ package uk.gov.phe.erdst.sc.awag.service.factory.user;
 import javax.ejb.Stateless;
 
 import uk.gov.phe.erdst.sc.awag.datamodel.User;
-import uk.gov.phe.erdst.sc.awag.datamodel.client.UserClientData;
+import uk.gov.phe.erdst.sc.awag.webapi.request.UserClientData;
 
 @Stateless
 public class UserFactory

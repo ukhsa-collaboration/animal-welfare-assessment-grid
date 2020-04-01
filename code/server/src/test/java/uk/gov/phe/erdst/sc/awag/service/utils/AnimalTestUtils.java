@@ -12,7 +12,7 @@ public final class AnimalTestUtils
     {
     }
 
-    public static Animal createAnimal(Long animalId)
+    public static Animal createAnimalWithIdOnly(Long animalId)
     {
         Animal animal = new Animal();
         animal.setId(animalId);

@@ -68,7 +68,6 @@ public class UserAuth implements Serializable, EntitySelect
         return userGroup;
     }
 
-    @SuppressWarnings("unchecked")
     @Override
     public String getEntitySelectId()
     {

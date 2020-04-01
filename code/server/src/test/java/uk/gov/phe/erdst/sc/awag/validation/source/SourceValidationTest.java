@@ -12,9 +12,9 @@ import org.testng.annotations.BeforeClass;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 
-import uk.gov.phe.erdst.sc.awag.datamodel.client.SourceClientData;
 import uk.gov.phe.erdst.sc.awag.shared.test.TestConstants;
 import uk.gov.phe.erdst.sc.awag.utils.StringHelper;
+import uk.gov.phe.erdst.sc.awag.webapi.request.SourceClientData;
 
 @Test(groups = {TestConstants.TESTNG_UNIT_TESTS_GROUP})
 public class SourceValidationTest
@@ -68,6 +68,15 @@ public class SourceValidationTest
     {
         int expectedNoViolations = 1;
         mSourcesClientData.sourceName = INVALID_MIN_SOURCE_NAME;
+        Set<ConstraintViolation<SourceClientData>> constraintViolations = mValidator.validate(mSourcesClientData);
+        Assert.assertEquals(constraintViolations.size(), expectedNoViolations);
+    }
+
+    @Test
+    private void testMaxInvalidSourceClientData()
+    {
+        int expectedNoViolations = 1;
+        mSourcesClientData.sourceName = INVALID_MAX_SOURCE_NAME;
         Set<ConstraintViolation<SourceClientData>> constraintViolations = mValidator.validate(mSourcesClientData);
         Assert.assertEquals(constraintViolations.size(), expectedNoViolations);
     }

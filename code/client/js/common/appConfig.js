@@ -8,7 +8,9 @@ function()
         defaultPageOffsetStart : 0,
         defaultPageSize : 10,
         noSuchPage : -1,
-        errorAccessDeniedMessage : "Access denied"
+        errorAccessDeniedMessage : "Access denied",
+        entityNameKey: "entityNameKey",
+        entityIdKey: "entityIdKey"
     };    
 
     var services = {

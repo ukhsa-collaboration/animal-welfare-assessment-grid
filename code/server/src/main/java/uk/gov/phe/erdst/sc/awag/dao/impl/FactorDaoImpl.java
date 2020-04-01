@@ -1,12 +1,16 @@
 package uk.gov.phe.erdst.sc.awag.dao.impl;
 
+import java.util.Collection;
+
 import javax.ejb.Stateless;
+import javax.persistence.PersistenceException;
 
 import uk.gov.phe.erdst.sc.awag.dao.DaoErrorMessageProvider;
 import uk.gov.phe.erdst.sc.awag.dao.FactorDao;
 import uk.gov.phe.erdst.sc.awag.dao.impl.utils.DaoConstants;
 import uk.gov.phe.erdst.sc.awag.dao.impl.utils.DaoUtils;
 import uk.gov.phe.erdst.sc.awag.datamodel.Factor;
+import uk.gov.phe.erdst.sc.awag.exceptions.AWNonUniqueException;
 
 @Stateless
 public class FactorDaoImpl extends CommonDaoImpl<Factor> implements FactorDao
@@ -33,5 +37,35 @@ public class FactorDaoImpl extends CommonDaoImpl<Factor> implements FactorDao
                 return DaoUtils.getNoSuchEntityMessage(DaoConstants.PROP_FACTOR_NAME, nameValue);
             }
         });
+    }
+
+    @Override
+    // TODO check why cannot inherit easily from the Upload..Impl
+    public void upload(Collection<Factor> factors) throws AWNonUniqueException
+    {
+        Factor lastFactor = null;
+        try
+        {
+            for (Factor factor : factors)
+            {
+                lastFactor = factor;
+                getEntityManager().persist(factor);
+            }
+            getEntityManager().flush();
+        }
+        catch (PersistenceException ex)
+        {
+            if (DaoUtils.isUniqueConstraintViolation(ex))
+            {
+                String errMsg = getMessageProvider().getNonUniqueEntityErrorMessage(lastFactor);
+                getLogger().error(errMsg);
+                throw new AWNonUniqueException(errMsg);
+            }
+            else
+            {
+                getLogger().error(ex.getMessage());
+                throw ex;
+            }
+        }
     }
 }

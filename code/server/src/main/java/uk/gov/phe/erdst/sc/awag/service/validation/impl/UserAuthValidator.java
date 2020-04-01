@@ -6,11 +6,11 @@ import javax.validation.ConstraintValidator;
 import javax.validation.ConstraintValidatorContext;
 
 import uk.gov.phe.erdst.sc.awag.dao.GroupAuthDao;
-import uk.gov.phe.erdst.sc.awag.datamodel.client.UserAuthClientData;
 import uk.gov.phe.erdst.sc.awag.exceptions.AWNoSuchEntityException;
 import uk.gov.phe.erdst.sc.awag.service.validation.annotations.ValidAuthUser;
 import uk.gov.phe.erdst.sc.awag.service.validation.utils.ValidationConstants;
-import uk.gov.phe.erdst.sc.awag.servlets.utils.ServletSecurityUtils;
+import uk.gov.phe.erdst.sc.awag.utils.WebSecurityUtils;
+import uk.gov.phe.erdst.sc.awag.webapi.request.UserAuthClientData;
 
 @Stateless
 public class UserAuthValidator implements ConstraintValidator<ValidAuthUser, UserAuthClientData>
@@ -33,8 +33,8 @@ public class UserAuthValidator implements ConstraintValidator<ValidAuthUser, Use
 
     private boolean isNotAdminRoleChange(UserAuthClientData clientData, ConstraintValidatorContext context)
     {
-        if (clientData.userName.equals(ServletSecurityUtils.AW_ADMIN_USER)
-            && !clientData.groupName.equals(ServletSecurityUtils.RolesAllowed.AW_ADMIN))
+        if (clientData.userName.equals(WebSecurityUtils.AW_ADMIN_USER)
+            && !clientData.groupName.equals(WebSecurityUtils.RolesAllowed.AW_ADMIN))
         {
             context.buildConstraintViolationWithTemplate(ValidationConstants.ERR_ADMIN_ROLE_CHANGE)
                 .addConstraintViolation();

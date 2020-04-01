@@ -1,6 +1,9 @@
 package uk.gov.phe.erdst.sc.awag.exceptions;
 
-public class AWNonUniqueException extends Exception
+import java.util.Arrays;
+import java.util.List;
+
+public class AWNonUniqueException extends AWRecoverableException implements AWWebApiException
 {
     private static final long serialVersionUID = 1433812709988636101L;
 
@@ -11,5 +14,11 @@ public class AWNonUniqueException extends Exception
     public AWNonUniqueException(String exceptionMessage)
     {
         super(exceptionMessage);
+    }
+
+    @Override
+    public List<String> getErrors()
+    {
+        return Arrays.asList(getMessage());
     }
 }

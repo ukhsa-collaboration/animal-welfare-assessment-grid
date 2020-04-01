@@ -1,8 +1,10 @@
 package uk.gov.phe.erdst.sc.awag.dao.impl;
 
+import java.util.Collection;
 import java.util.List;
 
 import javax.ejb.Stateless;
+import javax.persistence.PersistenceException;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -14,7 +16,9 @@ import uk.gov.phe.erdst.sc.awag.dao.impl.utils.DaoUtils;
 import uk.gov.phe.erdst.sc.awag.datamodel.Animal;
 import uk.gov.phe.erdst.sc.awag.datamodel.AssessmentTemplate;
 import uk.gov.phe.erdst.sc.awag.exceptions.AWNoSuchEntityException;
+import uk.gov.phe.erdst.sc.awag.exceptions.AWNonUniqueException;
 import uk.gov.phe.erdst.sc.awag.utils.DataRetrievalUtils;
+import uk.gov.phe.erdst.sc.awag.utils.UploadUtils;
 
 @Stateless
 public class AssessmentTemplateDaoImpl extends CommonDaoImpl<AssessmentTemplate> implements AssessmentTemplateDao
@@ -61,4 +65,49 @@ public class AssessmentTemplateDaoImpl extends CommonDaoImpl<AssessmentTemplate>
 
         return DataRetrievalUtils.getEntityFromListResult(result);
     }
+
+    @Override
+    public Long getCountAssessmentTemplates()
+    {
+        return getEntityManager().createNamedQuery(AssessmentTemplate.Q_FIND_COUNT_ALL, Long.class).getResultList()
+            .get(0);
+    }
+
+    @Override
+    public String[] getAssessmentTemplateSuffixUploadHeaders(Long assessmentTemplateId) throws AWNoSuchEntityException
+    {
+        final int columnCount = getEntityById(assessmentTemplateId).getAssessmentTemplateParameters().size();
+        final String[] headerColumns = UploadUtils.retrieveAssessmentUploadSuffixHeader(columnCount);
+        return headerColumns;
+    }
+
+    @Override
+    public void upload(Collection<AssessmentTemplate> assessmentTemplates) throws AWNonUniqueException
+    {
+        AssessmentTemplate lastAssessmentTemplate = null;
+        try
+        {
+            for (AssessmentTemplate assessmentTemplate : assessmentTemplates)
+            {
+                lastAssessmentTemplate = assessmentTemplate;
+                getEntityManager().persist(assessmentTemplate);
+            }
+            getEntityManager().flush();
+        }
+        catch (PersistenceException ex)
+        {
+            if (DaoUtils.isUniqueConstraintViolation(ex))
+            {
+                String errMsg = getMessageProvider().getNonUniqueEntityErrorMessage(lastAssessmentTemplate);
+                LOGGER.error(errMsg);
+                throw new AWNonUniqueException(errMsg);
+            }
+            else
+            {
+                LOGGER.error(ex.getMessage());
+                throw ex;
+            }
+        }
+    }
+
 }

@@ -1,53 +1,143 @@
-<h1 class="page-header text-center">Species Management</h1>
-<div class="container-fluid" ng-controller="MngmtSpeciesManagementCtrl as speciesMngmtCtrl">
-    <form name="speciesManagementForm" class="form-horizontal">
-        <div class="form-group" ng-controller="MngmtSpeciesSelectionCtrl as speciesCtrl">
-            <label for="{{speciesCtrl.selectId}}" class="col-xs-3 control-label">Species name: </label>
-            <div ng-class="{'col-xs-7': speciesMngmtCtrl.isNewSpecies, 'col-xs-6': !speciesMngmtCtrl.isNewSpecies}">
-                <aw-search-select2 class="form-control" elem-id="{{speciesCtrl.selectId}}" controller="speciesCtrl"></aw-search-select2>
+<h1 class="page-header text-center">
+    Species Management
+</h1>
+
+<div class="container-fluid">
+
+    <accordion close-others="false">
+
+        <accordion-group is-open="true">
+
+            <accordion-heading>
+                Species management
+                <i class="pull-right glyphicon" ng-class="{'glyphicon-chevron-down': true, 'glyphicon-chevron-right': !false}"></i>
+            </accordion-heading>
+
+            <div ng-controller="MngmtSpeciesManagementCtrl as speciesMngmtCtrl">
+
+                <form name="speciesManagementForm" class="form-horizontal">
+
+                    <div class="form-group" ng-controller="MngmtSpeciesSelectionCtrl as speciesCtrl">
+                        <label for="{{speciesCtrl.selectId}}" class="col-xs-3 control-label">Species name: </label>
+                        <div ng-class="{'col-xs-7': speciesMngmtCtrl.isNewSpecies, 'col-xs-6': !speciesMngmtCtrl.isNewSpecies}">
+                            <aw-search-select2 class="form-control" elem-id="{{speciesCtrl.selectId}}" controller="speciesCtrl"></aw-search-select2>
+                        </div>
+                        <div ng-click="speciesMngmtCtrl.startUpdate()" ng-hide="speciesMngmtCtrl.isNewSpecies">
+                            <button type="button" class="btn btn-default btn-sm">
+                                <i class="glyphicon glyphicon-edit"></i>
+                            </button>
+                        </div>
+                    </div>
+
+                    <div class="form-group" ng-controller="MngmtSpeciesSelectionUpdateCtrl as speciesUpdateCtrl" ng-show="speciesMngmtCtrl.isUpdatingSpecies">
+                        <label for="{{speciesUpdateCtrl.selectId}}" class="col-xs-3 control-label">Update species name: </label>
+                        <div ng-class="{'col-xs-7': speciesMngmtCtrl.isNewSpecies, 'col-xs-6': !speciesMngmtCtrl.isNewSpecies}">
+                            <aw-select2 elem-id="{{speciesUpdateCtrl.selectId}}" controller="speciesUpdateCtrl"></aw-select2>
+                        </div>
+                        <div ng-click="speciesMngmtCtrl.cancelUpdate()">
+                            <button type="button" class="btn btn-default btn-sm">
+                                <i class="glyphicon glyphicon-remove"></i>
+                            </button>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <div class="col-xs-12">
+                            <aw-success-display success="speciesMngmtCtrl.isSuccess"></aw-success-display>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <div class="col-xs-12">
+                            <aw-error-display errors="speciesMngmtCtrl.errors"></aw-error-display>
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <hr />
+                    </div>
+
+                    <div class="row">
+
+                        <div class="text-center">
+                            <button type="button" class="btn btn-lg btn-success" ng-click="speciesMngmtCtrl.submitSpecies()" ng-disabled="!speciesMngmtCtrl.isNewSpecies">
+                                Create
+                            </button>
+                            <button type="button" class="btn btn-lg btn-primary" ng-click="speciesMngmtCtrl.updateSpecies()" ng-disabled="speciesMngmtCtrl.isNewSpecies">
+                                Update
+                            </button>
+                            <button type="button" class="btn btn-danger btn-lg" ng-click="speciesMngmtCtrl.clearSpecies()">
+                                Clear
+                            </button>
+                        </div>
+
+                    </div>
+
+                </form>
+
             </div>
-            <div ng-click="speciesMngmtCtrl.startUpdate()" ng-hide="speciesMngmtCtrl.isNewSpecies">
-                <button type="button" class="btn btn-default btn-sm">
-                    <i class="glyphicon glyphicon-edit"></i>
-                </button>
+
+        </accordion-group>        
+
+        <accordion-group is-open="false">
+
+            <accordion-heading>
+                Upload Species File management
+                <i class="pull-right glyphicon" ng-class="{'glyphicon-chevron-down': true, 'glyphicon-chevron-right': !false}"></i>
+            </accordion-heading>
+
+            <div ng-controller="MngmtSpeciesUploadManagementCtrl as speciesUploadMngmtCtrl">
+
+                <form name="speciesManagementUploadForm" class="form-horizontal">
+
+                    <div class="form-group" ng-controller="MngmtSpeciesUploadCtrl as speciesUploadCtrl">
+
+                        <label for="{{speciesUploadCtrl.uploadId}}" class="col-xs-3 control-label">Upload File: </label>
+
+                        <div class="col-xs-7">
+                            <aw-upload-file elem-id="{{speciesUploadCtrl.uploadId}}" controller="speciesUploadCtrl"></aw-upload-file>
+                        </div>
+
+                    </div>     
+
+                    <div class="form-group">
+
+                        <div class="col-xs-12">
+                            <aw-success-display success="speciesUploadMngmtCtrl.isSuccess"></aw-success-display>
+                        </div>
+
+                    </div>
+
+                    <div class="form-group">
+
+                        <div class="col-xs-12">
+                            <aw-error-display errors="speciesUploadMngmtCtrl.errors"></aw-error-display>
+                        </div>
+
+                    </div>
+                       
+                    <div class="row">
+
+                        <div class="text-center">
+
+                            <button type="button" class="btn btn-lg btn-success" ng-click="speciesUploadMngmtCtrl.uploadSpecies()" 
+                                    ng-disabled="speciesUploadMngmtCtrl.isFileSelected">
+                                Upload
+                            </button>
+                            <button type="button" class="btn btn-lg btn-danger" ng-click="speciesUploadMngmtCtrl.clearUploadSpecies()">
+                                Clear
+                            </button>
+
+                        </div>
+
+                    </div>
+
+                </form>
+
             </div>
-        </div>
-        <div class="form-group" ng-controller="MngmtSpeciesSelectionUpdateCtrl as speciesUpdateCtrl" ng-show="speciesMngmtCtrl.isUpdatingSpecies">
-            <label for="{{speciesUpdateCtrl.selectId}}" class="col-xs-3 control-label">Update species name: </label>
-            <div ng-class="{'col-xs-7': speciesMngmtCtrl.isNewSpecies, 'col-xs-6': !speciesMngmtCtrl.isNewSpecies}">
-                <aw-select2 elem-id="{{speciesUpdateCtrl.selectId}}" controller="speciesUpdateCtrl"></aw-select2>
-            </div>
-            <div ng-click="speciesMngmtCtrl.cancelUpdate()">
-                <button type="button" class="btn btn-default btn-sm">
-                    <i class="glyphicon glyphicon-remove"></i>
-                </button>
-            </div>
-        </div>
-        <div class="form-group">
-            <div class="col-xs-12">
-                <aw-success-display success="speciesMngmtCtrl.isSuccess"></aw-success-display>
-            </div>
-        </div>
-        <div class="form-group">
-            <div class="col-xs-12">
-                <aw-error-display errors="speciesMngmtCtrl.errors"></aw-error-display>
-            </div>
-        </div>
-        <div class="row">
-            <hr />
-        </div>
-        <div class="row">
-            <div class="text-center">
-                <button type="button" class="btn btn-lg btn-success" ng-click="speciesMngmtCtrl.submitSpecies()" ng-disabled="!speciesMngmtCtrl.isNewSpecies">
-                    Create
-                </button>
-                <button type="button" class="btn btn-lg btn-primary" ng-click="speciesMngmtCtrl.updateSpecies()" ng-disabled="speciesMngmtCtrl.isNewSpecies">
-                    Update
-                </button>
-                <button type="button" class="btn btn-danger btn-lg" ng-click="speciesMngmtCtrl.clearSpecies()">
-                    Clear
-                </button>
-            </div>
-        </div>
-    </form>
+
+        </accordion-group>
+
+    </accordion>
+
 </div>

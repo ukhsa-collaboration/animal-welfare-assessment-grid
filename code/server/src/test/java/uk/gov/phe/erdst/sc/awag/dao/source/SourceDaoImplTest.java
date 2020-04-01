@@ -16,7 +16,7 @@ import uk.gov.phe.erdst.sc.awag.exceptions.AWNonUniqueException;
 import uk.gov.phe.erdst.sc.awag.shared.test.TestConstants;
 import uk.gov.phe.erdst.sc.awag.utils.GlassfishTestsHelper;
 
-@Test(groups = {TestConstants.TESTNG_CONTAINER_TESTS_GROUP})
+@Test(groups = {TestConstants.TESTNG_CONTAINER_TESTS_GROUP, TestConstants.TESTNG_SOURCE_TESTS_GROUP})
 public class SourceDaoImplTest
 {
     public static final long SOURCE_ONE_ID = 10000L;
@@ -85,14 +85,6 @@ public class SourceDaoImplTest
         deleteSource(source);
     }
 
-    private void deleteSource(Source source)
-    {
-        if (source.getId() != null)
-        {
-            mSourceDao.realDelete(source.getId());
-        }
-    }
-
     @Test(expectedExceptions = {AWNonUniqueException.class})
     public void testStoreNonUniqueSource() throws AWNonUniqueException
     {
@@ -112,9 +104,35 @@ public class SourceDaoImplTest
         source = mSourceDao.store(source);
     }
 
+    /*
+    @Test
+    public void testSourceAnimalsWithSuccessfulData() throws IOException
+    {
+    
+        String testUploadSourceDataFile = TestConstants.UPLOAD_TEST_DATA_FOLDER + File.separator + "source"
+            + File.separator + "UploadSource.csv";
+        FileInputStream fileInputStream = new FileInputStream(testUploadSourceDataFile);
+        mSourceDao.upload(sources);
+    
+        // Load the data from test data file
+    
+        Assert.assertEquals(System.getProperty("user.dir"), TestConstants.UPLOAD_TEST_DATA_FOLDER);
+    
+    }
+    */
+
     @AfterClass
     public static void tearDownClass()
     {
         GlassfishTestsHelper.onTestFinished();
     }
+
+    private void deleteSource(Source source)
+    {
+        if (source.getId() != null)
+        {
+            mSourceDao.realDelete(source.getId());
+        }
+    }
+
 }

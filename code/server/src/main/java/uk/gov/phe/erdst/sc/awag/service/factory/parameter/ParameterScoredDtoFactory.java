@@ -9,9 +9,9 @@ import javax.inject.Inject;
 
 import uk.gov.phe.erdst.sc.awag.datamodel.FactorScored;
 import uk.gov.phe.erdst.sc.awag.datamodel.ParameterScore;
-import uk.gov.phe.erdst.sc.awag.dto.FactorScoredDto;
-import uk.gov.phe.erdst.sc.awag.dto.ParameterScoredDto;
 import uk.gov.phe.erdst.sc.awag.service.factory.factor.FactorScoredDtoFactory;
+import uk.gov.phe.erdst.sc.awag.webapi.response.factor.FactorScoredDto;
+import uk.gov.phe.erdst.sc.awag.webapi.response.parameter.ParameterScoredDto;
 
 @Stateless
 public class ParameterScoredDtoFactory

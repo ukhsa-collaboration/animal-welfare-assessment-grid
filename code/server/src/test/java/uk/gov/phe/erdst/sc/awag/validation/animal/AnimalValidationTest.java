@@ -35,7 +35,7 @@ public class AnimalValidationTest
     public void setUp() throws Exception
     {
         mAnimalRequestConverter = (RequestConverter) GlassfishTestsHelper
-            .lookup("RequestConverterImpl");
+            .lookup("RequestConverter");
         mAnimalValidator = (AnimalValidator) GlassfishTestsHelper.lookup("AnimalValidator");
     }
 

@@ -1,35 +1,26 @@
 package uk.gov.phe.erdst.sc.awag.service.factory.template;
 
-import java.util.LinkedHashSet;
 import java.util.List;
-import java.util.Set;
 
 import javax.ejb.Stateless;
 
 import uk.gov.phe.erdst.sc.awag.datamodel.AssessmentTemplate;
-import uk.gov.phe.erdst.sc.awag.datamodel.AssessmentTemplateParameterFactor;
-import uk.gov.phe.erdst.sc.awag.dto.assessment.ParametersOrdering;
+import uk.gov.phe.erdst.sc.awag.datamodel.AssessmentTemplateParameter;
+import uk.gov.phe.erdst.sc.awag.datamodel.utils.ParametersOrdering;
 
 @Stateless
 public class ParametersOrderingFactory
 {
     public ParametersOrdering getParameterOrdering(AssessmentTemplate template)
     {
+        List<AssessmentTemplateParameter> parameters = template.getAssessmentTemplateParameters();
+
         ParametersOrdering ordering = new ParametersOrdering();
 
-        Set<Long> orderedIds = new LinkedHashSet<>();
-        List<AssessmentTemplateParameterFactor> parameterFactors = template.getAssessmentTemplateParameterFactors();
-
-        for (AssessmentTemplateParameterFactor pf : parameterFactors)
+        int displayOrderIndex = 0; // TODO move into class ParametersOrdering
+        for (AssessmentTemplateParameter parameter : parameters)
         {
-            orderedIds.add(pf.getParameter().getId());
-        }
-
-        int i = 0;
-        for (Long id : orderedIds)
-        {
-            ordering.add(id, i);
-            i++;
+            ordering.add(parameter.getId().getParameterId(), displayOrderIndex++);
         }
 
         return ordering;

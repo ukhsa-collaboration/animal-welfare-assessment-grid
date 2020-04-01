@@ -21,4 +21,21 @@ public class SexDaoImpl implements SexDao
     {
         return mEntityManager.createNamedQuery(Sex.Q_FIND_ALL, Sex.class).getResultList();
     }
+
+    @Override
+    public Sex getSexFemale()
+    {
+
+        return mEntityManager.createNamedQuery(Sex.Q_FIND_SEX_BY_NAME, Sex.class).setParameter("name", Sex.FEMALE)
+            .getSingleResult();
+    }
+
+    @Override
+    public Sex getSexMale()
+    {
+
+        return mEntityManager.createNamedQuery(Sex.Q_FIND_SEX_BY_NAME, Sex.class).setParameter("name", Sex.MALE)
+            .getSingleResult();
+    }
+
 }

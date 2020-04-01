@@ -5,21 +5,12 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-import javax.validation.ConstraintValidatorContext;
-import javax.validation.Validation;
-import javax.validation.Validator;
-import javax.validation.ValidatorFactory;
-import javax.validation.constraints.NotNull;
-import javax.ws.rs.HttpMethod;
-
 import org.testng.Assert;
-import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
 
-import uk.gov.phe.erdst.sc.awag.datamodel.response.ResponsePayload;
+import uk.gov.phe.erdst.sc.awag.exceptions.AWInputValidationException;
 import uk.gov.phe.erdst.sc.awag.service.validation.utils.ValidatorUtils;
 import uk.gov.phe.erdst.sc.awag.shared.test.TestConstants;
-import uk.gov.phe.erdst.sc.awag.utils.Constants;
 
 @Test(groups = {TestConstants.TESTNG_UNIT_TESTS_GROUP})
 public class ValidatorUtilsTest
@@ -30,52 +21,6 @@ public class ValidatorUtilsTest
     private static final String VALID_TO_DATE = "2015-02-20T00:00:00.000Z";
     private static final String INVALID_PARSE_FIRST_DATE = "2014aaaaaaaaaa-02-01T00:00:00.000Z";
     private static final String INVALID_PARSE_SECOND_DATE = "2013aaaaaaaaaa-02-01T00:00:00.000Z";
-
-    private Validator mValidator;
-
-    @BeforeClass
-    private void setUp()
-    {
-        ValidatorFactory validatorFactory = Validation.buildDefaultValidatorFactory();
-        mValidator = validatorFactory.getValidator();
-    }
-
-    @Test
-    private void testInvalidResources()
-    {
-        Long invalidGETPUTDELResourceId = Constants.MIN_VALID_ID - 1L;
-        Long invalidPOSTResourceId = Constants.UNASSIGNED_ID - 1L;
-
-        boolean expectedValue = false;
-        Assert.assertEquals(ValidatorUtils.isResourceValid(invalidGETPUTDELResourceId, HttpMethod.GET), expectedValue);
-        Assert.assertEquals(ValidatorUtils.isResourceValid(invalidGETPUTDELResourceId, HttpMethod.PUT), expectedValue);
-        Assert.assertEquals(ValidatorUtils.isResourceValid(invalidGETPUTDELResourceId, HttpMethod.DELETE),
-            expectedValue);
-        Assert.assertEquals(ValidatorUtils.isResourceValid(invalidPOSTResourceId, HttpMethod.POST), expectedValue);
-    }
-
-    @Test
-    private void testValidResources()
-    {
-        Long validGETPUTDELResourceId = Constants.MIN_VALID_ID;
-        Long validPOSTResourceId = Constants.UNASSIGNED_ID;
-        boolean expectedValue = true;
-        Assert.assertEquals(ValidatorUtils.isResourceValid(validGETPUTDELResourceId, HttpMethod.GET), expectedValue);
-        Assert.assertEquals(ValidatorUtils.isResourceValid(validGETPUTDELResourceId, HttpMethod.PUT), expectedValue);
-        Assert.assertEquals(ValidatorUtils.isResourceValid(validGETPUTDELResourceId, HttpMethod.DELETE), expectedValue);
-        Assert.assertEquals(ValidatorUtils.isResourceValid(validPOSTResourceId, HttpMethod.POST), expectedValue);
-    }
-
-    @Test
-    private void testInvalidNullResource()
-    {
-        Long invalidNullResourceId = null;
-        boolean expectedValue = false;
-        Assert.assertEquals(ValidatorUtils.isResourceValid(invalidNullResourceId, HttpMethod.GET), expectedValue);
-        Assert.assertEquals(ValidatorUtils.isResourceValid(invalidNullResourceId, HttpMethod.PUT), expectedValue);
-        Assert.assertEquals(ValidatorUtils.isResourceValid(invalidNullResourceId, HttpMethod.POST), expectedValue);
-        Assert.assertEquals(ValidatorUtils.isResourceValid(invalidNullResourceId, HttpMethod.DELETE), expectedValue);
-    }
 
     @Test
     private void testValidIsFirstDateAfterSecondDate()
@@ -157,69 +102,57 @@ public class ValidatorUtilsTest
     // CS:ON
 
     @Test
-    public void testGenericValidateRequestValidData()
+    public void testValidDateFromToFilterFields() throws AWInputValidationException
     {
-        DataToValidate data = new DataToValidate();
-        data.nonNullData = "";
-        ResponsePayload responsePayload = new ResponsePayload();
-
-        ValidatorUtils.validateRequest(data, responsePayload, mValidator);
-
-        Assert.assertFalse(responsePayload.hasErrors());
-    }
-
-    @Test
-    public void testGenericValidateRequestInvalidData()
-    {
-        ResponsePayload responsePayload = new ResponsePayload();
-
-        ValidatorUtils.validateRequest(new DataToValidate(), responsePayload, mValidator);
-
-        Assert.assertTrue(responsePayload.hasErrors());
-    }
-
-    @Test
-    public void testValidDateFromToFilterFields()
-    {
-        final int expectedErrors = 0;
-        ConstraintValidatorContext context = new ValidationTestHelper.MockConstraintValidatorContext();
-
         String dateFrom = VALID_FROM_DATE;
         String dateTo = VALID_TO_DATE;
-        Assert.assertEquals(ValidatorUtils.validateDateFromToFilter(dateFrom, dateTo, context), expectedErrors);
+        ValidatorUtils.validateOptionalDateParameters(dateFrom, dateTo);
 
         dateTo = null;
-        Assert.assertEquals(ValidatorUtils.validateDateFromToFilter(dateFrom, dateTo, context), expectedErrors);
+        ValidatorUtils.validateOptionalDateParameters(dateFrom, dateTo);
 
         dateFrom = null;
         dateTo = VALID_TO_DATE;
-        Assert.assertEquals(ValidatorUtils.validateDateFromToFilter(dateFrom, dateTo, context), expectedErrors);
+        ValidatorUtils.validateOptionalDateParameters(dateFrom, dateTo);
     }
 
-    @Test
+    @Test()
     public void testInvalidDateFromToFilterFields()
     {
-        final int expectedErrors = 1;
-        ConstraintValidatorContext context = new ValidationTestHelper.MockConstraintValidatorContext();
+        final int expectedErrors = 2;
+        int errorsCount = 0;
 
         String dateFrom = VALID_TO_DATE;
         String dateTo = VALID_FROM_DATE;
-        Assert.assertEquals(ValidatorUtils.validateDateFromToFilter(dateFrom, dateTo, context), expectedErrors);
+        try
+        {
+            ValidatorUtils.validateOptionalDateParameters(dateFrom, dateTo);
+        }
+        catch (AWInputValidationException e)
+        {}
 
         dateFrom = ValidationTestHelper.INVALID_DATE;
         dateTo = null;
-        Assert.assertEquals(ValidatorUtils.validateDateFromToFilter(dateFrom, dateTo, context), expectedErrors);
+        try
+        {
+            ValidatorUtils.validateOptionalDateParameters(dateFrom, dateTo);
+        }
+        catch (AWInputValidationException e)
+        {
+            errorsCount++;
+        }
 
         dateFrom = null;
         dateTo = ValidationTestHelper.INVALID_DATE;
-        Assert.assertEquals(ValidatorUtils.validateDateFromToFilter(dateFrom, dateTo, context), expectedErrors);
-    }
+        try
+        {
+            ValidatorUtils.validateOptionalDateParameters(dateFrom, dateTo);
+        }
+        catch (AWInputValidationException e)
+        {
+            errorsCount++;
+        }
 
-    private static class DataToValidate
-    {
-        // CS:OFF: VisibilityModifier
-        @NotNull
-        public String nonNullData;
-        // CS:ON
+        Assert.assertEquals(errorsCount, expectedErrors);
     }
 }

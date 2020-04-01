@@ -31,8 +31,8 @@ import uk.gov.phe.erdst.sc.awag.datamodel.AssessmentTemplate;
 import uk.gov.phe.erdst.sc.awag.datamodel.Study;
 import uk.gov.phe.erdst.sc.awag.datamodel.StudyGroup;
 import uk.gov.phe.erdst.sc.awag.datamodel.User;
-import uk.gov.phe.erdst.sc.awag.exceptions.AWAssessmentCreationException;
 import uk.gov.phe.erdst.sc.awag.exceptions.AWNoSuchEntityException;
+import uk.gov.phe.erdst.sc.awag.exceptions.AWSeriousException;
 import uk.gov.phe.erdst.sc.awag.service.utils.AnimalTestUtils;
 import uk.gov.phe.erdst.sc.awag.shared.test.AssessmentProvider;
 import uk.gov.phe.erdst.sc.awag.shared.test.TestConstants;
@@ -65,8 +65,8 @@ public class AssessmentDaoImplGetAssessmentStudyGroupBasedSelectionTest
         mAssessmentDao = (AssessmentDao) GlassfishTestsHelper.lookupMultiInterface("AssessmentDaoImpl",
             AssessmentDao.class);
 
-        mAssessmentTemplateDao = (AssessmentTemplateDao) GlassfishTestsHelper.lookupMultiInterface(
-            "AssessmentTemplateDaoImpl", AssessmentTemplateDao.class);
+        mAssessmentTemplateDao = (AssessmentTemplateDao) GlassfishTestsHelper
+            .lookupMultiInterface("AssessmentTemplateDaoImpl", AssessmentTemplateDao.class);
 
         mStudyDao = (StudyDao) GlassfishTestsHelper.lookupMultiInterface("StudyDaoImpl", StudyDao.class);
 
@@ -75,8 +75,8 @@ public class AssessmentDaoImplGetAssessmentStudyGroupBasedSelectionTest
 
         mAnimalDao = (AnimalDao) GlassfishTestsHelper.lookupMultiInterface("AnimalDaoImpl", AnimalDao.class);
 
-        mAssessmentReasonDao = (AssessmentReasonDao) GlassfishTestsHelper.lookupMultiInterface(
-            "AssessmentReasonDaoImpl", AssessmentReasonDao.class);
+        mAssessmentReasonDao = (AssessmentReasonDao) GlassfishTestsHelper
+            .lookupMultiInterface("AssessmentReasonDaoImpl", AssessmentReasonDao.class);
 
         mUserDao = (UserDao) GlassfishTestsHelper.lookupMultiInterface("UserDaoImpl", UserDao.class);
     }
@@ -168,8 +168,8 @@ public class AssessmentDaoImplGetAssessmentStudyGroupBasedSelectionTest
             mAssessmentDao.store(assessment);
         }
 
-        Collection<Assessment> result = mAssessmentDao.getAssessments(studyId,
-            StudyGroupDaoImplTest.STUDY_GROUP_ONE_ID, null, null, null, null, null);
+        Collection<Assessment> result = mAssessmentDao.getAssessments(studyId, StudyGroupDaoImplTest.STUDY_GROUP_ONE_ID,
+            null, null, null, null, null);
 
         Assert.assertEquals(result.size(), studyGroup1Assessments);
 
@@ -181,9 +181,8 @@ public class AssessmentDaoImplGetAssessmentStudyGroupBasedSelectionTest
         cleanUpAfterTestDiffGroups(study, studyGroup2, animal2, studyGroup1);
     }
 
-    private void
-        cleanUpAfterTestDiffGroups(Study study, StudyGroup studyGroup2, Animal animal2, StudyGroup studyGroup1)
-            throws Exception
+    private void cleanUpAfterTestDiffGroups(Study study, StudyGroup studyGroup2, Animal animal2, StudyGroup studyGroup1)
+        throws Exception
     {
         study.getStudyGroups().remove(studyGroup2);
         studyGroup2.getAnimals().remove(animal2);
@@ -205,8 +204,8 @@ public class AssessmentDaoImplGetAssessmentStudyGroupBasedSelectionTest
 
         Study study = assessment.getStudy();
         StudyGroup[] studyGroups = study.getStudyGroups().toArray(new StudyGroup[] {});
-        Assert.assertTrue(studyGroups.length == 1
-            && studyGroups[0].getId().equals(StudyGroupDaoImplTest.STUDY_GROUP_ONE_ID));
+        Assert.assertTrue(
+            studyGroups.length == 1 && studyGroups[0].getId().equals(StudyGroupDaoImplTest.STUDY_GROUP_ONE_ID));
 
         Collection<Assessment> secondaryData = new ArrayList<>();
         assessment.getStudy().setId(studyId);
@@ -218,8 +217,8 @@ public class AssessmentDaoImplGetAssessmentStudyGroupBasedSelectionTest
         mAssessmentDao.store(assessment);
         secondaryData.add(assessment);
 
-        Assert.assertTrue(mAssessmentDao.getAssessments(studyId, StudyGroupDaoImplTest.STUDY_GROUP_TWO_ID, null, null,
-            null, null, null).isEmpty());
+        Assert.assertTrue(mAssessmentDao
+            .getAssessments(studyId, StudyGroupDaoImplTest.STUDY_GROUP_TWO_ID, null, null, null, null, null).isEmpty());
     }
 
     @Test
@@ -227,8 +226,8 @@ public class AssessmentDaoImplGetAssessmentStudyGroupBasedSelectionTest
     {
         final Long nonExistentStudyId = 123L;
         final Long nonExistentStudyGroupId = nonExistentStudyId;
-        Collection<Assessment> result = mAssessmentDao.getAssessments(nonExistentStudyId, nonExistentStudyGroupId,
-            null, null, null, null, null);
+        Collection<Assessment> result = mAssessmentDao.getAssessments(nonExistentStudyId, nonExistentStudyGroupId, null,
+            null, null, null, null);
 
         Assert.assertTrue(result.isEmpty());
     }
@@ -239,8 +238,8 @@ public class AssessmentDaoImplGetAssessmentStudyGroupBasedSelectionTest
      *      reason
      *      user
      *      date from and to
-     *      
-     *      
+     *
+     *
      *      create a number of assessments with variant a
      *      one with variant b
      *      search for variant b
@@ -445,13 +444,13 @@ public class AssessmentDaoImplGetAssessmentStudyGroupBasedSelectionTest
 
     private Assessment createAssessment(Long animalId) throws Exception
     {
-        Animal animal = AnimalTestUtils.createAnimal(animalId);
+        Animal animal = AnimalTestUtils.createAnimalWithIdOnly(animalId);
         Assessment assessment = createDefaultAssessment();
         assessment.setAnimal(animal);
         return assessment;
     }
 
-    private Assessment createDefaultAssessment() throws AWNoSuchEntityException, AWAssessmentCreationException
+    private Assessment createDefaultAssessment() throws AWNoSuchEntityException, AWSeriousException
     {
         AssessmentTemplate template = mAssessmentTemplateDao.getEntityById(TestConstants.TEST_ASSESSMENT_TEMPLATE_ID);
         return mAssessmentProvider.createAssessment(template);

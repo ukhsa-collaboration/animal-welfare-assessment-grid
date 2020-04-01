@@ -12,7 +12,9 @@ var studyGroupMngmtFormEvents = {
     onStudyGroupUpdateFinished: "onStudyGroupUpdateFinished",
     onStudyGroupUpdated: "onStudyGroupUpdated",
     onStudyGroupClearSelected: "onStudyGroupClearSelected",
-    onStudyGroupRemovedClearUpdate: "onStudyGroupRemovedClearUpdate"
+    onStudyGroupRemovedClearUpdate: "onStudyGroupRemovedClearUpdate",
+    onStudyGroupUploadSelected : "onStudyGroupUploadSelected",
+    onStudyGroupUploadClearSelected : "onStudyGroupUploadClearSelected"
 };
 
 manageStudyGroupControllers.controller('MngmtStudyGroupSelectionCtrl', ['$scope', 'formService', 'studyGroupService', 'appConfig',
@@ -100,10 +102,14 @@ manageStudyGroupControllers.controller('MngmtStudyGroupAnimalsCtrl', ['$scope', 
         $scope.$on(studyGroupMngmtFormEvents.onExistingStudyGroupUpdateForm, function(event, animals)
     	{
     		var results = [];
-    		for(var i = animals.length - 1; i >= 0; i--){
-    			var animal = animals[i];
-    			results.push({id : animal.id, text : animal.number });
-    		};
+            
+            if (animals) {
+        		for(var i = animals.length - 1; i >= 0; i--) {
+        			var animal = animals[i];
+        			results.push({id : animal.id, text : animal.number });
+        		}
+            }
+
         	formService.setSelect2Val(results, jQuery('#' + that.selectId));
     	});
 
@@ -166,8 +172,14 @@ manageStudyGroupControllers.controller('MngmtStudyGroupManagementCtrl', ['$scope
             this.getStudyGroupById(choice.id);
         };
 
-        this.addAnimalToStudyGroup = function(animal){
-			if (this.studyGroup.studyGroupAnimals.indexOf() === -1) {
+        this.addAnimalToStudyGroup = function(animal) {
+            var animals = this.studyGroup.studyGroupAnimals;
+
+            if (animals == undefined) {
+                animals = [animal];
+                this.studyGroup.studyGroupAnimals = animals;
+            }
+            else {
                 this.studyGroup.studyGroupAnimals.push(animal);
             }
         };
@@ -272,3 +284,88 @@ manageStudyGroupControllers.controller('MngmtStudyGroupManagementCtrl', ['$scope
         this.resetStudyGroupContainer();
     }
 ]);
+
+manageStudyGroupControllers.controller('MngmtStudyGroupUploadCtrl', ['$scope', 'appConfig', 'studyGroupService', '$timeout',
+function($scope, appConfig, studyGroupService, $timeout)
+{
+    this.uploadId = "uploadFile";
+    this.uploadElement = null;
+    var that = this;
+
+    this.onFileUploadChange = function(event)
+    {
+        that.uploadElement = event.target;
+        $scope.$emit(studyGroupMngmtFormEvents.onStudyGroupUploadSelected, event.target.files);
+    };
+
+    $scope.$on(studyGroupMngmtFormEvents.onStudyGroupUploadClearSelected, function(event)
+    {
+        that.uploadElement.value = null;
+    });    
+
+}]);
+
+manageStudyGroupControllers.controller('MngmtStudyGroupUploadManagementCtrl', ['$scope', 'appConfig', 'studyGroupService', '$timeout',
+function($scope, appConfig, studyGroupService, $timeout)
+{
+    this.fileList = {};
+    this.isSuccess = false;
+    this.errors = [];
+    this.isFileSelected = true;
+    var that = this;
+
+    this.resetErrors = function()
+    {
+        this.errors = [];
+    };
+
+    var onErrorCallBack = function(errors)
+    {
+        that.isSuccess = false;
+        that.errors = errors;
+    };
+
+    var uploadStudyGroupCallback = function(data)
+    {
+        that.isSuccess = true;
+        that.resetErrors();
+
+    };
+
+    this.setDisabled = function(isDisabled)
+    {
+        this.isFileSelected = isDisabled;
+        $timeout(function(){
+            $scope.$apply();
+        });
+    };
+
+
+    this.setUploadFiles = function(fileList) 
+    {
+        Object.assign(this.fileList, fileList);
+        that.setDisabled(false);
+    };
+
+    this.uploadStudyGroup = function()
+    {
+        var fd = new FormData();
+        fd.append('file', this.fileList[0]);
+
+        studyGroupService.uploadStudyGroup(fd, uploadStudyGroupCallback, onErrorCallBack);
+    };
+
+    this.clearUploadStudyGroup = function()
+    {
+        this.fileList = {};
+        this.setDisabled(true);
+        this.resetErrors();
+        $scope.$broadcast(studyGroupMngmtFormEvents.onStudyGroupUploadClearSelected);        
+    };
+
+    $scope.$on(studyGroupMngmtFormEvents.onStudyGroupUploadSelected, function(event, fileList)
+    {
+        that.setUploadFiles(fileList);
+    });
+    
+}]);

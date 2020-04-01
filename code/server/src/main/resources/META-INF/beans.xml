@@ -6,7 +6,7 @@
        bean-discovery-mode="all">
        
     <interceptors>
-        <class>uk.gov.phe.erdst.sc.awag.service.logging.LoggedActivityInterceptor</class>
+        <class>uk.gov.phe.erdst.sc.awag.service.activitylogging.LoggedActivityInterceptor</class>
     </interceptors>
     
     

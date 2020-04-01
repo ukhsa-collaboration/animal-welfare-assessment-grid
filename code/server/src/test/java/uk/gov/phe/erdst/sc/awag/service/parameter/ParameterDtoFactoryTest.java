@@ -8,10 +8,10 @@ import com.google.inject.Inject;
 
 import uk.gov.phe.erdst.sc.awag.datamodel.Parameter;
 import uk.gov.phe.erdst.sc.awag.datamodel.ParameterScore;
-import uk.gov.phe.erdst.sc.awag.dto.ParameterScoredDto;
 import uk.gov.phe.erdst.sc.awag.service.factory.parameter.ParameterScoredDtoFactory;
 import uk.gov.phe.erdst.sc.awag.shared.test.TestConstants;
 import uk.gov.phe.erdst.sc.awag.utils.GuiceHelper;
+import uk.gov.phe.erdst.sc.awag.webapi.response.parameter.ParameterScoredDto;
 
 @Test(groups = {TestConstants.TESTNG_UNIT_TESTS_GROUP})
 public class ParameterDtoFactoryTest

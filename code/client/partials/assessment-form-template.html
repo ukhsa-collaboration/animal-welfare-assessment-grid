@@ -7,14 +7,17 @@
             </div>
         </div>
     </div>
-    <div ng-show="animalCtrl.isInExistingMode && !animalCtrl.isInExistingCompleteMode" class="row existing-assessment-info-panel">
+    <div ng-show="animalCtrl.isInExistingMode && !animalCtrl.isInExistingCompleteMode"
+        class="row existing-assessment-info-panel">
         <div class="bg-info">
             <span class="glyphicon glyphicon-info-sign pull-left" style="padding-right: 4px"></span>
             <div>
-                <p>After you save changes made to an existing assessment, you can edit it at a later time. However, finalised assessments can be viewed or deleted but <strong>not edited</strong>.</p>
+                <p>After you save changes made to an existing assessment, you can edit it at a later time. However,
+                    finalised assessments can be viewed or deleted but <strong>not edited</strong>.</p>
             </div>
         </div>
-     </div>   
+    </div>
+
     <form name="assessmentForm">
         <div class="row">
             <div class="col-xs-12 col-sm-3">
@@ -113,31 +116,35 @@
                 </div>
             </div>
             <div class="row">
-               <div class="col-sm-3">
-                   <h4>Previous assessment scores:</h4>
-               </div>
-               <div class="col-sm-9 table-responsive">
-                  <table class="table table-bordered table-condensed table-hover">
-                      <thead>
-                        <tr>
-                            <th>Name</th>
-                            <th>Average</th>
-                        </tr>
-                      </thead>
-                      <tbody>
-                          <tr ng-repeat="score in prevAssessmentCtrl.scores | orderBy:'name'">
-                            <td>{{score.name}}</td><td>{{score.avgScore | number:2}}</td>
-                          </tr>
-                      </tbody>
-                  </table>
+                <div class="col-sm-3">
+                    <h4>Previous assessment scores:</h4>
+                </div>
+                <div class="col-sm-9 table-responsive">
+                    <table class="table table-bordered table-condensed table-hover">
+                        <thead>
+                            <tr>
+                                <th>Parameter</th>
+                                <th>Avg. score</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr ng-repeat="score in prevAssessmentCtrl.scores">
+                                <td>{{score.name}}</td>
+                                <td>{{score.avgScore | number:2}}</td>
+                            </tr>
+                        </tbody>
+                    </table>
                 </div>
             </div>
         </div>
         <div class="row spacer">
             <div class="col-xs-12 col-sm-12 col-md-12">
                 <tabset>
-                    <tab ng-repeat="parameter in animalCtrl.assessmentTemplate.templateParameters | orderBy:'parameterName'" heading="{{parameter.parameterName}}" ng-controller="AssessFormParametersCtrl as parametersCtrl">
-                        <div class="row" ng-repeat="factor in parameter.parameterFactors" ng-controller="AssessFormFactorsCtrl as factorsCtrl">
+                    <tab ng-repeat="parameter in animalCtrl.assessmentTemplate.templateParameters | orderBy:'parameterDisplayOrderNumber'"
+                        heading="{{parameter.parameterName}}"
+                        ng-controller="AssessFormParametersCtrl as parametersCtrl">
+                        <div class="row" ng-repeat="factor in parameter.parameterFactors"
+                            ng-controller="AssessFormFactorsCtrl as factorsCtrl">
                             <div class="col-xs-6 col-sm-6 col-md-4">
                                 <ul class="list-unstyled">
                                     <li>
@@ -145,30 +152,44 @@
                                     </li>
                                 </ul>
                             </div>
-                            <div class="col-xs-6 col-sm-6 col-md-4" ng-init="factorsCtrl.init(factor, factorsCtrl.score, factorsCtrl.isIgnored)">
+                            <div class="col-xs-6 col-sm-6 col-md-4"
+                                ng-init="factorsCtrl.init(factor, factorsCtrl.score, factorsCtrl.isIgnored)">
                                 <ul class="list-unstyled">
                                     <li>
-                                        <rating ng-model="factorsCtrl.score" readonly="animalCtrl.isInExistingCompleteMode || animalCtrl.isLockedInputs" max="animalCtrl.assessmentTemplate.templateScale.scaleMax" state-on="'glyphicon-stop'" state-off="'glyphicon-unchecked'" ng-click="factorsCtrl.onFactorScored(factor, factorsCtrl.score, factorsCtrl.isIgnored)"></rating><b>(<i>Score:</i> {{factorsCtrl.score}})</b>
+                                        <rating ng-model="factorsCtrl.score"
+                                            readonly="animalCtrl.isInExistingCompleteMode || animalCtrl.isLockedInputs"
+                                            max="animalCtrl.assessmentTemplate.templateScale.scaleMax"
+                                            state-on="'glyphicon-stop'" state-off="'glyphicon-unchecked'"
+                                            ng-click="factorsCtrl.onFactorScored(factor, factorsCtrl.score, factorsCtrl.isIgnored)">
+                                        </rating><b>(<i>Score:</i> {{factorsCtrl.score}})</b>
                                     </li>
                                 </ul>
                             </div>
                             <div class="col-xs-6 col-sm-6 col-md-4">
                                 <div class="checkbox">
                                     <label>
-                                        <input type="checkbox" ng-model="factorsCtrl.isIgnored" ng-change="factorsCtrl.onFactorIgnore(factor, factorsCtrl.score, factorsCtrl.isIgnored)" ng-disabled="animalCtrl.isInExistingCompleteMode || animalCtrl.isLockedInputs">
-                                        Ignore</label>
+                                        <input type="checkbox" ng-model="factorsCtrl.isIgnored"
+                                            ng-change="factorsCtrl.onFactorIgnore(factor, factorsCtrl.score, factorsCtrl.isIgnored)"
+                                            ng-disabled="animalCtrl.isInExistingCompleteMode || animalCtrl.isLockedInputs">
+                                        Not Applicable
+                                    </label>
                                 </div>
                             </div>
                         </div>
 
-                        <div class="row" >
+                        <div class="row">
                             <div class="col-xs-12" ng-controller="AssessFormCommentCtrl as commentCtrl">
-                                <textarea class="form-control" rows="4" cols="50" ng-attr-placeholder="Comment for parameter: {{parameter.parameterName}}" ng-model="commentCtrl.comment" ng-change="commentCtrl.onComment(parameter.parameterId)" ng-disabled="animalCtrl.isInExistingCompleteMode || animalCtrl.isLockedInputs"></textarea>
+                                <textarea class="form-control" rows="4" cols="50"
+                                    ng-attr-placeholder="Comment for parameter: {{parameter.parameterName}}"
+                                    ng-model="commentCtrl.comment"
+                                    ng-change="commentCtrl.onComment(parameter.parameterId)"
+                                    ng-disabled="animalCtrl.isInExistingCompleteMode || animalCtrl.isLockedInputs"></textarea>
                             </div>
                         </div>
-                        <div class="row" >
+                        <div class="row">
                             <div class="col-xs-12">
-                                <h4>Average score for parameter: {{ parameter.parameterName }} is {{animalCtrl.parameterAverages[parameter.parameterId]| number:2}}</h4>
+                                <h4>Average score for parameter: {{ parameter.parameterName }} is
+                                    {{animalCtrl.parameterAverages[parameter.parameterId]| number:2}}</h4>
                             </div>
                         </div>
                     </tab>
@@ -187,7 +208,9 @@
                 <div class="bg-info">
                     <span class="glyphicon glyphicon-info-sign pull-left" style="padding-right: 4px"></span>
                     <div>
-                        <p>After you create an assessment, you can review it and make changes in the Existing Assessment section (see menu). Finalised assessments can be viewed or deleted but <strong>not edited</strong>.</p>
+                        <p>After you create an assessment, you can review it and make changes in the Existing Assessment
+                            section (see menu). Finalised assessments can be viewed or deleted but <strong>not
+                                edited</strong>.</p>
                     </div>
                 </div>
             </div>
@@ -195,35 +218,42 @@
                 <div class="bg-info">
                     <span class="glyphicon glyphicon-info-sign pull-left" style="padding-right: 4px"></span>
                     <div>
-                        <p>After you save changes made to an existing assessment, you can edit it at a later time. However, finalised assessments can be viewed or deleted but <strong>not edited</strong>.</p>
+                        <p>After you save changes made to an existing assessment, you can edit it at a later time.
+                            However, finalised assessments can be viewed or deleted but <strong>not edited</strong>.</p>
                     </div>
                 </div>
             </div>
             <div class="row assessment-form aw-btns-panel">
-                <button ng-show="!animalCtrl.isInExistingCompleteMode" type="button" class="btn btn-success btn-lg" ng-click="animalCtrl.submitAssessment()">
+                <button ng-show="!animalCtrl.isInExistingCompleteMode" type="button" class="btn btn-success btn-lg"
+                    ng-click="animalCtrl.submitAssessment()">
                     {{animalCtrl.isInExistingMode ? "Finalise assessment" : "Create and finalise assessment"}}
                 </button>
-                <button ng-show="!animalCtrl.isInExistingCompleteMode" type="button" class="btn btn-primary btn-lg" ng-click="animalCtrl.saveAssessment()">
+                <button ng-show="!animalCtrl.isInExistingCompleteMode" type="button" class="btn btn-primary btn-lg"
+                    ng-click="animalCtrl.saveAssessment()">
                     {{animalCtrl.isInExistingMode ? "Save changes" : "Create assessment"}}
                 </button>
-                <button ng-show="!animalCtrl.isInExistingCompleteMode" type="button" class="btn btn-danger btn-lg" ng-click="animalCtrl.clearForm()">
+                <button ng-show="!animalCtrl.isInExistingCompleteMode" type="button" class="btn btn-danger btn-lg"
+                    ng-click="animalCtrl.clearForm()">
                     Clear form
                 </button>
-                <button ng-show="animalCtrl.isInExistingMode && !animalCtrl.isIntendingToDelete" type="button" class="btn btn-danger btn-lg" ng-click="animalCtrl.intendToDeleteAssessment()">
+                <button ng-show="animalCtrl.isInExistingMode && !animalCtrl.isIntendingToDelete" type="button"
+                    class="btn btn-danger btn-lg" ng-click="animalCtrl.intendToDeleteAssessment()">
                     Delete Assessment
                 </button>
                 <div ng-show="animalCtrl.isIntendingToDelete && animalCtrl.isInExistingMode" style="display: inline;">
                     <div ng-click="animalCtrl.deleteAssessment()" style="display: inline;">
-                        <button type="button" class="btn btn-success btn-sm" title="Confirm deletion" ng-disabled="animalCtrl.isDeleting">
+                        <button type="button" class="btn btn-success btn-sm" title="Confirm deletion"
+                            ng-disabled="animalCtrl.isDeleting">
                             <i class="glyphicon glyphicon-ok"></i>
                         </button>
                     </div>
                     <div ng-click="animalCtrl.cancelDeleteAssessment()" style="display: inline;">
-                        <button type="button" class="btn btn-danger btn-sm" title="Cancel deletion" ng-disabled="animalCtrl.isDeleting">
+                        <button type="button" class="btn btn-danger btn-sm" title="Cancel deletion"
+                            ng-disabled="animalCtrl.isDeleting">
                             <i class="glyphicon glyphicon-remove"></i>
                         </button>
                     </div>
-                </div>                
+                </div>
             </div>
         </div>
     </form>

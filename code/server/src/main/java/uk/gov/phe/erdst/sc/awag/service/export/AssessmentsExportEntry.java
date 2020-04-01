@@ -3,8 +3,8 @@ package uk.gov.phe.erdst.sc.awag.service.export;
 import java.util.Set;
 
 import uk.gov.phe.erdst.sc.awag.datamodel.StudyGroup;
-import uk.gov.phe.erdst.sc.awag.dto.ParameterScoredDto;
-import uk.gov.phe.erdst.sc.awag.dto.assessment.AssessmentFullDto;
+import uk.gov.phe.erdst.sc.awag.webapi.response.assessment.AssessmentFullDto;
+import uk.gov.phe.erdst.sc.awag.webapi.response.parameter.ParameterScoredDto;
 
 public class AssessmentsExportEntry
 {

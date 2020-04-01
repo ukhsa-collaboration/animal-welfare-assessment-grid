@@ -4,6 +4,7 @@ import java.io.Serializable;
 import java.util.List;
 
 import javax.persistence.CascadeType;
+import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
@@ -14,6 +15,7 @@ import javax.persistence.ManyToOne;
 import javax.persistence.NamedQueries;
 import javax.persistence.NamedQuery;
 import javax.persistence.OneToMany;
+import javax.persistence.OrderBy;
 import javax.persistence.Table;
 
 @Entity
@@ -48,9 +50,16 @@ public class AssessmentTemplate implements Serializable, EntitySelect
     @OneToMany(mappedBy = "mAssessmentTemplate", fetch = FetchType.EAGER, cascade = CascadeType.ALL)
     private List<AssessmentTemplateParameterFactor> mAssessmentTemplateParameterFactors;
 
+    @OneToMany(mappedBy = "mAssessmentTemplate", fetch = FetchType.EAGER, cascade = CascadeType.ALL)
+    @OrderBy(value = "clockwiseDisplayOrderNumber ASC")
+    private List<AssessmentTemplateParameter> mAssessmentTemplateParameters;
+
     @ManyToOne
     @JoinColumn(name = "mscale_mid")
     private Scale mScale;
+
+    @Column(name = "is_allow_zero_scores")
+    private boolean isAllowZeroScores;
 
     public AssessmentTemplate()
     {
@@ -81,6 +90,16 @@ public class AssessmentTemplate implements Serializable, EntitySelect
         this.mName = mName;
     }
 
+    public boolean isAllowZeroScores()
+    {
+        return isAllowZeroScores;
+    }
+
+    public void setAllowZeroScores(boolean isAllowZeroScores)
+    {
+        this.isAllowZeroScores = isAllowZeroScores;
+    }
+
     public List<AssessmentTemplateParameterFactor> getAssessmentTemplateParameterFactors()
     {
         return this.mAssessmentTemplateParameterFactors;
@@ -108,6 +127,11 @@ public class AssessmentTemplate implements Serializable, EntitySelect
         assessmentTemplateParameterFactor.setAssessmentTemplate(null);
 
         return assessmentTemplateParameterFactor;
+    }
+
+    public List<AssessmentTemplateParameter> getAssessmentTemplateParameters()
+    {
+        return this.mAssessmentTemplateParameters;
     }
 
     public Scale getScale()

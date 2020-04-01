@@ -1,0 +1,78 @@
+<h1 class="page-header text-center">
+    Import Animal Assessments
+</h1>
+
+<div class="container-fluid">
+
+    <div ng-controller="MngmtAssessmentUploadManagementCtrl as assessmentUploadMngmtCtrl" ng-cloak>
+
+        <div ng-hide="!assessmentUploadMngmtCtrl.isAllowAssessmentUpload">
+
+            Add new assessment templates before importing new data
+
+        </div>
+
+        <div ng-hide="assessmentUploadMngmtCtrl.isAllowAssessmentUpload" ng-cloak>
+
+            <form name="assessmentManagementUploadForm" class="form-horizontal">
+
+                <div ng-controller="MngmtUploadAnimalAssessmentTemplateSelectionCtrl as templateCtrl">
+
+                    <div class="form-group">
+                        <label for="{{templateCtrl.selectId}}" class="col-xs-3 control-label">Assessment template: </label>
+                        <div class="col-xs-7">
+                            <aw-search-select2 elem-id="{{templateCtrl.selectId}}" controller="templateCtrl"></aw-search-select2>
+                        </div>
+                    </div>
+
+                </div>
+
+                <div class="form-group" ng-controller="MngmtAssessmentUploadCtrl as assessmentUploadCtrl">
+
+                    <label for="{{assessmentUploadCtrl.uploadId}}" class="col-xs-3 control-label">Upload File: </label>
+
+                    <div class="col-xs-7">
+                        <aw-upload-file elem-id="{{assessmentUploadCtrl.uploadId}}" controller="assessmentUploadCtrl"></aw-upload-file>
+                    </div>
+
+                </div>     
+
+                <div class="form-group">
+
+                    <div class="col-xs-12">
+                        <aw-success-display success="assessmentUploadMngmtCtrl.isSuccess"></aw-success-display>
+                    </div>
+
+                </div>
+
+                <div class="form-group">
+
+                    <div class="col-xs-12">
+                        <aw-error-display errors="assessmentUploadMngmtCtrl.errors"></aw-error-display>
+                    </div>
+
+                </div>
+                   
+                <div class="row">
+
+                    <div class="text-center">
+
+                        <button type="button" class="btn btn-lg btn-success" ng-click="assessmentUploadMngmtCtrl.uploadAssessment()" 
+                                ng-disabled="assessmentUploadMngmtCtrl.isFileSelected">
+                            Upload
+                        </button>
+                        <button type="button" class="btn btn-lg btn-danger" ng-click="assessmentUploadMngmtCtrl.clearUploadAssessment()">
+                            Clear
+                        </button>
+
+                    </div>
+
+                </div>
+
+            </form>
+
+        </div>
+
+    </div>
+
+</div>

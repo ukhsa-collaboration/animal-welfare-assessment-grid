@@ -1,8 +1,10 @@
 package uk.gov.phe.erdst.sc.awag.dao.impl;
 
+import java.util.Collection;
 import java.util.List;
 
 import javax.ejb.Stateless;
+import javax.persistence.PersistenceException;
 
 import uk.gov.phe.erdst.sc.awag.dao.DaoErrorMessageProvider;
 import uk.gov.phe.erdst.sc.awag.dao.StudyDao;
@@ -11,6 +13,7 @@ import uk.gov.phe.erdst.sc.awag.dao.impl.utils.DaoUtils;
 import uk.gov.phe.erdst.sc.awag.datamodel.Animal;
 import uk.gov.phe.erdst.sc.awag.datamodel.Study;
 import uk.gov.phe.erdst.sc.awag.exceptions.AWMultipleResultException;
+import uk.gov.phe.erdst.sc.awag.exceptions.AWNonUniqueException;
 
 @Stateless
 public class StudyDaoImpl extends CommonDaoImpl<Study> implements StudyDao
@@ -57,4 +60,35 @@ public class StudyDaoImpl extends CommonDaoImpl<Study> implements StudyDao
 
         return result.get(0);
     }
+
+    @Override
+    public void upload(Collection<Study> studies) throws AWNonUniqueException
+    {
+        Study lastStudy = null;
+        try
+        {
+            for (Study study : studies)
+            {
+                lastStudy = study;
+                getEntityManager().persist(study);
+            }
+            getEntityManager().flush();
+        }
+        catch (PersistenceException ex)
+        {
+            if (DaoUtils.isUniqueConstraintViolation(ex))
+            {
+                String errMsg = DaoUtils.getNoSuchEntityMessage(Study.class.getName(), lastStudy);
+                getLogger().error(errMsg);
+                throw new AWNonUniqueException(errMsg);
+            }
+            else
+            {
+                getLogger().error(ex.getMessage());
+                throw ex;
+            }
+        }
+
+    }
+
 }

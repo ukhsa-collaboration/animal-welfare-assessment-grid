@@ -35,6 +35,7 @@ import uk.gov.phe.erdst.sc.awag.datamodel.Study;
 import uk.gov.phe.erdst.sc.awag.datamodel.StudyGroup;
 import uk.gov.phe.erdst.sc.awag.datamodel.User;
 import uk.gov.phe.erdst.sc.awag.exceptions.AWNoSuchEntityException;
+import uk.gov.phe.erdst.sc.awag.exceptions.AWNonUniqueException;
 import uk.gov.phe.erdst.sc.awag.utils.Constants;
 import uk.gov.phe.erdst.sc.awag.utils.DataRetrievalUtils;
 
@@ -154,7 +155,8 @@ public class AssessmentDaoImpl implements AssessmentDao
     public Collection<Assessment> getAssessmentsByIds(Long... ids)
     {
         // CS:OFF: LineLength
-        MessageFormat messageFormat = new MessageFormat("SELECT o FROM {0} o WHERE o.{1} IN :{2} ORDER BY o.mDate DESC");
+        MessageFormat messageFormat = new MessageFormat(
+            "SELECT o FROM {0} o WHERE o.{1} IN :{2} ORDER BY o.mDate DESC");
         // CS:ON
         String queryString = messageFormat.format(new String[] {"Assessment", "mId", ENTITY_COMMON_IDS_FIELD});
         return mEntityManager.createQuery(queryString, Assessment.class)
@@ -162,10 +164,11 @@ public class AssessmentDaoImpl implements AssessmentDao
     }
 
     @Override
-    public Long getCountAnimalAssessmentsBetween(String dateFrom, String dateTo, Long animalId)
+    public Long getCountAnimalAssessmentsBetween(String dateFrom, String dateTo, Long animalId, boolean isComplete)
     {
         Query getCountQuery = mEntityManager.createNamedQuery(Assessment.Q_COUNT_ANIMAL_ASSESSMENT_BETWEEN, Long.class)
             .setParameter(DaoConstants.QUERY_PARAM_ANIMAL_ID, animalId)
+            .setParameter(DaoConstants.QUERY_PARAM_IS_COMPLETE, isComplete)
             .setParameter(DaoConstants.QUERY_PARAM_DATE_FROM, dateFrom)
             .setParameter(DaoConstants.QUERY_PARAM_DATE_TO, dateTo);
         return (Long) getCountQuery.getResultList().get(0);
@@ -208,8 +211,8 @@ public class AssessmentDaoImpl implements AssessmentDao
         Root<StudyGroup> group = sq.from(StudyGroup.class);
         sq.select(group);
 
-        Expression<Set<Animal>> groupAnimals = group.get(studyGroupClass.getDeclaredSet(
-            StudyGroup.F_ANIMALS_FIELD_NAME, Animal.class));
+        Expression<Set<Animal>> groupAnimals = group
+            .get(studyGroupClass.getDeclaredSet(StudyGroup.F_ANIMALS_FIELD_NAME, Animal.class));
 
         Predicate groupRestriction = builder.equal(group.get(studyGroupClass.getId(Long.class)), studyGroupId);
 
@@ -249,11 +252,11 @@ public class AssessmentDaoImpl implements AssessmentDao
         Predicate dateRestriction = builder.lessThanOrEqualTo(
             root.get(assessmentClass.getSingularAttribute(Assessment.F_DATE_FIELD_NAME, String.class)), date);
 
-        Predicate idRestriction = builder.not(builder.equal(root.get(assessmentClass.getId(Long.class)),
-            currentAssessmentId));
+        Predicate idRestriction = builder
+            .not(builder.equal(root.get(assessmentClass.getId(Long.class)), currentAssessmentId));
 
         criteria.where(builder.and(animalRestriction, dateRestriction, idRestriction)).orderBy(
-            builder.desc(root.get(assessmentClass.getId(Long.class))));
+            builder.desc(root.get(assessmentClass.getSingularAttribute(Assessment.F_DATE_FIELD_NAME, String.class))));
 
         TypedQuery<Assessment> query = mEntityManager.createQuery(criteria);
         query.setMaxResults(1);
@@ -277,8 +280,8 @@ public class AssessmentDaoImpl implements AssessmentDao
         setSearchCriteria(animalId, dateFrom, dateTo, userId, reasonId, studyId, isComplete, builder, criteria, root,
             restrictions, assessmentClass);
 
-        criteria.orderBy(builder.desc(root.get(assessmentClass.getSingularAttribute(Assessment.F_DATE_FIELD_NAME,
-            String.class))));
+        criteria.orderBy(
+            builder.desc(root.get(assessmentClass.getSingularAttribute(Assessment.F_DATE_FIELD_NAME, String.class))));
 
         TypedQuery<Assessment> query = mEntityManager.createQuery(criteria);
         DaoUtils.setOffset(query, offset);
@@ -309,6 +312,35 @@ public class AssessmentDaoImpl implements AssessmentDao
         Long result = query.getResultList().get(0);
 
         return result;
+    }
+
+    @Override
+    public void upload(Collection<Assessment> assessments) throws AWNonUniqueException
+    {
+        Assessment lastAnimal = null;
+        try
+        {
+            for (Assessment assessment : assessments)
+            {
+                lastAnimal = assessment;
+                mEntityManager.persist(assessment);
+            }
+            mEntityManager.flush();
+        }
+        catch (PersistenceException ex)
+        {
+            if (DaoUtils.isUniqueConstraintViolation(ex))
+            {
+                String errMsg = getNonUniqueAssessmentMessage(lastAnimal);
+                LOGGER.error(errMsg);
+                throw new AWNonUniqueException(errMsg);
+            }
+            else
+            {
+                LOGGER.error(ex.getMessage());
+                throw ex;
+            }
+        }
     }
 
     private void setSearchCriteria(Long animalId, String dateFrom, String dateTo, Long userId, Long reasonId,
@@ -406,6 +438,12 @@ public class AssessmentDaoImpl implements AssessmentDao
     private static String getNoSuchAssessmentMessage(Long id)
     {
         return DaoUtils.getNoSuchEntityMessage(Assessment.class.getName(), id);
+    }
+
+    private static String getNonUniqueAssessmentMessage(Assessment assessment)
+    {
+        return DaoUtils.getUniqueConstraintViolationMessage(DaoConstants.PROP_SOURCE_NAME,
+            assessment.getEntitySelectName());
     }
 
     @Override

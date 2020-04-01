@@ -5,11 +5,11 @@ import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 
 import uk.gov.phe.erdst.sc.awag.datamodel.AnimalHousing;
-import uk.gov.phe.erdst.sc.awag.datamodel.client.AnimalHousingClientData;
+import uk.gov.phe.erdst.sc.awag.deprecated.RequestConverter;
 import uk.gov.phe.erdst.sc.awag.service.factory.housing.AnimalHousingFactory;
-import uk.gov.phe.erdst.sc.awag.servlets.utils.RequestConverter;
 import uk.gov.phe.erdst.sc.awag.shared.test.TestConstants;
 import uk.gov.phe.erdst.sc.awag.utils.GuiceHelper;
+import uk.gov.phe.erdst.sc.awag.webapi.request.AnimalHousingClientData;
 
 import com.google.inject.Inject;
 

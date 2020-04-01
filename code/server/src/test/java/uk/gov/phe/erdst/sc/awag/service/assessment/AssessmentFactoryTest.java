@@ -4,19 +4,20 @@ import org.testng.Assert;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 
+import com.google.inject.Inject;
+
 import uk.gov.phe.erdst.sc.awag.datamodel.Assessment;
 import uk.gov.phe.erdst.sc.awag.datamodel.AssessmentTemplate;
-import uk.gov.phe.erdst.sc.awag.datamodel.client.AssessmentClientData;
 import uk.gov.phe.erdst.sc.awag.datamodel.utils.AssessmentScoreUtils;
+import uk.gov.phe.erdst.sc.awag.deprecated.RequestConverter;
 import uk.gov.phe.erdst.sc.awag.service.factory.assessment.AssessmentFactory;
 import uk.gov.phe.erdst.sc.awag.service.factory.impl.AssessmentPartsFactoryImpl.AssessmentParts;
 import uk.gov.phe.erdst.sc.awag.service.mock.MockAssessmentPartsFactory;
-import uk.gov.phe.erdst.sc.awag.servlets.utils.RequestConverter;
 import uk.gov.phe.erdst.sc.awag.shared.test.AssessmentFactoryTestUtils;
 import uk.gov.phe.erdst.sc.awag.shared.test.TestConstants;
 import uk.gov.phe.erdst.sc.awag.utils.GuiceHelper;
-
-import com.google.inject.Inject;
+import uk.gov.phe.erdst.sc.awag.webapi.request.AssessmentClientData;
+import uk.gov.phe.erdst.sc.awag.webapi.response.assessment.AssessmentScoreComparisonResultDto;
 
 @Test(groups = {TestConstants.TESTNG_UNIT_TESTS_GROUP})
 public class AssessmentFactoryTest
@@ -39,11 +40,11 @@ public class AssessmentFactoryTest
     @Test
     public void testCreate() throws Exception
     {
-        AssessmentClientData clientData = (AssessmentClientData) mRequestConverter.convert(
-            TestConstants.DUMMY_ASSESSMENT_RAW_DATA, AssessmentClientData.class);
+        AssessmentClientData clientData = (AssessmentClientData) mRequestConverter
+            .convert(TestConstants.DUMMY_ASSESSMENT_RAW_DATA, AssessmentClientData.class);
 
-        AssessmentTemplate template = AssessmentFactoryTestUtils.createTemplateFromAssessmentClientData(
-            TestConstants.TEST_ASSESSMENT_TEMPLATE_ID, clientData);
+        AssessmentTemplate template = AssessmentFactoryTestUtils
+            .createTemplateFromAssessmentClientData(TestConstants.TEST_ASSESSMENT_TEMPLATE_ID, clientData);
 
         AssessmentParts assessmentParts = mAssessmentPartsFactory.create(clientData);
         final boolean isComplete = true;
@@ -56,20 +57,20 @@ public class AssessmentFactoryTest
     @Test
     public void testUpdate()
     {
-        AssessmentClientData clientData = (AssessmentClientData) mRequestConverter.convert(
-            TestConstants.DUMMY_ASSESSMENT_RAW_DATA, AssessmentClientData.class);
+        AssessmentClientData clientData = (AssessmentClientData) mRequestConverter
+            .convert(TestConstants.DUMMY_ASSESSMENT_RAW_DATA, AssessmentClientData.class);
 
         AssessmentParts assessmentParts = mAssessmentPartsFactory.create(clientData);
-        AssessmentTemplate template = AssessmentFactoryTestUtils.createTemplateFromAssessmentClientData(
-            TestConstants.TEST_ASSESSMENT_TEMPLATE_ID, clientData);
+        AssessmentTemplate template = AssessmentFactoryTestUtils
+            .createTemplateFromAssessmentClientData(TestConstants.TEST_ASSESSMENT_TEMPLATE_ID, clientData);
 
         boolean isComplete = false;
         Assessment assessment = mAssessmentFactory.create(clientData, template, assessmentParts, isComplete);
 
         AssessmentFactoryTestUtils.changeClientData(clientData);
 
-        AssessmentTemplate changedTemplate = AssessmentFactoryTestUtils.createTemplateFromAssessmentClientData(
-            TestConstants.TEST_ASSESSMENT_TEMPLATE_ID, clientData);
+        AssessmentTemplate changedTemplate = AssessmentFactoryTestUtils
+            .createTemplateFromAssessmentClientData(TestConstants.TEST_ASSESSMENT_TEMPLATE_ID, clientData);
         AssessmentParts changedAssessmentParts = mAssessmentPartsFactory.create(clientData);
 
         Long originalId = assessment.getId();
@@ -89,7 +90,10 @@ public class AssessmentFactoryTest
         Assert.assertEquals(assessment.getDate(), clientData.date);
         Assert.assertEquals(assessment.getAnimalHousing().getName(), clientData.animalHousing);
         Assert.assertEquals(assessment.getPerformedBy().getName(), clientData.performedBy);
-        Assert.assertTrue(AssessmentScoreUtils.isAssessmentScoreEqual(assessment.getScore(), clientData));
+
+        AssessmentScoreComparisonResultDto comparison = AssessmentScoreUtils
+            .isAssessmentScoreEqual(assessment.getScore(), clientData, null);
+        Assert.assertTrue(comparison.isAssessmentScoreEqual);
     }
 
 }

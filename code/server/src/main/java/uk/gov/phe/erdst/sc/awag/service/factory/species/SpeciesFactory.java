@@ -2,8 +2,9 @@ package uk.gov.phe.erdst.sc.awag.service.factory.species;
 
 import javax.ejb.Stateless;
 
+import uk.gov.phe.erdst.sc.awag.datamodel.ImportSpecy;
 import uk.gov.phe.erdst.sc.awag.datamodel.Species;
-import uk.gov.phe.erdst.sc.awag.datamodel.client.SpeciesClientData;
+import uk.gov.phe.erdst.sc.awag.webapi.request.SpeciesClientData;
 
 @Stateless
 public class SpeciesFactory
@@ -19,6 +20,13 @@ public class SpeciesFactory
 
         setNonIdSpeciesProperties(species, clientData);
 
+        return species;
+    }
+
+    public Species create(ImportSpecy importSpecies)
+    {
+        Species species = new Species();
+        species.setName(importSpecies.getSpeciesName());
         return species;
     }
 

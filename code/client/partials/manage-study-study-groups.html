@@ -1,12 +1,17 @@
 <h1 class="page-header text-center">Study/Study group management</h1>
+
 <div class="container-fluid" ng-controller="StudyStudyGroupAccordianCtrl as accordianCtrl">
     <accordion close-others="false">
+
     	<accordion-group is-open="accordianCtrl.accordionStatus.isStudyGroupAnimalsOpen">
+
     		<accordion-heading>
     			Study group management
     			<i class="pull-right glyphicon" ng-class="{'glyphicon-chevron-down': accordianCtrl.accordionStatus.isStudyGroupAnimalsOpen, 'glyphicon-chevron-right': !accordianCtrl.accordionStatus.isStudyGroupAnimalsOpen}"></i>
     		</accordion-heading>
+
     		<div ng-controller="MngmtStudyGroupManagementCtrl as studyGroupMngmtCtrl">
+
     			<form name="studyGroupManagementForm" class="form-horizontal">
 					<div class="form-group" ng-controller="MngmtStudyGroupSelectionCtrl as studyGroupCtrl">
             			<label for="{{studyGroupCtrl.selectId}}" class="col-xs-3 control-label">Study group name: </label>
@@ -19,6 +24,7 @@
             				</button>
             			</div>
         			</div>
+
         			<div class="form-group" ng-controller="MngmtStudyGroupSelectionUpdateCtrl as studyGroupUpdateCtrl" ng-show="studyGroupMngmtCtrl.isUpdatingStudyGroup">
             			<label for="{{studyGroupUpdateCtrl.selectId}}" class="col-xs-3 control-label">Update study group: </label>
             			<div ng-class="{'col-xs-7': !studyGroupMngmtCtrl.isExistingStudyGroup, 'col-xs-6': studyGroupMngmtCtrl.isExistingStudyGroup}">
@@ -31,6 +37,7 @@
             				</button>
             			</div>
         			</div>
+
         			<div class="form-group" ng-controller="MngmtStudyGroupAnimalsCtrl as studyGroupAnimalsCtrl"> 
             			<label for="{{studyGroupAnimalsCtrl.selectId}}" class="col-xs-3 control-label">Study group animals: </label>
             			<div class="col-xs-7">
@@ -44,6 +51,7 @@
             				<aw-success-display success="studyGroupMngmtCtrl.isSuccess"></aw-success-display>
             			</div>
         			</div>
+
                     <div class="row">
                         <div class="text-center">
                             <button type="button" class="btn btn-lg btn-success" ng-click="studyGroupMngmtCtrl.submitStudyGroup()" ng-disabled="studyGroupMngmtCtrl.isExistingStudyGroup">
@@ -57,15 +65,22 @@
                             </button>
                         </div>
                     </div>
+
         		</form>
+
     		</div>
+
     	</accordion-group>
+
     	<accordion-group is-open="accordianCtrl.accordionStatus.isStudyStudyGroupsOpen">
+
     		<accordion-heading>
     			Study management
     			<i class="pull-right glyphicon" ng-class="{'glyphicon-chevron-down': accordianCtrl.accordionStatus.isStudyStudyGroupsOpen, 'glyphicon-chevron-right': !accordianCtrl.accordionStatus.isStudyStudyGroupsOpen}"></i>
     		</accordion-heading>
+
     		<div ng-controller="MngmtStudyManagementCtrl as studyMngmtCtrl">
+
     			<form name="studyGroupManagementForm" class="form-horizontal">
 					<div class="form-group" ng-controller="MngmtStudySelectionCtrl as studyCtrl">
             			<label for="{{studyCtrl.selectId}}" class="col-xs-3 control-label">Study name: </label>
@@ -78,6 +93,7 @@
             				</button>
             			</div>
         			</div>
+
         			<div class="form-group" ng-controller="MngmtStudySelectionUpdateCtrl as studyUpdateCtrl" ng-show="studyMngmtCtrl.isUpdatingStudy">
             			<label for="{{studyUpdateCtrl.selectId}}" class="col-xs-3 control-label">Update study: </label>
             			<div ng-class="{'col-xs-7': !studyMngmtCtrl.isExistingStudy, 'col-xs-6': studyMngmtCtrl.isExistingStudy}">
@@ -90,22 +106,26 @@
             				</button>
             			</div>
         			</div>
+
         			<div class="form-group" ng-controller="MngmtStudyStudyGroupCtrl as studyStudyGroupCtrl"> 
             			<label for="{{studyStudyGroupCtrl.selectId}}" class="col-xs-3 control-label">Study study groups: </label>
             			<div class="col-xs-7">
                 			<aw-search-select2 elem-id="{{studyStudyGroupCtrl.selectId}}" controller="studyStudyGroupCtrl"></aw-search-select2>
             			</div>
         			</div>
+
         			<div class="form-group">
         				<label class="col-xs-3 control-label">Open study: </label>
             			<input class="col-xs-offset-6 big-checkbox" type="checkbox" ng-model="studyMngmtCtrl.study.isStudyOpen">
         			</div>
+
 					<div class="form-group">
             			<div class="col-xs-12" style="padding-left: 30px; padding-right: 30px; padding-top: 20px">
             				<aw-error-display errors="studyMngmtCtrl.errors"></aw-error-display>
             				<aw-success-display success="studyMngmtCtrl.isSuccess"></aw-success-display>
             			</div>
         			</div>
+
                     <div class="row">
                         <div class="text-center">
                             <button type="button" class="btn btn-lg btn-success" ng-click="studyMngmtCtrl.submitStudy()" ng-disabled="studyMngmtCtrl.isExistingStudy">
@@ -119,8 +139,131 @@
                             </button>
                         </div>
                     </div>
+
         		</form>
+                
     		</div>
+
     	</accordion-group>
+
+        <accordion-group is-open="accordianCtrl.accordionStatus.isUploadStudyGroupAnimalsUploadOpen">
+
+            <accordion-heading>
+                Upload Study group management
+                <i class="pull-right glyphicon" ng-class="{'glyphicon-chevron-down': accordianCtrl.accordionStatus.isStudyStudyGroupsOpen, 'glyphicon-chevron-right': !accordianCtrl.accordionStatus.isStudyStudyGroupsOpen}"></i>
+            </accordion-heading>
+
+            <div ng-controller="MngmtStudyGroupUploadManagementCtrl as studyGroupUploadMngmtCtrl">
+
+                <form name="studyGroupManagementUploadForm" class="form-horizontal">
+
+                    <div class="form-group" ng-controller="MngmtStudyGroupUploadCtrl as studyGroupUploadCtrl">
+
+                        <label for="{{studyGroupUploadCtrl.uploadId}}" class="col-xs-3 control-label">Upload File: </label>
+
+                        <div class="col-xs-7">
+                            <aw-upload-file elem-id="{{studyGroupUploadCtrl.uploadId}}" controller="studyGroupUploadCtrl"></aw-upload-file>
+                        </div>
+
+                    </div>     
+
+                    <div class="form-group">
+
+                        <div class="col-xs-12">
+                            <aw-success-display success="studyGroupUploadMngmtCtrl.isSuccess"></aw-success-display>
+                        </div>
+
+                    </div>
+
+                    <div class="form-group">
+
+                        <div class="col-xs-12">
+                            <aw-error-display errors="studyGroupUploadMngmtCtrl.errors"></aw-error-display>
+                        </div>
+
+                    </div>
+                       
+                    <div class="row">
+
+                        <div class="text-center">
+
+                            <button type="button" class="btn btn-lg btn-success" ng-click="studyGroupUploadMngmtCtrl.uploadStudyGroup()" 
+                                    ng-disabled="studyGroupUploadMngmtCtrl.isFileSelected">
+                                Upload
+                            </button>
+                            <button type="button" class="btn btn-lg btn-danger" ng-click="studyGroupUploadMngmtCtrl.clearUploadStudyGroup()">
+                                Clear
+                            </button>
+
+                        </div>
+
+                    </div>
+
+                </form>
+
+            </div>    
+
+        </accordion-group>
+
+        <accordion-group is-open="accordianCtrl.accordionStatus.isUploadStudyStudyGroupOpen">
+
+            <accordion-heading>
+                Upload Study management
+                <i class="pull-right glyphicon" ng-class="{'glyphicon-chevron-down': accordianCtrl.accordionStatus.isStudyStudyGroupsOpen, 'glyphicon-chevron-right': !accordianCtrl.accordionStatus.isStudyStudyGroupsOpen}"></i>
+            </accordion-heading>
+
+            <div ng-controller="MngmtStudyUploadManagementCtrl as studyUploadMngmtCtrl">
+
+                <form name="studyManagementUploadForm" class="form-horizontal">
+
+                    <div class="form-group" ng-controller="MngmtStudyUploadCtrl as studyUploadCtrl">
+
+                        <label for="{{studyUploadCtrl.uploadId}}" class="col-xs-3 control-label">Upload File: </label>
+
+                        <div class="col-xs-7">
+                            <aw-upload-file elem-id="{{studyUploadCtrl.uploadId}}" controller="studyUploadCtrl"></aw-upload-file>
+                        </div>
+
+                    </div>     
+
+                    <div class="form-group">
+
+                        <div class="col-xs-12">
+                            <aw-success-display success="studyUploadMngmtCtrl.isSuccess"></aw-success-display>
+                        </div>
+
+                    </div>
+
+                    <div class="form-group">
+
+                        <div class="col-xs-12">
+                            <aw-error-display errors="studyUploadMngmtCtrl.errors"></aw-error-display>
+                        </div>
+
+                    </div>
+                       
+                    <div class="row">
+
+                        <div class="text-center">
+
+                            <button type="button" class="btn btn-lg btn-success" ng-click="studyUploadMngmtCtrl.uploadStudy()" 
+                                    ng-disabled="studyUploadMngmtCtrl.isFileSelected">
+                                Upload
+                            </button>
+                            <button type="button" class="btn btn-lg btn-danger" ng-click="studyUploadMngmtCtrl.clearUploadStudy()">
+                                Clear
+                            </button>
+
+                        </div>
+
+                    </div>
+
+                </form>
+
+            </div>            
+
+        </accordion-group>
+
     </accordion>
+
 </div>

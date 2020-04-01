@@ -1,16 +1,18 @@
-var sexServices = angular.module('sexServices', ['dataServices']);
+var sexServices = angular.module('sexServices', ['webApiConfigModule', 'newDataServices']);
 
-animalServices.factory('sexService', ['dataService',
-function(dataService)
+animalServices.factory('sexService', ['webApiConfig', 'newDataService',
+function(webApiConfig, newDataService)
 {
+  var URLS = webApiConfig.webApiUrls.entity.sex;
+
 	var getSex = function (callback)
 	{
-		dataService.dataConnection({
-    		servlet: "sex",
-    		callback : {
-				success : callback
-			}
-    	});
+    var url = URLS.getAll;
+    var parameters = {};
+    var successCallback = function(data) {
+      callback(data.sexes);
+    };
+    newDataService.httpGet(url, parameters, successCallback);
 	};
 	
 	return{

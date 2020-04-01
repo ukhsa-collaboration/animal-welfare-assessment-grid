@@ -1,8 +1,10 @@
 package uk.gov.phe.erdst.sc.awag.service.factory.assessment;
 
-import java.util.Arrays;
+import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.HashSet;
+import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
@@ -10,24 +12,26 @@ import java.util.Set;
 import javax.ejb.Stateless;
 import javax.inject.Inject;
 
-import uk.gov.phe.erdst.sc.awag.datamodel.Animal;
 import uk.gov.phe.erdst.sc.awag.datamodel.Assessment;
 import uk.gov.phe.erdst.sc.awag.datamodel.AssessmentReason;
 import uk.gov.phe.erdst.sc.awag.datamodel.AssessmentScore;
 import uk.gov.phe.erdst.sc.awag.datamodel.ParameterScore;
-import uk.gov.phe.erdst.sc.awag.dto.AnimalDto;
-import uk.gov.phe.erdst.sc.awag.dto.ParameterScoredDto;
-import uk.gov.phe.erdst.sc.awag.dto.assessment.AssessmentDto;
-import uk.gov.phe.erdst.sc.awag.dto.assessment.AssessmentFullDto;
-import uk.gov.phe.erdst.sc.awag.dto.assessment.AssessmentSearchPreviewDto;
-import uk.gov.phe.erdst.sc.awag.dto.assessment.AssessmentsDto;
-import uk.gov.phe.erdst.sc.awag.dto.assessment.ParametersOrdering;
-import uk.gov.phe.erdst.sc.awag.dto.assessment.PreviousAssessmentDto;
+import uk.gov.phe.erdst.sc.awag.datamodel.utils.ParametersOrdering;
 import uk.gov.phe.erdst.sc.awag.service.factory.animal.AnimalDtoFactory;
 import uk.gov.phe.erdst.sc.awag.service.factory.housing.AnimalHousingDtoFactory;
 import uk.gov.phe.erdst.sc.awag.service.factory.parameter.ParameterScoredDtoFactory;
 import uk.gov.phe.erdst.sc.awag.service.factory.study.StudyDtoFactory;
 import uk.gov.phe.erdst.sc.awag.service.factory.user.UserDtoFactory;
+import uk.gov.phe.erdst.sc.awag.utils.Constants;
+import uk.gov.phe.erdst.sc.awag.webapi.response.animal.AnimalDto;
+import uk.gov.phe.erdst.sc.awag.webapi.response.assessment.AssessmentFullDto;
+import uk.gov.phe.erdst.sc.awag.webapi.response.assessment.AssessmentMinimalDto;
+import uk.gov.phe.erdst.sc.awag.webapi.response.assessment.AssessmentSearchResultDto;
+import uk.gov.phe.erdst.sc.awag.webapi.response.assessment.AssessmentSearchResultWrapperDto;
+import uk.gov.phe.erdst.sc.awag.webapi.response.assessment.AssessmentSimpleDto;
+import uk.gov.phe.erdst.sc.awag.webapi.response.assessment.AssessmentSimpleWrapperDto;
+import uk.gov.phe.erdst.sc.awag.webapi.response.assessment.PreviousAssessmentDto;
+import uk.gov.phe.erdst.sc.awag.webapi.response.parameter.ParameterScoredDto;
 
 // CS:OFF: ClassDataAbstractionCoupling
 @Stateless
@@ -52,42 +56,81 @@ public class AssessmentDtoFactory
     @Inject
     private StudyDtoFactory mStudyDtoFactory;
 
-    public AssessmentsDto createAssessmentsDto(List<Assessment> assessments, ParametersOrdering ordering)
+    public Collection<AssessmentMinimalDto> createMinimalAssessmentsDto(Collection<Assessment> assessments)
     {
-
-        Set<AssessmentDto> assessmentDtos = new LinkedHashSet<AssessmentDto>(assessments.size());
+        Collection<AssessmentMinimalDto> dtos = new ArrayList<>(assessments.size());
 
         for (Assessment assessment : assessments)
         {
-            AssessmentDto assessmentDto = createAssessmentDto(assessment, ordering);
+            AssessmentMinimalDto dto = new AssessmentMinimalDto();
+            dto.id = assessment.getId();
+            dto.entityName = assessment.getAnimal().getAnimalNumber() + "|" + assessment.getDate();
+            dtos.add(dto);
+        }
+
+        return dtos;
+    }
+
+    public AssessmentSimpleWrapperDto createSimpleAssessmentsDto(List<Assessment> assessments,
+        ParametersOrdering ordering)
+    {
+
+        Set<AssessmentSimpleDto> assessmentDtos = new LinkedHashSet<>(assessments.size());
+
+        for (Assessment assessment : assessments)
+        {
+            AssessmentSimpleDto assessmentDto = createSimpleAssessmentDto(assessment, ordering);
             assessmentDtos.add(assessmentDto);
         }
 
-        return new AssessmentsDto(assessmentDtos);
+        return new AssessmentSimpleWrapperDto(assessmentDtos);
     }
 
-    public AssessmentDto createAssessmentDto(Assessment assessment, ParametersOrdering ordering)
+    public AssessmentSimpleDto createSimpleAssessmentDto(Assessment assessment, ParametersOrdering ordering)
     {
-        AssessmentDto assessmentDto = new AssessmentDto();
+        AssessmentSimpleDto assessmentDto = new AssessmentSimpleDto();
 
-        // FIXME: why the null check?
-        if (assessment != null)
-        {
-            assessmentDto.assessmentId = assessment.getId();
-            assessmentDto.assessmentDate = assessment.getDate();
+        assessmentDto.assessmentId = assessment.getId();
+        assessmentDto.assessmentDate = assessment.getDate();
 
-            setAssessmentReason(assessmentDto, assessment);
-            setAssessmentScore(assessmentDto, assessment, ordering);
-            setAnimal(assessmentDto, assessment);
-
-        }
+        setAssessmentReason(assessmentDto, assessment);
+        setAssessmentScore(assessmentDto, assessment, ordering);
+        setAnimal(assessmentDto, assessment);
 
         return assessmentDto;
     }
 
-    public AssessmentSearchPreviewDto createAssessmentSearchPreviewDto(Assessment assessment)
+    public AssessmentFullDto createAssessmentFullDto(Assessment assessment, ParametersOrdering ordering)
     {
-        AssessmentSearchPreviewDto dto = new AssessmentSearchPreviewDto();
+        AssessmentSimpleDto simpleDto = createSimpleAssessmentDto(assessment, ordering);
+        AssessmentFullDto dto = new AssessmentFullDto();
+
+        dto.assessmentId = simpleDto.assessmentId;
+        dto.animal = mAnimalDtoFactory.createAnimalDto(assessment.getAnimal());
+        dto.assessmentDate = simpleDto.assessmentDate;
+        dto.assessmentParameters = simpleDto.assessmentParameters;
+        dto.isComplete = assessment.isComplete();
+
+        dto.housing = assessment.getAnimalHousing() != null
+            ? mAnimalHousingDtoFactory.createAnimalHousingDto(assessment.getAnimalHousing())
+            : null;
+
+        dto.performedBy = assessment.getPerformedBy() != null
+            ? mUserDtoFactory.createUserDto(assessment.getPerformedBy())
+            : null;
+
+        dto.study = assessment.getStudy() != null ? mStudyDtoFactory.createStudySimpleDto(assessment.getStudy()) : null;
+
+        dto.reason = assessment.getReason() != null
+            ? mAssessmentReasonDtoFactory.createAssessmentReasonDto(assessment.getReason())
+            : null;
+
+        return dto;
+    }
+
+    public AssessmentSearchResultDto createAssessmentSearchResultDto(Assessment assessment)
+    {
+        AssessmentSearchResultDto dto = new AssessmentSearchResultDto();
 
         dto.assessmentId = assessment.getId();
         dto.assessmentDate = assessment.getDate();
@@ -100,34 +143,29 @@ public class AssessmentDtoFactory
         return dto;
     }
 
-    public AssessmentFullDto createAssessmentFullDto(Assessment assessment, ParametersOrdering ordering)
+    public AssessmentSearchResultWrapperDto createAssessmentSearchResultWrapperDto(Collection<Assessment> assessments)
     {
-        AssessmentDto simpleDto = createAssessmentDto(assessment, ordering);
-        AssessmentFullDto dto = new AssessmentFullDto();
+        Set<AssessmentSearchResultDto> assessmentDtos = new LinkedHashSet<>(assessments.size());
 
-        dto.assessmentId = simpleDto.assessmentId;
-        dto.animal = mAnimalDtoFactory.createAnimalDto(assessment.getAnimal());
-        dto.assessmentDate = simpleDto.assessmentDate;
-        dto.assessmentParameters = simpleDto.assessmentParameters;
-        dto.isComplete = assessment.isComplete();
+        for (Assessment assessment : assessments)
+        {
+            AssessmentSearchResultDto assessmentDto = createAssessmentSearchResultDto(assessment);
+            assessmentDtos.add(assessmentDto);
+        }
 
-        dto.housing = assessment.getAnimalHousing() != null ? mAnimalHousingDtoFactory
-            .createAnimalHousingDto(assessment.getAnimalHousing()) : null;
+        return new AssessmentSearchResultWrapperDto(assessmentDtos);
+    }
 
-        dto.performedBy = assessment.getPerformedBy() != null ? mUserDtoFactory.createUserDto(assessment
-            .getPerformedBy()) : null;
-
-        dto.study = assessment.getStudy() != null ? mStudyDtoFactory.createStudySimpleDto(assessment.getStudy()) : null;
-
-        dto.reason = assessment.getReason() != null ? mAssessmentReasonDtoFactory.createAssessmentReasonDto(assessment
-            .getReason()) : null;
-
-        return dto;
-    };
-
-    public PreviousAssessmentDto createPreviousAssessmentDto(Assessment prevAssessment)
+    public PreviousAssessmentDto createPreviousAssessmentDto(Assessment prevAssessment,
+        ParametersOrdering parametersOrdering)
     {
         PreviousAssessmentDto dto = new PreviousAssessmentDto();
+
+        HashMap<Long, PreviousAssessmentDto.Score> prevAssessmentScoreDtoMap = new LinkedHashMap<>();
+        for (Long parameterId : parametersOrdering.getParameterIdList())
+        {
+            prevAssessmentScoreDtoMap.put(parameterId, null);
+        }
 
         dto.date = prevAssessment.getDate();
         dto.isComplete = prevAssessment.isComplete();
@@ -138,13 +176,16 @@ public class AssessmentDtoFactory
         {
             paramName = paramScore.getParameterScored().getName();
             avgScore = String.valueOf(paramScore.getAverageScore());
-            dto.scores.add(new PreviousAssessmentDto.Score(paramName, avgScore));
+            PreviousAssessmentDto.Score score = new PreviousAssessmentDto.Score(paramName, avgScore);
+            prevAssessmentScoreDtoMap.put(paramScore.getParameterScored().getEntitySelectId(), score);
         }
+
+        dto.scores.addAll(new ArrayList<>(prevAssessmentScoreDtoMap.values()));
 
         return dto;
     }
 
-    private void setAssessmentReason(AssessmentDto assessmentDto, Assessment assessment)
+    private void setAssessmentReason(AssessmentSimpleDto assessmentDto, Assessment assessment)
     {
         AssessmentReason reason = assessment.getReason();
         if (reason != null)
@@ -153,25 +194,18 @@ public class AssessmentDtoFactory
         }
         else
         {
-            assessmentDto.assessmentReason = "";
+            assessmentDto.assessmentReason = Constants.EMPTY_STRING;
         }
     }
 
-    private void setAnimal(AssessmentDto assessmentDto, Assessment assessment)
+    private void setAnimal(AssessmentSimpleDto assessmentDto, Assessment assessment)
     {
-        // FIXME: why is there an animal null check if uk.gov.phe.erdst.sc.awag.validation prevents
-        // that?
-        Animal animal = assessment.getAnimal();
-        AnimalDto animalDto = new AnimalDto();
-        if (animal != null)
-        {
-            animalDto = mAnimalDtoFactory.createAnimalBasicDto(animal);
-        }
-
+        AnimalDto animalDto = mAnimalDtoFactory.createAnimalBasicDto(assessment.getAnimal());
         assessmentDto.animal = animalDto;
     }
 
-    private void setAssessmentScore(AssessmentDto assessmentDto, Assessment assessment, ParametersOrdering ordering)
+    private void setAssessmentScore(AssessmentSimpleDto assessmentDto, Assessment assessment,
+        ParametersOrdering parametersOrdering)
     {
         AssessmentScore assessmentScore = assessment.getScore();
 
@@ -181,16 +215,20 @@ public class AssessmentDtoFactory
         {
             Collection<ParameterScore> parametersScored = assessmentScore.getParametersScored();
 
-            ParameterScoredDto[] orderedParameterDtos = new ParameterScoredDto[parametersScored.size()];
+            // TODO simplify as a template
+            HashMap<Long, ParameterScoredDto> parameterDtoMap = new LinkedHashMap<>();
+            for (Long parameterId : parametersOrdering.getParameterIdList())
+            {
+                parameterDtoMap.put(parameterId, null);
+            }
 
             for (ParameterScore parameterScore : parametersScored)
             {
                 ParameterScoredDto parameterDto = mParameterDtoFactory.createParameterDto(parameterScore);
-                int idx = ordering.getIndex(parameterDto.parameterId);
-                orderedParameterDtos[idx] = parameterDto;
+                parameterDtoMap.put(parameterDto.parameterId, parameterDto);
             }
 
-            parameterDtos = new LinkedHashSet<>(Arrays.asList(orderedParameterDtos));
+            parameterDtos = new LinkedHashSet<>(parameterDtoMap.values());
         }
         else
         {
@@ -199,5 +237,4 @@ public class AssessmentDtoFactory
 
         assessmentDto.assessmentParameters = parameterDtos;
     }
-
 }

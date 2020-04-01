@@ -9,8 +9,8 @@ import uk.gov.phe.erdst.sc.awag.datamodel.AssessmentTemplateParameterFactor;
 import uk.gov.phe.erdst.sc.awag.datamodel.AssessmentTemplateParameterFactorPK;
 import uk.gov.phe.erdst.sc.awag.datamodel.Factor;
 import uk.gov.phe.erdst.sc.awag.datamodel.Parameter;
-import uk.gov.phe.erdst.sc.awag.datamodel.client.AssessmentClientData;
-import uk.gov.phe.erdst.sc.awag.datamodel.client.AssessmentClientFactor;
+import uk.gov.phe.erdst.sc.awag.webapi.request.AssessmentClientData;
+import uk.gov.phe.erdst.sc.awag.webapi.request.AssessmentClientFactor;
 
 public final class AssessmentFactoryTestUtils
 {

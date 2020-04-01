@@ -1,87 +1,68 @@
-var studyServices = angular.module('studyServices', ['dataServices', 'appConfigModule', 'pagingUtilsModule']);
+var studyServices = angular.module('studyServices', ['appConfigModule', 'pagingUtilsModule', 'webApiConfigModule', 'newDataServices']);
 
-studyServices.factory('studyService', ['dataService', 'appConfig', 'pagingUtils',
-function(dataService, appConfig, pagingUtils)
+studyServices.factory('studyService', ['appConfig', 'pagingUtils', 'webApiConfig', 'newDataService',
+function(appConfig, pagingUtils, webApiConfig, newDataService)
 {
-    var studyServlet = "study";
+    var URLS = webApiConfig.webApiUrls.entity.study;
+    var STUDY_NAME_KEY = 'studyName';
+    var STUDY_ID_KEY = 'studyId';    
 
     var getStudyWithAnimal = function(callback, animalId)
     {
-        var parameters = {};
-        parameters[appConfig.services.selectAction] = appConfig.services.selectActions.studyWithAnimal;
-        parameters[appConfig.services.actionParams.id] = animalId;
-        dataService.dataConnection({
-            servlet : studyServlet,
-            parameters : parameters,
-            callback : {
-				success : callback
-			}
-        });
+      var parameters = {};
+      var url = URLS.getWithAnimal + animalId;
+      newDataService.httpGet(url, parameters, callback);
     };
 
-	var getStudiesLike = function(callback, likeTerm, pagingOptions) {
-		var parameters = {};
-		parameters[appConfig.services.selectAction] = appConfig.services.selectActions.like;
-		parameters[appConfig.services.actionParams.like] = likeTerm;
-		pagingUtils.setPagingParameters(parameters, pagingOptions);
-		dataService.dataConnection({
-			servlet : studyServlet,
-			parameters : parameters,
-			callback : {
-				success : callback
-			}
-		});
-	};
+	  var getStudiesLike = function(callback, likeTerm, pagingOptions) {
+      var parameters = {};
 
-	var getStudy = function(studyId, successCallback, errCallback) {
-		var parameters = {};
-		parameters[appConfig.services.selectAction] = appConfig.services.selectActions.id;
-		parameters[appConfig.services.actionParams.id] = studyId;
-		dataService.dataConnection({
-			servlet : studyServlet,
-			parameters : parameters,
-			callback : {
-				success : successCallback,
-				error : errCallback
-			}
-		});
-	};
+      parameters[webApiConfig.webApiParameters.likeFilter] = likeTerm;
+      pagingUtils.newApiSetPagingParameters(parameters, pagingOptions);
 
-	var saveStudy = function(study, successCallback, errCallback) {
-		var parameters = _getStoreDataParameters(study);
-		dataService.postData({
-			servlet : studyServlet,
-			parameters : parameters,
-			callback : {
-				success : successCallback,
-				error : errCallback
-			}
-		});
-	};
+      var onSuccess = function(data) {
+        var metadata = pagingUtils.buildPagingMetadata(
+          data[webApiConfig.webApiResponseKeys.pagingInfo], STUDY_NAME_KEY, STUDY_ID_KEY);
+        callback(data.studies, metadata);
+      };
 
-	var updateStudy = function(study, successCallback, errCallback) {
-		dataService.putData({
-			servlet : studyServlet,
-			resourceId : study.studyId,
-			data : study,
-			callback : {
-				success : successCallback,
-				error : errCallback
-			}
-		});
-	};
+      newDataService.httpGet(URLS.getLike, parameters, onSuccess);
+  	};
 
-	var _getStoreDataParameters = function(study) {
-		return {
-			study : study
-		};
-	};
+  	var getStudy = function(studyId, successCallback, errCallback) {
+        var parameters = {};
+        var url = URLS.getById + studyId;
+        newDataService.httpGet(url, parameters, successCallback, errCallback);
+  	};
 
-	return {
-		updateStudy : updateStudy,
-		getStudy : getStudy,
-		saveStudy : saveStudy,
-		getStudiesLike : getStudiesLike,
-		getStudyWithAnimal : getStudyWithAnimal
-	};
+  	var saveStudy = function(study, successCallback, errCallback) {
+        var onSuccess = function(data) {
+          var response = {};
+          response[STUDY_NAME_KEY] = data.value;
+          response[STUDY_ID_KEY] = data.id;
+          successCallback(response);
+        }
+
+        newDataService.httpPost(URLS.create, study, onSuccess, errCallback);
+  	};
+
+  	var updateStudy = function(study, successCallback, errCallback) {
+        var url = URLS.update + study.studyId;
+        newDataService.httpPut(url, study, successCallback, errCallback);
+  	};
+
+    var uploadStudy = function(data, successCallback, errCallback) {
+      var url = URLS.upload;
+      newDataService.httpPostWithHeaderContentType(url, data, successCallback, errCallback);
+    };    
+
+
+  	return {
+  		updateStudy : updateStudy,
+  		getStudy : getStudy,
+  		saveStudy : saveStudy,
+  		getStudiesLike : getStudiesLike,
+  		getStudyWithAnimal : getStudyWithAnimal,
+      uploadStudy : uploadStudy
+  	};
 }]);

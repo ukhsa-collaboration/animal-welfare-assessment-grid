@@ -11,7 +11,9 @@ var animalMngmtFormEvents = {
     onExcludeChoices : "onExcludeChoices",
     onAnimalUpdateStarted : "onAnimalUpdateStarted",
     onAnimalUpdateFinished : "onAnimalUpdateFinished",
-    onAnimalUpdated : "onAnimalUpdated"
+    onAnimalUpdated : "onAnimalUpdated",
+    onAnimalUploadSelected : "onAnimalUploadSelected",
+    onAnimalUploadClearSelected : "onAnimalUploadClearSelected" 
 };
 
 manageAnimalControllers.controller('MngmtAnimalSelectionCtrl', ['$scope', 'formService', 'animalService', 'appConfig',
@@ -531,7 +533,7 @@ function($scope, appConfig, animalService, $timeout)
 
     this.setAnimalIsAlive = function(isAlive)
     {
-        this.animal.isAlive = (isAlive === "true");
+        this.animal.isAlive = isAlive;
     };
 
     this.setAnimalAssessmentTemplate = function(template)
@@ -623,7 +625,7 @@ function($scope, appConfig, animalService, $timeout)
     {   
         that.isSuccess = false;
     	that.errors = errors;
-    }
+    };
 
     var onSubmitAnimalCallBack = function(data)
     {
@@ -719,4 +721,87 @@ function($scope, appConfig, animalService, $timeout)
     });
 
     this.resetAnimalContainer();
+}]);
+
+manageAnimalControllers.controller('MngmtAnimalUploadCtrl', ['$scope', 'appConfig', 'animalService', '$timeout',
+function($scope, appConfig, animalService, $timeout)
+{
+    this.uploadId = "uploadFile";
+    this.uploadElement = null;
+    var that = this;
+
+    this.onFileUploadChange = function(event)
+    {
+        that.uploadElement = event.target;
+        $scope.$emit(animalMngmtFormEvents.onAnimalUploadSelected, event.target.files);
+    };
+
+    $scope.$on(animalMngmtFormEvents.onAnimalUploadClearSelected, function(event)
+    {
+        that.uploadElement.value = null;
+    });    
+
+}]);
+
+manageAnimalControllers.controller('MngmtAnimalUploadManagementCtrl', ['$scope', 'appConfig', 'animalService', '$timeout',
+function($scope, appConfig, animalService, $timeout)
+{
+    this.fileList = {};
+    this.isSuccess = false;
+    this.errors = [];
+    this.isFileSelected = true;
+    var that = this;
+
+    this.resetErrors = function()
+    {
+        this.errors = [];
+    };
+
+    var onErrorCallBack = function(errors)
+    {
+        that.isSuccess = false;
+        that.errors = errors;
+    };
+
+    var uploadAnimalCallback = function(data)
+    {
+        that.isSuccess = true;
+        that.resetErrors();
+    };
+
+    this.setDisabled = function(isDisabled)
+    {
+        this.isFileSelected = isDisabled;
+        $timeout(function(){
+            $scope.$apply();
+        });
+    };
+
+    this.setUploadFiles = function(fileList) 
+    {
+        Object.assign(this.fileList, fileList);
+        that.setDisabled(false);
+    };
+
+    this.uploadAnimal = function()
+    {
+        var fd = new FormData();
+        fd.append('file', this.fileList[0]);
+
+        animalService.uploadAnimal(fd, uploadAnimalCallback, onErrorCallBack);
+    };
+
+    this.clearUploadAnimal = function()
+    {
+        this.fileList = {};
+        this.setDisabled(true);
+        this.resetErrors();
+        $scope.$broadcast(animalMngmtFormEvents.onAnimalUploadClearSelected);        
+    };
+
+    $scope.$on(animalMngmtFormEvents.onAnimalUploadSelected, function(event, fileList)
+    {
+        that.setUploadFiles(fileList);
+    });
+    
 }]);

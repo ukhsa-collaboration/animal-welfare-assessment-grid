@@ -24,7 +24,6 @@
         <script src="lib/js/html5shiv.js"></script>
         <![endif]-->
         <script src="lib/js/jquery-1.9.1.min.js"></script>
-        <script src="lib/js/jquery.jsonp-2.4.0.min.js"></script>
         <script src="js/common/global-config.js"></script>
     </head>
     <body>
@@ -67,6 +66,9 @@
                             </li>
                             <li ng-class="{ active: isActive('/export-assessments')}">
                                 <a href="#/export-assessments">Export Animal Assessments</a>
+                            </li>
+                            <li ng-class="{ active: isActive('/import-assessments')}">
+                                <a href="#/import-assessments">Import Animal Assessments</a>
                             </li>
                         </ul>
                         <ul class="nav nav-pills nav-stacked">
@@ -141,6 +143,7 @@
     <script src="js/assessment-form/assessmentFormControllers.js"></script>
     <script src="js/assessment-form/existingAssessmentControllers.js"></script>
     <script src="js/graphs/graphsController.js"></script>
+    <script src="js/import/importAssessmentControllers.js"></script>
     <script src="js/export/exportAssessmentsControllers.js"></script>
     <script src="js/manage/manageSourceControllers.js"></script>
     <script src="js/manage/manageAnimalControllers.js"></script>
@@ -185,10 +188,10 @@
     <script src="js/services/tableServices.js"></script>
     <script src="js/services/graphDrawServices.js"></script>
     <script src="js/services/activityLogServices.js"></script>
-    <script src="js/common/dataServices.js"></script>
-    <script src="js/common/entityServices.js"></script>
+    <script src="js/common/newDataServices.js"></script>
     <script src="js/common/formatServices.js"></script>
     <script src="js/common/awFilters.js"></script>
     <script src="js/common/appConfig.js"></script>
+    <script src="js/common/webApiConfig.js"></script>
     <script src="js/common/awApp.js"></script>
 </html>

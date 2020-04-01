@@ -4,9 +4,9 @@ import javax.ejb.Stateless;
 import javax.validation.ConstraintValidator;
 import javax.validation.ConstraintValidatorContext;
 
-import uk.gov.phe.erdst.sc.awag.datamodel.client.ScaleClientData;
 import uk.gov.phe.erdst.sc.awag.service.validation.annotations.ValidScaleMinMax;
 import uk.gov.phe.erdst.sc.awag.service.validation.utils.ValidationConstants;
+import uk.gov.phe.erdst.sc.awag.webapi.request.ScaleClientData;
 
 @Stateless
 public class ScaleMinMaxValidator implements ConstraintValidator<ValidScaleMinMax, ScaleClientData>

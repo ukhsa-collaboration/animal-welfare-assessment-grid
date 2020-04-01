@@ -1,108 +1,62 @@
-var reasonServices = angular.module('reasonServices', ['dataServices', 'appConfigModule', 'pagingUtilsModule']);
+var reasonServices = angular.module('reasonServices', ['appConfigModule', 'pagingUtilsModule', 'webApiConfigModule', 'newDataServices']);
 
-reasonServices.factory('reasonService', ['dataService', 'appConfig', 'pagingUtils',
-function(dataService, appConfig, pagingUtils) {
+reasonServices.factory('reasonService', ['appConfig', 'pagingUtils', 'newDataService', 'webApiConfig',
+    function(appConfig, pagingUtils, newDataService, webApiConfig) {
 
-    var reasonServlet = "reason";
+        var URLS = webApiConfig.webApiUrls.entity.reason;
+        var REASON_NAME_KEY = 'reasonName';
+        var REASON_ID_KEY = 'reasonId';
 
-    var create = function(id, name) {
-        return {
-            reasonId : id,
-            reasonName : name
+        var create = function(id, name) {
+            return {
+                reasonId: id,
+                reasonName: name
+            };
         };
-    };
 
-    var getReason = function(callback, id){
-        var parameters = {};
-        parameters[appConfig.services.selectAction] = appConfig.services.selectActions.id;
-        parameters[appConfig.services.actionParams.id] = id;
-        dataService.dataConnection({
-            servlet : reasonServlet,
-            parameters : parameters,
-            callback : {
-                success : callback
-            }
-        });
-    };
+        var getReasonsLike = function(callback, likeTerm, pagingOptions) {
+            var parameters = {};
 
-    var getReasons = function(callback, pagingOptions) {
-        var parameters = {};
-        parameters[appConfig.services.actionParams.all] = appConfig.services.actionParamsValues.all;
-        pagingUtils.setPagingParameters(parameters, pagingOptions);
-        dataService.dataConnection({
-            servlet : reasonServlet,
-            parameters : parameters,
-            callback : {
-                success : callback
-            }
-        });
-    };
+            parameters[webApiConfig.webApiParameters.likeFilter] = likeTerm;
+            pagingUtils.newApiSetPagingParameters(parameters, pagingOptions);
 
-    var getReasonsLike = function(callback,likeTerm, pagingOptions){
-        var parameters = {};
-        parameters[appConfig.services.selectAction] = appConfig.services.selectActions.like;
-        parameters[appConfig.services.actionParams.like] = likeTerm;
-        pagingUtils.setPagingParameters(parameters, pagingOptions);
-        dataService.dataConnection({
-            servlet : reasonServlet,
-            parameters : parameters,
-            callback : {
-                success : callback
-            }
-        });
-    };
+            var onSuccess = function(data) {
+                var metadata = pagingUtils.buildPagingMetadata(
+                    data[webApiConfig.webApiResponseKeys.pagingInfo], REASON_NAME_KEY, REASON_ID_KEY);
+                callback(data.reasons, metadata);
+            };
 
-    var saveReason = function(reason, successCallback, errCallback){
-        var parameters = _getStoreDataParameters(reason);
-        dataService.postData({
-            servlet : reasonServlet,
-            parameters : parameters,
-            callback : {
-                success : successCallback,
-                error : errCallback
-            }
-        });
-    };
-
-    var updateReason = function(reason, successCallback, errCallback){
-        dataService.putData({
-            servlet : reasonServlet,
-            resourceId : reason.reasonId,
-            data : reason,
-            callback : {
-                success : successCallback,
-                error : errCallback
-            }
-        });
-    };
-
-    var _getStoreDataParameters = function(reason) {
-        return {
-            reason : reason
+            newDataService.httpGet(URLS.getLike, parameters, onSuccess);
         };
-    };
 
-//TODO - Find out if this is still necessary after implementing reason management services.
-/*  var saveReason = function(callback, reason) {
-        dataService.dataConnection({
-            servlet : "reason",
-            parameters : {
-                reason : reason
-            },
-            callback : {
-                success : callback
+        var saveReason = function(reason, successCallback, errCallback) {
+
+            var onSuccess = function(data) {
+                var response = {};
+                response[REASON_NAME_KEY] = data.value;
+                response[REASON_ID_KEY] = data.id;
+                successCallback(response);
             }
-        });
-    };*/
 
-    return {
-        getReasons : getReasons,
-        getReason : getReason,
-        getReasonsLike : getReasonsLike,
-        saveReason : saveReason,
-        updateReason : updateReason,
-        create : create
-        /*,
-        saveReason : saveReason*/
-    };
-}]);
+            newDataService.httpPost(URLS.create, reason, onSuccess, errCallback);
+        };
+
+        var updateReason = function(reason, successCallback, errCallback) {
+            var url = URLS.update + reason.reasonId;
+            newDataService.httpPut(url, reason, successCallback, errCallback);
+        };
+
+        var uploadReason = function(data, successCallback, errCallback) {
+            var url = URLS.upload;
+            newDataService.httpPostWithHeaderContentType(url, data, successCallback, errCallback);
+        };    
+
+        return {
+            getReasonsLike: getReasonsLike,
+            saveReason: saveReason,
+            updateReason: updateReason,
+            create: create,
+            uploadReason: uploadReason
+        };
+    }
+]);

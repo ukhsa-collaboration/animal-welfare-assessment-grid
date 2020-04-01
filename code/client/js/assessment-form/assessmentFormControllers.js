@@ -1,6 +1,6 @@
 var assessmentFormControllers = angular.module('assessmentFormControllers', ['appConfigModule', 'formServices', 'animalServices', 'studyServices',
     'reasonServices', 'housingServices', 'userServices', 'assessmentServices', 'select2UtilsModule', 'templateServices', 'dateUtilsModule',
-    'ui.bootstrap']);
+    'ui.bootstrap', 'awFilters']);
 
 var assessmentFormEvents = {
     animalSelectEntitySelected : "animalSelectEntitySelected",
@@ -12,7 +12,9 @@ var assessmentFormEvents = {
     onParameterCommentPreSelect : "onParameterCommentPreSelect",
     onFactorPreSelect : "onFactorPreSelect",
     onLockInputs : "onLockInputs",
-    onUnlockInputs : "onUnlockInputs"
+    onUnlockInputs : "onUnlockInputs",
+    onPreviousAssessmentDataAvailable: "onPreviousAssessmentDataAvailable",
+    onPreviousAssessmentDataUnavailable: "onPreviousAssessmentDataUnavailable"
 };
 
 var assessmentFormModes = {
@@ -74,6 +76,21 @@ function($scope, $modalInstance) {
   };
 }]);
 
+assessmentFormControllers.controller('AssessFormScoreComparisonModalCtrl', ['$scope', '$modalInstance', 'comparisonData',
+function($scope, $modalInstance, comparisonData) {
+
+    $scope.comparisonData = comparisonData;
+
+    $scope.ok = function () {
+        $modalInstance.close();
+    };
+
+    $scope.cancel = function () {
+        $modalInstance.dismiss();
+    };
+
+}]);
+
 assessmentFormControllers.controller('AssessFormAnimalSelectionCtrl', ['$scope', '$timeout', 'appConfig', 'animalService', 'studyService', 'assessmentService',
     'formService', 'templateService', 'assessFormHelperService', '$modal', 'select2Utils',
 function($scope, $timeout, appConfig, animalService, studyService, assessmentService, formService, templateService, assessFormHelperService, $modal, select2Utils)
@@ -85,10 +102,20 @@ function($scope, $timeout, appConfig, animalService, studyService, assessmentSer
     this.deleteSuccessEvent = "deleteSuccessEvent";
 
     this.previousAnimal = null;
+    this.previousAssessmentId = null;
+
+    this.assessmentScoreComparisonResult = null;
+    this.isScoresVerified = false;
 
     this.modeHandlers = {};
     this.isInExistingCompleteMode = false;
     this.isInExistingMode = false;
+
+    this.storeAssessmentIntention = {
+        intention: null,
+        save: 'save',
+        submit: 'submit'
+    };
 
     this.showAnimalChangingMsg = false;
     this.isLockedInputs = false;
@@ -257,7 +284,7 @@ function($scope, $timeout, appConfig, animalService, studyService, assessmentSer
 
     this.onSearchSelect2DirectiveLinked = function()
     {
-        formService.initSearchSelect2(jQuery("#" + this.selectId), animalService.getAssessedAnimalsLike, false, this.placeHolder);
+        formService.initSearchSelect2(jQuery("#" + this.selectId), animalService.getAnimalsLike, false, this.placeHolder);
     };
 
     this.onSearchSelect2Selecting = function(animalSelectEntity)
@@ -347,6 +374,31 @@ function($scope, $timeout, appConfig, animalService, studyService, assessmentSer
         templateService.getTemplateByAnimalId(getAnimalFormTemplateCallback, animalId);
     };
 
+    var getPreviousAssessmentDataCallback = function(data) {
+        if (data.animal)
+        {
+            $scope.$broadcast(assessmentFormEvents.onPreviousAssessmentDataAvailable, data);
+            that.preSelectParameters(data.assessmentParameters);
+            that.previousAssessmentId = data.assessmentId;
+        }
+        else if (that.previousAnimal)
+        {
+            // Since there is no previous data we can treat selection as new animal
+            that.updateWithNewAnimal(that.animal);
+            $scope.$broadcast(assessmentFormEvents.onPreviousAssessmentDataUnavailable);
+        }
+        else
+        {
+            // There is no previous data and no animal was selected before
+            $scope.$broadcast(assessmentFormEvents.onPreviousAssessmentDataUnavailable);
+        }
+    };
+
+    this.getPreviousAssessmentData = function(animalId) {
+        this.previousAssessmentId = null;
+        assessmentService.getPreviousAssessment(animalId, getPreviousAssessmentDataCallback, onErrorCallBack);
+    };
+
     this.onAnimalSelected = function(animal)
     {
         if (this.previousAnimal)
@@ -356,6 +408,7 @@ function($scope, $timeout, appConfig, animalService, studyService, assessmentSer
         else
         {
             this.updateWithNewAnimal(animal);
+            this.getPreviousAssessmentData(animal.id)
         }
     };
 
@@ -384,6 +437,7 @@ function($scope, $timeout, appConfig, animalService, studyService, assessmentSer
                 that.setAssessedAnimalId(animal.id);
                 $scope.$broadcast(assessmentFormEvents.onAnimalChanged, animal);
                 $scope.$broadcast(assessmentFormEvents.onUnlockInputs);
+                that.getPreviousAssessmentData(animal.id)
             }
             else
             {
@@ -418,6 +472,7 @@ function($scope, $timeout, appConfig, animalService, studyService, assessmentSer
         $scope.$broadcast(assessmentFormEvents.onUnlockInputs);
         this.updateWithNewAnimal(animal);
         this.onAnimalChangedDifferentTemplate();
+        this.getPreviousAssessmentData(animal.id)
     };
 
     this.cancelAnimalChange = function()
@@ -482,14 +537,14 @@ function($scope, $timeout, appConfig, animalService, studyService, assessmentSer
         updateAssessment();
     };
 
-    var onSaveAssessmentCallback = function(data)
+    var onSaveAssessmentCallback = function()
     {
         that.isSuccess = true;
         that.resetErrors();
 
         if (!that.isInExistingMode)
         {
-            that.clearFormOnSubmit();
+            that.getPreviousAssessmentData(that.animal.id);
         }
     };
 
@@ -499,7 +554,7 @@ function($scope, $timeout, appConfig, animalService, studyService, assessmentSer
         that.errors = errors;
     };
 
-    var onSubmitAssessmentCallback = function(data)
+    var onSubmitAssessmentCallback = function()
     {
         that.isSuccess = true;
         that.resetErrors();
@@ -514,20 +569,122 @@ function($scope, $timeout, appConfig, animalService, studyService, assessmentSer
         }
         else
         {
-           that.clearFormOnSubmit();
+           that.getPreviousAssessmentData(that.animal.id);
         }
+    };
+
+    var onCompareAssessmentScoresCallback = function(data)
+    {
+        if (!data.isAssessmentScoreEqual && !data.isAnyFactorScoreEqual)
+        {
+            that.handleCompletelyDifferentScores();
+            return;
+        }
+
+        that.assessmentScoreComparisonResult = data;
+
+        var modalInstance = $modal.open({
+            templateUrl: 'partials/modals/assessment-form-score-comparison-result-modal.html',
+            controller: 'AssessFormScoreComparisonModalCtrl',
+            resolve: {
+                comparisonData: function () {
+                    return that.assessmentScoreComparisonResult;
+                }
+            }
+        });
+
+        modalInstance.result.then(
+            function () {
+                that.confirmEqualScoresOk();
+            },
+            function () {
+                that.confirmEqualScoresCancel();
+            }
+        );
+    };
+
+    this.handleCompletelyDifferentScores = function()
+    {
+        this.storeAssessmentWithScoresVerified();
     };
 
     this.saveAssessment = function()
     {
-        // Save performs the 'create' and also the 'save' action.
-        assessmentService.saveAssessment(this.assessment, that.isInExistingMode, onSaveAssessmentCallback, onErrorCallBack);
+        if (this.isInExistingMode)
+        {
+            this.saveAssessmentToServer();
+            return;
+        }
+
+        if (!this.previousAssessmentId)
+        {
+            this.storeAssessmentIntention.intention = this.storeAssessmentIntention.save;
+            this.storeAssessmentWithScoresVerified();
+            return;
+        }
+
+        this.storeAssessmentIntention.intention = this.storeAssessmentIntention.save;
+        assessmentService.compareAssessmentScores(this.assessment, this.previousAssessmentId, onCompareAssessmentScoresCallback, onErrorCallBack);
     };
 
     this.submitAssessment = function()
     {
+        if (this.isInExistingMode)
+        {
+            this.submitAssessmentToServer();
+            return;
+        }
+
+        if (!this.previousAssessmentId)
+        {
+            this.storeAssessmentIntention.intention = this.storeAssessmentIntention.submit;
+            this.storeAssessmentWithScoresVerified();
+            return;
+        }
+
+        this.storeAssessmentIntention.intention = this.storeAssessmentIntention.submit;
+        assessmentService.compareAssessmentScores(this.assessment, this.previousAssessmentId, onCompareAssessmentScoresCallback, onErrorCallBack);
+    };
+
+    this.confirmEqualScoresOk = function()
+    {
+        this.storeAssessmentWithScoresVerified();
+    };
+
+    this.storeAssessmentWithScoresVerified = function()
+    {
+        this.isScoresVerified = true;
+
+        if (this.storeAssessmentIntention.intention === this.storeAssessmentIntention.save)
+        {
+            this.saveAssessmentToServer();
+        }
+        else if (this.storeAssessmentIntention.intention === this.storeAssessmentIntention.submit)
+        {
+            this.submitAssessmentToServer();
+        }
+
+        this.storeAssessmentIntention.intention = null;
+    };
+
+    this.confirmEqualScoresCancel = function()
+    {
+        this.isScoresVerified = false;
+        this.storeAssessmentIntention.intention = null;
+    };
+
+    this.saveAssessmentToServer = function()
+    {
+        // Save performs the 'create' and also the 'save' action.
+        assessmentService.saveAssessment(this.assessment, this.isInExistingMode, this.isScoresVerified, onSaveAssessmentCallback, onErrorCallBack);
+        this.isScoresVerified = false;
+    };
+
+    this.submitAssessmentToServer = function()
+    {
         // Submit is equivalent to finalise.
-        assessmentService.submitAssessment(this.assessment, that.isInExistingMode, onSubmitAssessmentCallback, onErrorCallBack);
+        assessmentService.submitAssessment(this.assessment, this.isInExistingMode, this.isScoresVerified, onSubmitAssessmentCallback, onErrorCallBack);
+        this.isScoresVerified = false;
     };
 
     this.switchMode = function(mode, assessment, assessmentTemplate)
@@ -634,7 +791,7 @@ function(reasonService, formService, appConfig, $scope, assessFormHelperService)
     var onErrorCallBack = function(errors)
     {
         that.errors = errors;
-    }
+    };
 
     var onCreatedOk = function(data)
     {
@@ -674,6 +831,24 @@ function(reasonService, formService, appConfig, $scope, assessFormHelperService)
         formService.clearSelect2(jQuery("#" + this.selectId));
     };
 
+    this.onModeChanged = function(handlingFun, reason)
+    {
+        this.setValue(handlingFun, reason);
+    };
+
+    this.setValue = function(handlingFun, reason)
+    {
+        if (reason)
+        {
+            handlingFun(reason.reasonId, reason.reasonName, this.selectId);
+            this.updateMainController(reason.reasonName);
+        }
+        else
+        {
+            handlingFun(null, null, this.selectId);
+        }
+    };
+
     $scope.$on(assessmentFormEvents.onClearForm, function(event)
     {
         that.reset();
@@ -688,19 +863,6 @@ function(reasonService, formService, appConfig, $scope, assessFormHelperService)
     {
         that.reset();
     });
-
-    this.onModeChanged = function(handlingFun, reason)
-    {
-        if (reason)
-        {
-            handlingFun(reason.reasonId, reason.reasonName, that.selectId);
-            that.updateMainController(reason.reasonName);
-        }
-        else
-        {
-            handlingFun(null, null, that.selectId);
-        }
-    };
 
     $scope.$on(assessmentFormModes.existingIncomplete, function(event, assessment)
     {
@@ -721,6 +883,16 @@ function(reasonService, formService, appConfig, $scope, assessFormHelperService)
     {
         assessFormHelperService.unlockSelect(that.selectId);
     });
+
+    $scope.$on(assessmentFormEvents.onPreviousAssessmentDataAvailable, function(event, data)
+    {
+        that.setValue(assessFormHelperService.unlockSelectWithValue, data.reason);
+    });
+
+    $scope.$on(assessmentFormEvents.onPreviousAssessmentDataUnavailable, function(event)
+    {
+        that.reset();
+    });
 }]);
 
 assessmentFormControllers.controller('AssessFormHousingSelectionCtrl', ['housingService', 'formService', 'appConfig', '$scope', 'assessFormHelperService',
@@ -740,7 +912,7 @@ function(housingService, formService, appConfig, $scope, assessFormHelperService
     var onErrorCallBack = function(errors)
     {
         that.errors = errors;
-    }
+    };
 
     var onCreatedOk = function(data)
     {
@@ -797,6 +969,11 @@ function(housingService, formService, appConfig, $scope, assessFormHelperService
 
     this.onModeChanged = function(handlingFun, housing)
     {
+        this.setValue(handlingFun, housing);
+    };
+
+    this.setValue = function(handlingFun, housing)
+    {
         if (housing)
         {
             handlingFun(housing.housingId, housing.housingName, that.selectId);
@@ -827,6 +1004,16 @@ function(housingService, formService, appConfig, $scope, assessFormHelperService
     {
         assessFormHelperService.unlockSelect(that.selectId);
     });
+
+    $scope.$on(assessmentFormEvents.onPreviousAssessmentDataAvailable, function(event, data)
+    {
+        that.setValue(assessFormHelperService.unlockSelectWithValue, data.housing);
+    });
+
+    $scope.$on(assessmentFormEvents.onPreviousAssessmentDataUnavailable, function(event)
+    {
+        that.reset();
+    });
 }]);
 
 assessmentFormControllers.controller('AssessFormUserSelectionCtrl', ['userService', 'formService', 'appConfig', '$scope', 'assessFormHelperService',
@@ -845,7 +1032,7 @@ function(userService, formService, appConfig, $scope, assessFormHelperService)
     var onErrorCallBack = function(errors)
     {
         that.errors = errors;
-    }
+    };
 
     var onCreatedOk = function(data)
     {
@@ -902,6 +1089,11 @@ function(userService, formService, appConfig, $scope, assessFormHelperService)
 
     this.onModeChanged = function(handlingFun, user)
     {
+        this.setValue(handlingFun, user);
+    };
+
+    this.setValue = function(handlingFun, user)
+    {
         if (user)
         {
             handlingFun(user.userId, user.userName, that.selectId);
@@ -911,7 +1103,7 @@ function(userService, formService, appConfig, $scope, assessFormHelperService)
         {
             handlingFun(null, null, that.selectId);
         }
-    };
+    };    
 
     $scope.$on(assessmentFormModes.existingIncomplete, function(event, assessment)
     {
@@ -931,6 +1123,16 @@ function(userService, formService, appConfig, $scope, assessFormHelperService)
     $scope.$on(assessmentFormEvents.onUnlockInputs, function(event)
     {
         assessFormHelperService.unlockSelect(that.selectId);
+    });
+
+    $scope.$on(assessmentFormEvents.onPreviousAssessmentDataAvailable, function(event, data)
+    {
+        that.setValue(assessFormHelperService.unlockSelectWithValue, data.performedBy);
+    });
+
+    $scope.$on(assessmentFormEvents.onPreviousAssessmentDataUnavailable, function(event)
+    {
+        that.reset();
     });
 }]);
 
@@ -1000,6 +1202,19 @@ function($scope, formService, dateUtils)
     {
         var elem = jQuery("#" + that.id);
         formService.enableDatePicker(elem);
+    });
+
+    $scope.$on(assessmentFormEvents.onPreviousAssessmentDataAvailable, function(event, data)
+    {
+        var elem = jQuery("#" + that.id);
+        var date = dateUtils.getFormDateString(data.assessmentDate);
+        that.onDateChange(date);
+        formService.setDatePickerFieldValue(date, elem);
+    });
+
+    $scope.$on(assessmentFormEvents.onPreviousAssessmentDataUnavailable, function(event)
+    {
+        that.clearDate();
     });
 }]);
 
@@ -1105,24 +1320,40 @@ function($scope, assessmentService, $timeout)
     this.scores = [];
     this.isComplete = true;
 
-    var onPrevAssessmentData = function(data)
+    var onErrorCallback = function(errors)
     {
-        that.setDate(data.date);
-        that.setScores(data.scores);
+        // In this case we ignore errors for now.
+    };
 
-        if (data.date)
-        {
-            that.isComplete = data.isComplete;
+    this.onPrevAssessmentData = function(data, isPreviewData)
+    {
+        var date, scores, scoresSetter;
+
+        if (isPreviewData) {
+            date = data.date;
+            scores = data.scores;
+        }
+        else {
+            date = data.assessmentDate;
+            scores = data.assessmentParameters;
+        }
+
+        this.setDate(date);
+
+        if (isPreviewData){
+            this.setScoresFromPreviewDto(scores);
+        }
+        else {
+            this.setScores(scores);
+        }
+
+        if (date) {
+            this.isComplete = data.isComplete;
         }
 
         $timeout(function() {
             $scope.$apply();
         }, 0);
-    };
-
-    var onErrorCallback = function(errors)
-    {
-        // In this case we ignore errors for now.
     };
 
     this.setDate = function(date)
@@ -1135,8 +1366,21 @@ function($scope, assessmentService, $timeout)
         }
     };
 
-    this.setScores = function(scores)
+    this.setScores = function(assessmentParameters)
     {
+        var tmpScores = [];
+        for (var i = 0, limit = assessmentParameters.length; i < limit; i++) {
+            var parameter = assessmentParameters[i];
+            tmpScores.push({
+                'name': parameter.parameterName,
+                'avgScore': parameter.parameterAverage
+            });
+        }
+
+        this.scores = tmpScores;
+    };
+
+    this.setScoresFromPreviewDto = function(scores) {
         this.scores = scores;
     };
 
@@ -1149,14 +1393,9 @@ function($scope, assessmentService, $timeout)
         }, 0);
     };
 
-    $scope.$on(assessmentFormEvents.animalSelectEntitySelected, function(event, animalSelectEntity)
+    $scope.$on(assessmentFormEvents.onPreviousAssessmentDataAvailable, function(event, data)
     {
-        assessmentService.getPreviousAssessment(animalSelectEntity.id, onPrevAssessmentData);
-    });
-
-    $scope.$on(assessmentFormEvents.onAnimalChanged, function(event, animal)
-    {
-        assessmentService.getPreviousAssessment(animal.id, onPrevAssessmentData);
+        that.onPrevAssessmentData(data, false);
     });
 
     $scope.$on(assessmentFormEvents.onAnimalSelectionCleared, function(event, animalSelectEntity)
@@ -1177,7 +1416,12 @@ function($scope, assessmentService, $timeout)
     this.handleModeSwitch = function(assessment)
     {
         that.reset();
-        assessmentService.getPreviousAssessmentByDate(assessment.animal.id, assessment.assessmentDate, assessment.assessmentId, onPrevAssessmentData, onErrorCallback);
+        var onSuccessCallback = function(data)
+        {
+            that.onPrevAssessmentData(data, true);
+        };
+
+        assessmentService.getPreviousAssessmentByDate(assessment.animal.id, assessment.assessmentDate, assessment.assessmentId, onSuccessCallback, onErrorCallback);
     };
 
     $scope.$on(assessmentFormModes.existingIncomplete, function(event, assessment)
@@ -1190,4 +1434,8 @@ function($scope, assessmentService, $timeout)
         that.handleModeSwitch(assessment);
     });
 
+    $scope.$on(assessmentFormEvents.onPreviousAssessmentDataUnavailable, function(event)
+    {
+        that.reset();
+    });
 }]);

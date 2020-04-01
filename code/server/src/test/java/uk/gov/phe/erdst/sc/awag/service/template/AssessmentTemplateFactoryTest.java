@@ -7,11 +7,11 @@ import org.testng.annotations.Test;
 import com.google.inject.Inject;
 
 import uk.gov.phe.erdst.sc.awag.datamodel.AssessmentTemplate;
-import uk.gov.phe.erdst.sc.awag.datamodel.client.AssessmentTemplateClientData;
 import uk.gov.phe.erdst.sc.awag.service.factory.template.AssessmentTemplateFactory;
 import uk.gov.phe.erdst.sc.awag.shared.test.TestConstants;
 import uk.gov.phe.erdst.sc.awag.utils.Constants;
 import uk.gov.phe.erdst.sc.awag.utils.GuiceHelper;
+import uk.gov.phe.erdst.sc.awag.webapi.request.AssessmentTemplateClientData;
 
 @Test(groups = {TestConstants.TESTNG_UNIT_TESTS_GROUP})
 public class AssessmentTemplateFactoryTest

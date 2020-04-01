@@ -205,10 +205,10 @@ function($rootScope, $scope, assessmentService, dateUtils, $timeout)
             c.animalId, c.dateFrom, c.dateTo, c.userId, c.reasonId, c.studyId, c.isComplete, onSearchSuccess, onSearchError, this.lastPagingOptions);
     };
 
-    var onSearchSuccess = function(data, metadata) {
-        if (data.length)
+    var onSearchSuccess = function(data) {
+        if (data.assessments && data.assessments.length)
         {
-            var response = {data : data, metadata : metadata};
+            var response = {data : data.assessments, metadata : data.pagingInfo};
             $rootScope.$broadcast(existingAssessmentFormEvents.searchResultAvailable, response);
         }
         else
@@ -301,7 +301,8 @@ function($scope, formService, animalService)
     var that = this;
 
     this.onSearchSelect2DirectiveLinked = function() {
-        formService.initSearchSelect2(jQuery('#' + this.selectId), animalService.getAnimalsLike, true, this.placeHolder);
+        var acceptNewValues = false;
+        formService.initSearchSelect2(jQuery('#' + this.selectId), animalService.getAnimalsLike, acceptNewValues, this.placeHolder);
     };
 
     this.onSearchSelect2Selecting = function(choice) {

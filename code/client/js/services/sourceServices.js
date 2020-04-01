@@ -1,82 +1,53 @@
-var sourceServices = angular.module('sourceServices', ['dataServices', 'appConfigModule', 'pagingUtilsModule']);
+var sourceServices = angular.module('sourceServices', ['appConfigModule', 'pagingUtilsModule', 'webApiConfigModule', 'newDataServices']);
 
-speciesServices.factory('sourceService', ['dataService', 'appConfig', 'pagingUtils',
-function(dataService, appConfig, pagingUtils) {
-	var sourceServlet = "source";
+speciesServices.factory('sourceService', ['appConfig', 'pagingUtils', 'newDataService', 'webApiConfig',
+  function(appConfig, pagingUtils, newDataService, webApiConfig) {
 
-	var getSourcesLike = function(callback, likeTerm, pagingOptions) {
-		var parameters = {};
-		parameters[appConfig.services.selectAction] = appConfig.services.selectActions.like;
-		parameters[appConfig.services.actionParams.like] = likeTerm;
-		pagingUtils.setPagingParameters(parameters, pagingOptions);
-		dataService.dataConnection({
-			servlet : sourceServlet,
-			parameters : parameters,
-			callback : {
-				success : callback
-			}
-		});
-	};
+    var URLS = webApiConfig.webApiUrls.entity.source;
+    var SOURCE_NAME_KEY = 'sourceName';
+    var SOURCE_ID_KEY = 'sourceId';
 
-	var getSource = function(callback, pagingOptions) {
-		var parameters = {};
-		parameters[appConfig.services.selectAction] = appConfig.services.selectActions.all;
-		pagingUtils.setPagingParameters(parameters, pagingOptions);	
-		dataService.dataConnection({
-			servlet : sourceServlet,
-			parameters : parameters,
-			callback : {
-				success : callback
-			}
-		});
-	};
+    var getSourcesLike = function(callback, likeTerm, pagingOptions) {
+      var parameters = {};
 
-	var _getStoreDataParameters = function(source) {
-		return {
-			source : source
-		};
-	};
+      parameters[webApiConfig.webApiParameters.likeFilter] = likeTerm;
+      pagingUtils.newApiSetPagingParameters(parameters, pagingOptions);
 
-	var saveSource = function(source, successCallback, errCallback) {
-		var parameters = _getStoreDataParameters(source);
-		dataService.postData({
-			servlet : sourceServlet,
-			parameters : parameters,
-			callback : {
-				success : successCallback,
-				error : errCallback
-			}
-		});
-	};
+      var onSuccess = function(data) {
+        var metadata = pagingUtils.buildPagingMetadata(
+          data[webApiConfig.webApiResponseKeys.pagingInfo], SOURCE_NAME_KEY, SOURCE_ID_KEY);
+        callback(data.sources, metadata);
+      };
 
-	var removeSource = function(species, successCallback, errCallback) {
-		dataService.deleteData({
-			servlet : sourceServlet,
-			resourceId : source.sourceId,
-			callback : {
-				success : successCallback,
-				error : errCallback
-			}
-		});
-	};
+      newDataService.httpGet(URLS.getLike, parameters, onSuccess);
+    };
 
-	var updateSource = function(source, successCallback, errCallback) {
-		dataService.putData({
-			servlet : sourceServlet,
-			resourceId : source.sourceId,
-			data : source,
-			callback : {
-				success : successCallback,
-				error : errCallback
-			}
-		});
-	};
+    var saveSource = function(source, successCallback, errCallback) {
+      var onSuccess = function(data) {
+        var response = {};
+        response[SOURCE_NAME_KEY] = data.value;
+        response[SOURCE_ID_KEY] = data.id;
+        successCallback(response);
+      }
 
-	return {
-		getSourcesLike : getSourcesLike,
-		getSource : getSource,
-		saveSource : saveSource,
-		updateSource : updateSource,
-		removeSource : removeSource
-	};
-}]);
+      newDataService.httpPost(URLS.create, source, onSuccess, errCallback);
+    };
+
+    var updateSource = function(source, successCallback, errCallback) {
+      var url = URLS.update + source.sourceId;
+      newDataService.httpPut(url, source, successCallback, errCallback);
+    };
+
+    var uploadSource = function(data, successCallback, errCallback) {
+      var url = URLS.upload;
+      newDataService.httpPostWithHeaderContentType(url, data, successCallback, errCallback);
+    };    
+
+    return {
+      getSourcesLike: getSourcesLike,
+      saveSource: saveSource,
+      updateSource: updateSource,
+      uploadSource: uploadSource
+    };
+  }
+]);

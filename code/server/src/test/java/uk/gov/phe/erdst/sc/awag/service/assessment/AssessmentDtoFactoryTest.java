@@ -7,6 +7,8 @@ import org.testng.Assert;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 
+import com.google.inject.Inject;
+
 import uk.gov.phe.erdst.sc.awag.datamodel.Animal;
 import uk.gov.phe.erdst.sc.awag.datamodel.AnimalHousing;
 import uk.gov.phe.erdst.sc.awag.datamodel.Assessment;
@@ -20,24 +22,20 @@ import uk.gov.phe.erdst.sc.awag.datamodel.Source;
 import uk.gov.phe.erdst.sc.awag.datamodel.Species;
 import uk.gov.phe.erdst.sc.awag.datamodel.Study;
 import uk.gov.phe.erdst.sc.awag.datamodel.User;
-import uk.gov.phe.erdst.sc.awag.dto.ParameterScoredDto;
-import uk.gov.phe.erdst.sc.awag.dto.assessment.AssessmentDto;
-import uk.gov.phe.erdst.sc.awag.dto.assessment.AssessmentFullDto;
-import uk.gov.phe.erdst.sc.awag.dto.assessment.AssessmentSearchPreviewDto;
-import uk.gov.phe.erdst.sc.awag.dto.assessment.AssessmentsDto;
-import uk.gov.phe.erdst.sc.awag.dto.assessment.ParametersOrdering;
+import uk.gov.phe.erdst.sc.awag.datamodel.utils.ParametersOrdering;
 import uk.gov.phe.erdst.sc.awag.service.factory.assessment.AssessmentDtoFactory;
 import uk.gov.phe.erdst.sc.awag.service.utils.AnimalTestUtils;
 import uk.gov.phe.erdst.sc.awag.service.validation.utils.ValidationConstants;
 import uk.gov.phe.erdst.sc.awag.shared.test.TestConstants;
 import uk.gov.phe.erdst.sc.awag.utils.GuiceHelper;
+import uk.gov.phe.erdst.sc.awag.webapi.response.assessment.AssessmentFullDto;
+import uk.gov.phe.erdst.sc.awag.webapi.response.assessment.AssessmentSearchResultDto;
+import uk.gov.phe.erdst.sc.awag.webapi.response.assessment.AssessmentSimpleDto;
+import uk.gov.phe.erdst.sc.awag.webapi.response.assessment.AssessmentSimpleWrapperDto;
+import uk.gov.phe.erdst.sc.awag.webapi.response.parameter.ParameterScoredDto;
 
-import com.google.inject.Inject;
-
-// CS:OFF: ClassDataAbstractionCoupling
 @Test(groups = {TestConstants.TESTNG_UNIT_TESTS_GROUP})
 public class AssessmentDtoFactoryTest
-// CS:ON
 {
     private static final String TEST_REASON = "Test reason";
     private static final String TEST_ANIMAL_NUMBER = "Test animal number";
@@ -62,30 +60,30 @@ public class AssessmentDtoFactoryTest
     @Test
     public void testCreateValidAssessment()
     {
-        AssessmentDto assessmentDto = mAssessmentDtoFactory.createAssessmentDto(mAssessment, mParametersOrdering);
+        mAssessment.setAnimal(AnimalTestUtils.createAnimalWithIdOnly(ValidationConstants.ENTITY_MIN_ID));
+        AssessmentSimpleDto assessmentDto = mAssessmentDtoFactory.createSimpleAssessmentDto(mAssessment,
+            mParametersOrdering);
 
         Assert.assertEquals(assessmentDto.assessmentId, mAssessment.getId());
         Assert.assertEquals(assessmentDto.assessmentDate, mAssessment.getDate());
     }
 
-    @Test
+    @Test(expectedExceptions = {NullPointerException.class})
     public void testCreateAssessmentNullAnimal()
     {
         mAssessment.setAnimal(null);
 
-        AssessmentDto assessmentDto = mAssessmentDtoFactory.createAssessmentDto(mAssessment, mParametersOrdering);
-
-        Assert.assertEquals(assessmentDto.assessmentId, mAssessment.getId());
-        Assert.assertEquals(assessmentDto.assessmentDate, mAssessment.getDate());
-        Assert.assertNotNull(assessmentDto.animal);
+        mAssessmentDtoFactory.createSimpleAssessmentDto(mAssessment, mParametersOrdering);
     }
 
     @Test
     public void testCreateAssessmentNullScore()
     {
+        mAssessment.setAnimal(AnimalTestUtils.createAnimalWithIdOnly(ValidationConstants.ENTITY_MIN_ID));
         mAssessment.setScore(null);
 
-        AssessmentDto assessmentDto = mAssessmentDtoFactory.createAssessmentDto(mAssessment, mParametersOrdering);
+        AssessmentSimpleDto assessmentDto = mAssessmentDtoFactory.createSimpleAssessmentDto(mAssessment,
+            mParametersOrdering);
 
         Assert.assertEquals(assessmentDto.assessmentId, mAssessment.getId());
         Assert.assertEquals(assessmentDto.assessmentDate, mAssessment.getDate());
@@ -95,9 +93,11 @@ public class AssessmentDtoFactoryTest
     @Test
     public void testCreateAssessmentNullReason()
     {
+        mAssessment.setAnimal(AnimalTestUtils.createAnimalWithIdOnly(ValidationConstants.ENTITY_MIN_ID));
         mAssessment.setReason(null);
 
-        AssessmentDto assessmentDto = mAssessmentDtoFactory.createAssessmentDto(mAssessment, mParametersOrdering);
+        AssessmentSimpleDto assessmentDto = mAssessmentDtoFactory.createSimpleAssessmentDto(mAssessment,
+            mParametersOrdering);
 
         Assert.assertEquals(assessmentDto.assessmentReason, "");
     }
@@ -117,7 +117,7 @@ public class AssessmentDtoFactoryTest
 
         mAssessment.setAnimal(animal);
 
-        AssessmentSearchPreviewDto dto = mAssessmentDtoFactory.createAssessmentSearchPreviewDto(mAssessment);
+        AssessmentSearchResultDto dto = mAssessmentDtoFactory.createAssessmentSearchResultDto(mAssessment);
 
         Assert.assertEquals(dto.assessmentId, mAssessment.getId());
         Assert.assertEquals(dto.assessmentDate, mAssessment.getDate());
@@ -208,16 +208,19 @@ public class AssessmentDtoFactoryTest
     public void testCreateAssessmentsDto()
     {
         Assessment assessment1 = new Assessment();
+        assessment1.setAnimal(AnimalTestUtils.createAnimalWithIdOnly(ValidationConstants.ENTITY_MIN_ID));
         assessment1.setId(1L);
+
         Assessment assessment2 = new Assessment();
         assessment2.setId(2L);
+        assessment2.setAnimal(AnimalTestUtils.createAnimalWithIdOnly(ValidationConstants.ENTITY_MIN_ID));
 
         List<Assessment> assessments = new ArrayList<Assessment>();
         assessments.add(assessment1);
         assessments.add(assessment2);
 
-        AssessmentsDto assessmentsDataDto = mAssessmentDtoFactory
-            .createAssessmentsDto(assessments, mParametersOrdering);
+        AssessmentSimpleWrapperDto assessmentsDataDto = mAssessmentDtoFactory.createSimpleAssessmentsDto(assessments,
+            mParametersOrdering);
 
         Assert.assertEquals(assessmentsDataDto.assessments.size(), assessments.size());
     }
@@ -230,6 +233,7 @@ public class AssessmentDtoFactoryTest
 
         ParametersOrdering ordering = new ParametersOrdering();
         final int limit = 7;
+        // for (int i = 0, j = limit - 1; i < limit; i++, j--)
         for (int i = 0, j = limit - 1; i < limit; i++, j--)
         {
             Long id = Long.valueOf(i);
@@ -241,7 +245,7 @@ public class AssessmentDtoFactoryTest
             parameterScore.setParameterScored(parameter);
 
             parameterScores.add(parameterScore);
-            ordering.add(id, j);
+            ordering.add(id, i);
         }
 
         score.setParametersScored(parameterScores);

@@ -3,29 +3,16 @@ package uk.gov.phe.erdst.sc.awag.service;
 import java.util.LinkedHashSet;
 
 import org.testng.Assert;
-import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 
-import uk.gov.phe.erdst.sc.awag.dto.ParameterScoredDto;
-import uk.gov.phe.erdst.sc.awag.dto.assessment.AssessmentFullDto;
 import uk.gov.phe.erdst.sc.awag.service.export.ExportUtils;
 import uk.gov.phe.erdst.sc.awag.shared.test.TestConstants;
-import uk.gov.phe.erdst.sc.awag.utils.GuiceHelper;
-
-import com.google.inject.Inject;
+import uk.gov.phe.erdst.sc.awag.webapi.response.assessment.AssessmentFullDto;
+import uk.gov.phe.erdst.sc.awag.webapi.response.parameter.ParameterScoredDto;
 
 @Test(groups = {TestConstants.TESTNG_UNIT_TESTS_GROUP})
 public class CwasCalculatorTest
 {
-    @Inject
-    private CwasCalculator mCwasCalculator;
-
-    @BeforeMethod
-    public void setUp() throws Exception
-    {
-        GuiceHelper.injectTestDependencies(this);
-    }
-
     @Test
     public void testCalculation() throws Exception
     {
@@ -51,10 +38,10 @@ public class CwasCalculatorTest
                 3.20, 3.20, 3.20, 3.20, 3.20, 3.20, 3.20, 3.20, 3.20, 3.20};
 
         double[] expectedCwas = new double[] {5.63, 4.95, 4.95, 26.65, 20.13, 15.25, 20.13, 20.13, 20.13, 15.25, 19.53,
-                19.53, 18.91, 14.64, 19.53, 18.91, 18.91, 18.91, 18.91, 19.53, 18.91, 18.91, 18.91, 18.91, 18.91,
-                18.91, 18.91, 18.91, 37.17, 30.77, 30.77, 30.09, 28.32, 29.60, 29.60, 31.85, 31.19, 31.19, 30.24,
-                31.52, 32.16, 30.88, 30.88, 32.48, 33.12, 33.12, 33.12, 32.48, 32.48, 32.48, 33.76, 33.76, 28.00,
-                26.72, 26.72, 28.00, 28.00};
+                19.53, 18.91, 14.64, 19.53, 18.91, 18.91, 18.91, 18.91, 19.53, 18.91, 18.91, 18.91, 18.91, 18.91, 18.91,
+                18.91, 18.91, 37.17, 30.77, 30.77, 30.09, 28.32, 29.60, 29.60, 31.85, 31.19, 31.19, 30.24, 31.52, 32.16,
+                30.88, 30.88, 32.48, 33.12, 33.12, 33.12, 32.48, 32.48, 32.48, 33.76, 33.76, 28.00, 26.72, 26.72, 28.00,
+                28.00};
 
         int dataLenCheck = avg1.length;
         Assert.assertEquals(avg2.length, dataLenCheck);
@@ -65,7 +52,8 @@ public class CwasCalculatorTest
         for (int i = 0; i < dataLenCheck; i++)
         {
             AssessmentFullDto dto = getAssessmentFullDto(avg1[i], avg2[i], avg3[i], avg4[i]);
-            String cwas = ExportUtils.formatNumericalValues(mCwasCalculator.calculateCwas(dto));
+            double dcwas = CwasCalculator.calculateCwas(dto);
+            String cwas = ExportUtils.formatNumericalValues(CwasCalculator.roundCwas(dcwas));
             String expected = ExportUtils.formatNumericalValues(expectedCwas[i]);
             Assert.assertEquals(cwas, expected);
         }

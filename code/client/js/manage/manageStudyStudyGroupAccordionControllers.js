@@ -4,6 +4,8 @@ manageAccordionControllers.controller('StudyStudyGroupAccordianCtrl',
     function() {
     	this.accordionStatus = {
             isStudyGroupAnimalsOpen: true,
-            isStudyStudyGroupsOpen: false
+            isStudyStudyGroupsOpen: false,
+            isUploadStudyGroupAnimalsUploadOpen : false,	//	TODO
+            isUploadStudyStudyGroupOpen : false
         };
     });

@@ -6,10 +6,10 @@ import org.testng.annotations.Test;
 
 import uk.gov.phe.erdst.sc.awag.datamodel.Factor;
 import uk.gov.phe.erdst.sc.awag.datamodel.FactorScored;
-import uk.gov.phe.erdst.sc.awag.dto.FactorScoredDto;
 import uk.gov.phe.erdst.sc.awag.service.factory.factor.FactorScoredDtoFactory;
 import uk.gov.phe.erdst.sc.awag.shared.test.TestConstants;
 import uk.gov.phe.erdst.sc.awag.utils.GuiceHelper;
+import uk.gov.phe.erdst.sc.awag.webapi.response.factor.FactorScoredDto;
 
 import com.google.inject.Inject;
 

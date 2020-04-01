@@ -9,12 +9,12 @@ import org.testng.annotations.Test;
 import com.google.inject.Inject;
 
 import uk.gov.phe.erdst.sc.awag.datamodel.GroupAuth;
-import uk.gov.phe.erdst.sc.awag.datamodel.client.UserAuthClientData;
 import uk.gov.phe.erdst.sc.awag.service.factory.auth.GroupAuthFactory;
 import uk.gov.phe.erdst.sc.awag.service.utils.UserAuthTestUtils;
-import uk.gov.phe.erdst.sc.awag.servlets.utils.ServletSecurityUtils;
 import uk.gov.phe.erdst.sc.awag.shared.test.TestConstants;
 import uk.gov.phe.erdst.sc.awag.utils.GuiceHelper;
+import uk.gov.phe.erdst.sc.awag.utils.WebSecurityUtils;
+import uk.gov.phe.erdst.sc.awag.webapi.request.UserAuthClientData;
 
 @Test(groups = {TestConstants.TESTNG_UNIT_TESTS_GROUP})
 public class GroupAuthFactoryTest
@@ -32,7 +32,7 @@ public class GroupAuthFactoryTest
     private void testCreateUserGroupAuthForAdmin()
     {
         UserAuthClientData clientData = UserAuthTestUtils.getUserAuthClientData(null, null, null,
-            ServletSecurityUtils.RolesAllowed.AW_ADMIN);
+            WebSecurityUtils.RolesAllowed.AW_ADMIN);
 
         List<GroupAuth> groups = mGroupAuthFactory.create(clientData);
 
@@ -40,8 +40,8 @@ public class GroupAuthFactoryTest
 
         for (GroupAuth group : groups)
         {
-            Assert.assertTrue(group.getGroupName().equals(ServletSecurityUtils.RolesAllowed.AW_ADMIN)
-                || group.getGroupName().equals(ServletSecurityUtils.RolesAllowed.AW_ASSESSMENT_USER));
+            Assert.assertTrue(group.getGroupName().equals(WebSecurityUtils.RolesAllowed.AW_ADMIN)
+                || group.getGroupName().equals(WebSecurityUtils.RolesAllowed.AW_ASSESSMENT_USER));
         }
     }
 
@@ -49,12 +49,12 @@ public class GroupAuthFactoryTest
     private void testCreateUserGroupAuthForAssessmentUser()
     {
         UserAuthClientData clientData = UserAuthTestUtils.getUserAuthClientData(null, null, null,
-            ServletSecurityUtils.RolesAllowed.AW_ASSESSMENT_USER);
+            WebSecurityUtils.RolesAllowed.AW_ASSESSMENT_USER);
 
         List<GroupAuth> groups = mGroupAuthFactory.create(clientData);
 
         Assert.assertEquals(groups.size(), 1);
-        Assert.assertTrue(groups.get(0).getGroupName().equals(ServletSecurityUtils.RolesAllowed.AW_ASSESSMENT_USER));
+        Assert.assertTrue(groups.get(0).getGroupName().equals(WebSecurityUtils.RolesAllowed.AW_ASSESSMENT_USER));
     }
 
 }

@@ -11,10 +11,10 @@ import org.testng.Assert;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
 
-import uk.gov.phe.erdst.sc.awag.datamodel.client.UserAuthClientData;
 import uk.gov.phe.erdst.sc.awag.service.utils.UserAuthTestUtils;
-import uk.gov.phe.erdst.sc.awag.servlets.utils.ServletSecurityUtils;
 import uk.gov.phe.erdst.sc.awag.shared.test.TestConstants;
+import uk.gov.phe.erdst.sc.awag.utils.WebSecurityUtils;
+import uk.gov.phe.erdst.sc.awag.webapi.request.UserAuthClientData;
 
 @Test(groups = {TestConstants.TESTNG_CONTAINER_TESTS_GROUP})
 public class UserAuthValidationTest
@@ -32,7 +32,7 @@ public class UserAuthValidationTest
     private void testPasswordNotEqualRetypedPassword()
     {
         UserAuthClientData clientData = UserAuthTestUtils.getUserAuthClientData("admin", "adminadmin", "notadminadmin",
-            ServletSecurityUtils.RolesAllowed.AW_ADMIN);
+            WebSecurityUtils.RolesAllowed.AW_ADMIN);
         Set<ConstraintViolation<UserAuthClientData>> testConstraintViolations = mValidator.validate(clientData);
         Assert.assertEquals(testConstraintViolations.size(), 1);
     }

@@ -14,12 +14,12 @@ import uk.gov.phe.erdst.sc.awag.datamodel.AssessmentTemplateParameterFactor;
 import uk.gov.phe.erdst.sc.awag.datamodel.Factor;
 import uk.gov.phe.erdst.sc.awag.datamodel.Parameter;
 import uk.gov.phe.erdst.sc.awag.datamodel.Scale;
-import uk.gov.phe.erdst.sc.awag.dto.AssessmentTemplateDto;
-import uk.gov.phe.erdst.sc.awag.dto.FactorDto;
-import uk.gov.phe.erdst.sc.awag.dto.ParameterDto;
 import uk.gov.phe.erdst.sc.awag.service.factory.template.AssessmentTemplateDtoFactory;
 import uk.gov.phe.erdst.sc.awag.shared.test.TestConstants;
 import uk.gov.phe.erdst.sc.awag.utils.GuiceHelper;
+import uk.gov.phe.erdst.sc.awag.webapi.response.factor.FactorDto;
+import uk.gov.phe.erdst.sc.awag.webapi.response.parameter.ParameterDto;
+import uk.gov.phe.erdst.sc.awag.webapi.response.template.AssessmentTemplateDto;
 
 @Test(groups = {TestConstants.TESTNG_UNIT_TESTS_GROUP})
 public class AssessmentTemplateDtoFactoryTest
@@ -33,9 +33,12 @@ public class AssessmentTemplateDtoFactoryTest
 
     private final Long FACTOR_ID = 10000L;
     private final String FACTOR_NAME = "Factor 1";
+    private final String FACTOR_DESCRIPTION = null;
 
     private final Long PARAMETER_ID = 10000L;
     private final String PARAMETER_NAME = "Parameter 1";
+
+    private final Long CLOCKWISE_DISPLAY_ORDER_NOT_SET = 0L;
 
     @Inject
     private AssessmentTemplateDtoFactory mTemplateDtoFactory;
@@ -90,9 +93,14 @@ public class AssessmentTemplateDtoFactoryTest
         Assert.assertEquals(templateDto.templateParameters.toArray(new ParameterDto[] {})[0].parameterId, PARAMETER_ID);
         Assert.assertEquals(templateDto.templateParameters.toArray(new ParameterDto[] {})[0].parameterName,
             PARAMETER_NAME);
+        Assert.assertEquals(
+            templateDto.templateParameters.toArray(new ParameterDto[] {})[0].parameterDisplayOrderNumber,
+            CLOCKWISE_DISPLAY_ORDER_NOT_SET); // TODO
         FactorDto factorDto = templateDto.templateParameters.toArray(new ParameterDto[] {})[0].parameterFactors
             .toArray(new FactorDto[] {})[0];
+
         Assert.assertEquals(factorDto.factorId, FACTOR_ID);
         Assert.assertEquals(factorDto.factorName, FACTOR_NAME);
+        Assert.assertEquals(factorDto.factorName, FACTOR_DESCRIPTION);
     }
 }

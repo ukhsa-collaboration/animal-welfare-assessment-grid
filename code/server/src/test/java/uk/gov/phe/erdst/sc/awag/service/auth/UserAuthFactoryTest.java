@@ -7,12 +7,12 @@ import org.testng.annotations.Test;
 import com.google.inject.Inject;
 
 import uk.gov.phe.erdst.sc.awag.datamodel.UserAuth;
-import uk.gov.phe.erdst.sc.awag.datamodel.client.UserAuthClientData;
 import uk.gov.phe.erdst.sc.awag.service.factory.auth.UserAuthFactory;
 import uk.gov.phe.erdst.sc.awag.service.utils.UserAuthTestUtils;
-import uk.gov.phe.erdst.sc.awag.servlets.utils.ServletSecurityUtils;
 import uk.gov.phe.erdst.sc.awag.shared.test.TestConstants;
 import uk.gov.phe.erdst.sc.awag.utils.GuiceHelper;
+import uk.gov.phe.erdst.sc.awag.utils.WebSecurityUtils;
+import uk.gov.phe.erdst.sc.awag.webapi.request.UserAuthClientData;
 
 @Test(groups = {TestConstants.TESTNG_UNIT_TESTS_GROUP})
 public class UserAuthFactoryTest
@@ -34,8 +34,8 @@ public class UserAuthFactoryTest
     @Test
     private void testCreateUserAuth()
     {
-        UserAuthClientData clientData = UserAuthTestUtils.getUserAuthClientData(ServletSecurityUtils.AW_ADMIN_USER,
-            PASSWORD_TO_HASH, PASSWORD_TO_HASH, ServletSecurityUtils.RolesAllowed.AW_ADMIN);
+        UserAuthClientData clientData = UserAuthTestUtils.getUserAuthClientData(WebSecurityUtils.AW_ADMIN_USER,
+            PASSWORD_TO_HASH, PASSWORD_TO_HASH, WebSecurityUtils.RolesAllowed.AW_ADMIN);
 
         UserAuth userAuth = mUserAuthFactory.create(clientData);
 
@@ -47,12 +47,12 @@ public class UserAuthFactoryTest
     private void testUpdateUserAuth()
     {
         UserAuth user = new UserAuth();
-        user.setUsername(ServletSecurityUtils.AW_ADMIN_USER + 2);
+        user.setUsername(WebSecurityUtils.AW_ADMIN_USER + 2);
         user.setPassword("D82494F05D6917BA02F7AAA29689CCB444BB73F20380876CB05D1F37537B7892");
 
         UserAuthClientData clientData = UserAuthTestUtils.getUserAuthClientData(
-            String.valueOf(ServletSecurityUtils.AW_ADMIN_USER + 2), UPDATED_PASSWORD_TO_HASH, UPDATED_PASSWORD_TO_HASH,
-            ServletSecurityUtils.RolesAllowed.AW_ADMIN);
+            String.valueOf(WebSecurityUtils.AW_ADMIN_USER + 2), UPDATED_PASSWORD_TO_HASH, UPDATED_PASSWORD_TO_HASH,
+            WebSecurityUtils.RolesAllowed.AW_ADMIN);
 
         mUserAuthFactory.update(user, clientData);
 

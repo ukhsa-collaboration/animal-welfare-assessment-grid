@@ -1,27 +1,43 @@
 <h1 class="page-header text-center">User management</h1>
+
 <div class="container-fluid" ng-controller="MngmtUsersManagementCtrl as usersMngmtCtrl">
-   <div ng-show="usersMngmtCtrl.isFormViewable && usersMngmtCtrl.isAdminUser">
+
+   <div ng-show="usersMngmtCtrl.isFormViewable && usersMngmtCtrl.isAdminUser" ng-cloak>
+
       <form class="form-horizontal">
+
          <div class="form-group" ng-controller="MngmtUsersSelectionCtrl as usersCtrl">
             <label for="{{usersCtrl.selectId}}" class="col-sm-3 control-label">Username: </label>
             <div class="col-sm-7">
                <aw-search-select2 class="form-control" elem-id="{{usersCtrl.selectId}}" controller="usersCtrl"></aw-search-select2>
             </div>
+
          </div>
+
          <div class="form-group">
+
             <label for="newPassword" class="col-sm-3 control-label">Password: </label>
+
             <div class="col-sm-7">
                <input type="password" class="form-control" id="newPassword" placeholder="Enter password..." ng-model="usersMngmtCtrl.user.password">
             </div>
+
          </div>
+
          <div class="form-group">
+
             <label for="passwordRetype" class="col-sm-3 control-label">Retype password: </label>
+
             <div class="col-sm-7">
                <input type="password" class="form-control" id="passwordRetype" placeholder="Retype password..." ng-model="usersMngmtCtrl.user.retypedPassword">
             </div>
+
          </div>
+
          <div class="col-sm-offset-3" ng-controller="MngmtGroupSelectionCtrl as groupCtrl">
+
             <div class="col-sm-2 dropdown" id="groupSelect">
+
                <button class="btn btn-default dropdown-toggle" type="button" data-toggle= aria-haspopup="true" aria-expanded="true">
                {{groupCtrl.selectedGroup}}
                </button>
@@ -30,22 +46,29 @@
                      <a style="cursor:pointer" ng-click="groupCtrl.groupSelected(group)">{{group.name}}</a>
                   </li>
                </ul>
+
             </div>
+
          </div>
+
          <div class="form-group" style="padding-top: 50px">
             <div class="col-xs-12">
                <aw-success-display success="usersMngmtCtrl.isSuccess"></aw-success-display>
             </div>
          </div>
+
          <div class="form-group">
             <div class="col-xs-12">
                <aw-error-display errors="usersMngmtCtrl.errors"></aw-error-display>
             </div>
          </div>
+
          <div class="row">
             <hr />
          </div>
+
          <div class="row">
+
             <div class="text-center">
                <button type="button" class="btn btn-lg btn-success" ng-click="usersMngmtCtrl.submitUser()" ng-disabled="!usersMngmtCtrl.isNewUser || usersMngmtCtrl.isDeletingUser">
                Create
@@ -69,12 +92,15 @@
          </div>
       </form>
    </div>
-   <div ng-hide="usersMngmtCtrl.isFormViewable">
+
+   <div ng-hide="usersMngmtCtrl.isFormViewable" ng-cloak>
       <span class="glyphicon glyphicon-info-sign" style="padding-right: 4px"></span>
       Contact your IT administrator who can configure LDAP users for you.
    </div>
-   <div ng-show="!usersMngmtCtrl.isAdminUser && usersMngmtCtrl.isFormViewable">
+
+   <div ng-show="!usersMngmtCtrl.isAdminUser && usersMngmtCtrl.isFormViewable" ng-cloak>
       <span class="glyphicon glyphicon-info-sign" style="padding-right: 4px"></span>
       You must be an administrator in order to manage users.
    </div>
+
 </div>

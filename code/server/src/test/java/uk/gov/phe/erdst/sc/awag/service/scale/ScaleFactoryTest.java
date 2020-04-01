@@ -7,10 +7,10 @@ import org.testng.annotations.Test;
 import com.google.inject.Inject;
 
 import uk.gov.phe.erdst.sc.awag.datamodel.Scale;
-import uk.gov.phe.erdst.sc.awag.datamodel.client.ScaleClientData;
 import uk.gov.phe.erdst.sc.awag.service.factory.scale.ScaleFactory;
 import uk.gov.phe.erdst.sc.awag.shared.test.TestConstants;
 import uk.gov.phe.erdst.sc.awag.utils.GuiceHelper;
+import uk.gov.phe.erdst.sc.awag.webapi.request.ScaleClientData;
 
 @Test(groups = {TestConstants.TESTNG_UNIT_TESTS_GROUP})
 public class ScaleFactoryTest

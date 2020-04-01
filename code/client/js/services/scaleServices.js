@@ -1,84 +1,61 @@
-var scaleServices = angular.module('scaleServices', ['dataServices', 'appConfigModule', 'pagingUtilsModule']);
+var scaleServices = angular.module('scaleServices', ['appConfigModule', 'pagingUtilsModule', 'webApiConfigModule', 'newDataServices']);
 
-scaleServices.factory('scaleService', ['dataService', 'appConfig', 'pagingUtils',
-function(dataService, appConfig, pagingUtils) {
-	var scaleServlet = "scale";
+scaleServices.factory('scaleService', ['appConfig', 'pagingUtils', 'newDataService', 'webApiConfig',
+    function (appConfig, pagingUtils, newDataService, webApiConfig) {
 
-	var getScale = function(callback, id){
-		var parameters = {};
-		parameters[appConfig.services.selectAction] = appConfig.services.selectActions.id;
-		parameters[appConfig.services.actionParams.id] = id;
-		dataService.dataConnection({
-			servlet : scaleServlet,
-			parameters : parameters,
-			callback : {
-				success : callback
-			}
-		});
-	};
+        var URLS = webApiConfig.webApiUrls.entity.scale;
+        var SCALE_NAME_KEY = 'scaleName';
+        var SCALE_ID_KEY = 'scaleId';
 
-	var getScales = function(callback, pagingOptions) {
-		var parameters = {};
-		parameters[appConfig.services.actionParams.all] = appConfig.services.actionParamsValues.all;
-		pagingUtils.setPagingParameters(parameters, pagingOptions);
-		dataService.dataConnection({
-			servlet : scaleServlet,
-			parameters : parameters,
-			callback : {
-				success : callback
-			}
-		});
-	};
+        var getScale = function (successCallback, id) {
+            var parameters = {};
+            var url = URLS.getById + id;
+            newDataService.httpGet(url, parameters, successCallback);
+        };
 
-	var getScalesLike = function(callback, likeTerm, pagingOptions){
-		var parameters = {};
-		parameters[appConfig.services.selectAction] = appConfig.services.selectActions.like;
-		parameters[appConfig.services.actionParams.like] = likeTerm;
-		pagingUtils.setPagingParameters(parameters, pagingOptions);
-		dataService.dataConnection({
-			servlet : scaleServlet,
-			parameters : parameters,
-			callback : {
-				success : callback
-			}
-		});
-	};
+        var getScalesLike = function (callback, likeTerm, pagingOptions) {
+            var parameters = {};
 
-	var saveScale = function(scale, successCallback, errCallback){
-		var parameters = _getStoreDataParameters(scale);
-		dataService.postData({
-			servlet : scaleServlet,
-			parameters : parameters,
-			callback : {
-				success : successCallback,
-				error : errCallback
-			}
-		});
-	};
+            parameters[webApiConfig.webApiParameters.likeFilter] = likeTerm;
+            pagingUtils.newApiSetPagingParameters(parameters, pagingOptions);
 
-	var updateScale = function(scale, successCallback, errCallback){
-		dataService.putData({
-			servlet : scaleServlet,
-			resourceId : scale.scaleId,
-			data : scale,
-			callback : {
-				success : successCallback,
-				error : errCallback
-			}
-		});
-	};
+            var onSuccess = function (data) {
+                var metadata = pagingUtils.buildPagingMetadata(
+                    data[webApiConfig.webApiResponseKeys.pagingInfo], SCALE_NAME_KEY, SCALE_ID_KEY);
+                callback(data.scales, metadata);
+            };
 
-	var _getStoreDataParameters = function(scale) {
-		return {
-			scale : scale
-		};
-	};
+            newDataService.httpGet(URLS.getLike, parameters, onSuccess);
+        };
 
-	return {
-		getScale : getScale,
-		getScales : getScales,
-		getScalesLike : getScalesLike,
-		saveScale : saveScale,
-		updateScale : updateScale
-	};
-}]);
+        var saveScale = function (scale, successCallback, errCallback) {
+            var onSuccess = function (data) {
+                var response = {};
+                response[SCALE_NAME_KEY] = data.value;
+                response[SCALE_ID_KEY] = data.id;
+                successCallback(response);
+            }
+
+            newDataService.httpPost(URLS.create, scale, onSuccess, errCallback);
+        };
+
+        var updateScale = function (scale, successCallback, errCallback) {
+            var url = URLS.update + scale.scaleId;
+            newDataService.httpPut(url, scale, successCallback, errCallback);
+        };
+
+        var uploadScale = function (data, successCallback, errCallback) {
+            var url = URLS.upload;
+            newDataService.httpPostWithHeaderContentType(url, data, successCallback, errCallback);
+        };
+
+
+        return {
+            getScale: getScale,
+            getScalesLike: getScalesLike,
+            saveScale: saveScale,
+            updateScale: updateScale,
+            uploadScale: uploadScale
+        };
+    }
+]);

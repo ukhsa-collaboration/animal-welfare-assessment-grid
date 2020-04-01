@@ -8,12 +8,12 @@ import javax.validation.ConstraintValidatorContext;
 import uk.gov.phe.erdst.sc.awag.dao.AnimalDao;
 import uk.gov.phe.erdst.sc.awag.datamodel.Animal;
 import uk.gov.phe.erdst.sc.awag.datamodel.Sex;
-import uk.gov.phe.erdst.sc.awag.datamodel.client.AnimalClientData;
 import uk.gov.phe.erdst.sc.awag.exceptions.AWNoSuchEntityException;
 import uk.gov.phe.erdst.sc.awag.service.validation.annotations.ValidAnimal;
 import uk.gov.phe.erdst.sc.awag.service.validation.utils.ValidationConstants;
 import uk.gov.phe.erdst.sc.awag.service.validation.utils.ValidatorUtils;
 import uk.gov.phe.erdst.sc.awag.utils.Constants;
+import uk.gov.phe.erdst.sc.awag.webapi.request.AnimalClientData;
 
 @Stateless
 public class AnimalValidator implements ConstraintValidator<ValidAnimal, AnimalClientData>

@@ -1,93 +1,62 @@
-var housingServices = angular.module('housingServices', ['dataServices','appConfigModule','pagingUtilsModule']);
+var housingServices = angular.module('housingServices', ['appConfigModule','pagingUtilsModule', 'webApiConfigModule', 'newDataServices']);
 
-housingServices.factory('housingService', ['dataService','appConfig','pagingUtils',
-function(dataService, appConfig, pagingUtils) {
-	
-	var housingServlet = "housing";
+housingServices.factory('housingService', ['appConfig','pagingUtils','newDataService', 'webApiConfig',
+function(appConfig, pagingUtils, newDataService, webApiConfig) {
+  
+  var URLS = webApiConfig.webApiUrls.entity.housing;
+  var HOUSING_NAME_KEY = 'housingName';
+  var HOUSING_ID_KEY = 'housingId';
 
-    var create = function(id, name) {
-        return {
-            housingId : id,
-            housingName : name
-        };
+  var create = function(id, name) {
+      return {
+          housingId : id,
+          housingName : name
+      };
+  };
+
+  var getHousingsLike = function(callback, likeTerm, pagingOptions) {
+    var parameters = {};
+    
+    parameters[webApiConfig.webApiParameters.likeFilter] = likeTerm;
+    pagingUtils.newApiSetPagingParameters(parameters, pagingOptions);
+
+    var onSuccess = function(data) {
+      var metadata = pagingUtils.buildPagingMetadata(
+        data[webApiConfig.webApiResponseKeys.pagingInfo], HOUSING_NAME_KEY, HOUSING_ID_KEY);
+      callback(data.housings, metadata);
     };
 
-	var getHousing = function(callback, id){
-		var parameters = {};
-		parameters[appConfig.services.selectAction] = appConfig.services.selectActions.id;
-		parameters[appConfig.services.actionParams.id] = id;
-		dataService.dataConnection({
-			servlet : housingServlet,
-			parameters : parameters,
-			callback : {
-				success : callback
-			}
-		});
-	};
+    newDataService.httpGet(URLS.getLike, parameters, onSuccess);
+  };
 
-	var getHousings = function(callback, pagingOptions) {
-		var parameters = {};
-		parameters[appConfig.services.actionParams.all] = appConfig.services.actionParamsValues.all;
-		pagingUtils.setPagingParameters(parameters, pagingOptions);
-		dataService.dataConnection({
-			servlet : housingServlet,
-			parameters : parameters,
-			callback : {
-				success : callback
-			}
-		});
-	};
+  var saveHousing = function(housing, successCallback, errCallback) {
 
-	var getHousingsLike = function(callback,likeTerm, pagingOptions){
-		var parameters = {};
-		parameters[appConfig.services.selectAction] = appConfig.services.selectActions.like;
-		parameters[appConfig.services.actionParams.like] = likeTerm;
-		pagingUtils.setPagingParameters(parameters, pagingOptions);
-		dataService.dataConnection({
-			servlet : housingServlet,
-			parameters : parameters,
-			callback : {
-				success : callback
-			}
-		});
-	};
+    var onSuccess = function(data) {
+      var response = {};
+      response[HOUSING_NAME_KEY] = data.value;
+      response[HOUSING_ID_KEY] = data.id;
+      successCallback(response);
+    }
 
-	var saveHousing = function(housing, successCallback, errCallback){
-		var parameters = _getStoreDataParameters(housing);
-		dataService.postData({
-			servlet : housingServlet,
-			parameters : parameters,
-			callback : {
-				success : successCallback,
-				error : errCallback
-			}
-		});
-	};
+    newDataService.httpPost(URLS.create, housing, onSuccess, errCallback);
+  };
 
-	var updateHousing = function(housing, successCallback, errCallback){
-		dataService.putData({
-			servlet : housingServlet,
-			resourceId : housing.housingId,
-			data : housing,
-			callback : {
-				success : successCallback,
-				error : errCallback
-			}
-		});
-	};
+  var updateHousing = function(housing, successCallback, errCallback) {
+    var url = URLS.update + housing.housingId;
+    newDataService.httpPut(url, housing, successCallback, errCallback);
+  };
 
-	var _getStoreDataParameters = function(housing) {
-		return {
-			housing : housing
-		};
-	};
+  var uploadHousing = function(data, successCallback, errCallback) {
+    var url = URLS.upload;
+    newDataService.httpPostWithHeaderContentType(url, data, successCallback, errCallback);
+  };    
 
-	return {
-		getHousing : getHousing,
-		getHousings : getHousings,
-		getHousingsLike : getHousingsLike,
-		saveHousing : saveHousing,
-		updateHousing : updateHousing,
-		create : create
-	};
+
+  return {
+    getHousingsLike : getHousingsLike,
+    saveHousing : saveHousing,
+    updateHousing : updateHousing,
+    create : create,
+    uploadHousing : uploadHousing
+  };
 }]); 

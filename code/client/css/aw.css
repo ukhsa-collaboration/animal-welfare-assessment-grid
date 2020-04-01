@@ -57,6 +57,10 @@
   cursor: pointer;
 }
 
+.rows-striped div.striped:nth-of-type(odd) {
+  background-color: #eee;
+}
+
 /**
   Animate CSS for success
 **/
@@ -75,3 +79,20 @@
   opacity: 1;
 }
 */
+
+ /*  TODO */
+/*
+input[type="file"] { 
+    display: none;
+}
+.custom-file-upload {
+    border: 1px solid #ccc;
+    display: inline-block;
+    padding: 6px 12px;
+    cursor: pointer;
+}
+*/
+
+[ng\:cloak], [ng-cloak], [data-ng-cloak], [x-ng-cloak], .ng-cloak, .x-ng-cloak {
+  display: none !important;
+}

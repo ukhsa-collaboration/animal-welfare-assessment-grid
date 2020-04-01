@@ -18,6 +18,8 @@ import javax.persistence.Table;
 @Entity
 @Table(name = "study_group")
 @NamedQueries(value = {
+        @NamedQuery(name = StudyGroup.Q_FIND_STUDY_GROUP_BY_NUMBER,
+            query = "SELECT s FROM StudyGroup s WHERE s.mStudyGroupNumber = :studyGroupNumber"),
         @NamedQuery(name = StudyGroup.Q_FIND_ALL_STUDY_GROUPS_LIKE,
             query = "SELECT s FROM StudyGroup s WHERE LOWER(s.mStudyGroupNumber) LIKE :like "
                 + "ORDER BY LENGTH(s.mStudyGroupNumber) ASC, s.mStudyGroupNumber ASC"),
@@ -27,6 +29,7 @@ import javax.persistence.Table;
         @NamedQuery(name = StudyGroup.Q_FIND_COUNT_ALL, query = "SELECT COUNT(s) FROM StudyGroup s")})
 public class StudyGroup implements Serializable, EntitySelect
 {
+    public static final String Q_FIND_STUDY_GROUP_BY_NUMBER = "findStudyGroupByNumber";
     public static final String Q_FIND_ALL_STUDY_GROUPS_LIKE = "findAllStudyGroupsLike";
     public static final String Q_COUNT_ALL_STUDY_GROUPS_LIKE = "findCountAllStudyGroupsLike";
     public static final String Q_FIND_ALL = "findAllStudyGroups";

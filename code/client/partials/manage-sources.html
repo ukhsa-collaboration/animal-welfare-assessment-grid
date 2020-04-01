@@ -1,53 +1,148 @@
-<h1 class="page-header text-center">Source Management</h1>
-<div class="container-fluid" ng-controller="MngmtSourceManagementCtrl as sourceMngmtCtrl">
-    <form name="sourceManagementForm" class="form-horizontal">
-        <div class="form-group" ng-controller="MngmtSourceSelectionCtrl as sourceCtrl">
-            <label for="{{sourceCtrl.selectId}}" class="col-xs-3 control-label">Source name: </label>
-            <div ng-class="{'col-xs-7': sourceMngmtCtrl.isNewSource, 'col-xs-6': !sourceMngmtCtrl.isNewSource}">
-                <aw-search-select2 class="form-control" elem-id="{{sourceCtrl.selectId}}" controller="sourceCtrl"></aw-search-select2>
+<h1 class="page-header text-center">
+    Source Management
+</h1>
+
+<div class="container-fluid">
+
+    <accordion close-others="false">
+
+        <accordion-group is-open="true">
+
+            <accordion-heading>
+                Source management
+                <i class="pull-right glyphicon" ng-class="{'glyphicon-chevron-down': true, 'glyphicon-chevron-right': !false}"></i>
+            </accordion-heading>
+
+            <div ng-controller="MngmtSourceManagementCtrl as sourceMngmtCtrl">
+
+                <form name="sourceManagementForm" class="form-horizontal">
+
+                    <div class="form-group" ng-controller="MngmtSourceSelectionCtrl as sourceCtrl">
+
+                        <label for="{{sourceCtrl.selectId}}" class="col-xs-3 control-label">Source name: </label>
+
+                        <div class="col-xs-7">
+                            <aw-search-select2 class="form-control" elem-id="{{sourceCtrl.selectId}}" controller="sourceCtrl"></aw-search-select2>
+                        </div>
+
+                        <div ng-click="sourceMngmtCtrl.startUpdate()" ng-hide="sourceMngmtCtrl.isNewSource">
+                            <button type="button" class="btn btn-default btn-sm">
+                                <i class="glyphicon glyphicon-edit"></i>
+                            </button>
+                        </div>
+
+                    </div>
+
+
+                    <div class="form-group" ng-controller="MngmtSourceSelectionUpdateCtrl as sourceUpdateCtrl" ng-show="sourceMngmtCtrl.isUpdatingSource">
+
+                        <label for="{{sourceUpdateCtrl.selectId}}" class="col-xs-3 control-label">Update source name: </label>
+                        <div ng-class="{'col-xs-7': sourceMngmtCtrl.isNewSource, 'col-xs-6': !sourceMngmtCtrl.isNewSource}">
+                            <aw-select2 elem-id="{{sourceUpdateCtrl.selectId}}" controller="sourceUpdateCtrl"></aw-select2>
+                        </div>
+
+                        <div ng-click="sourceMngmtCtrl.cancelUpdate()">
+                            <button type="button" class="btn btn-default btn-sm">
+                                <i class="glyphicon glyphicon-remove"></i>
+                            </button>
+                        </div>
+
+                    </div>
+
+                    <div class="form-group">
+                        <div class="col-xs-12">
+                            <aw-success-display success="sourceMngmtCtrl.isSuccess"></aw-success-display>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <div class="col-xs-12">
+                            <aw-error-display errors="sourceMngmtCtrl.errors"></aw-error-display>
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <hr />
+                    </div>
+
+                    <div class="row">
+                        <div class="text-center">
+                            <button type="button" class="btn btn-lg btn-success" ng-click="sourceMngmtCtrl.submitSource()" ng-disabled="!sourceMngmtCtrl.isNewSource">
+                                Create
+                            </button>
+                            <button type="button" class="btn btn-lg btn-primary" ng-click="sourceMngmtCtrl.updateSource()" ng-disabled="sourceMngmtCtrl.isNewSource">
+                                Update
+                            </button>
+                            <button type="button" class="btn btn-danger btn-lg" ng-click="sourceMngmtCtrl.clearSource()">
+                                Clear
+                            </button>
+                        </div>
+                    </div>
+
+                </form>
+
             </div>
-            <div ng-click="sourceMngmtCtrl.startUpdate()" ng-hide="sourceMngmtCtrl.isNewSource">
-                <button type="button" class="btn btn-default btn-sm">
-                    <i class="glyphicon glyphicon-edit"></i>
-                </button>
+
+        </accordion-group>
+
+        <accordion-group is-open="false">
+
+            <accordion-heading>
+                Upload Source File management
+                <i class="pull-right glyphicon" ng-class="{'glyphicon-chevron-down': true, 'glyphicon-chevron-right': !false}"></i>
+            </accordion-heading>
+
+            <div ng-controller="MngmtSourceUploadManagementCtrl as sourceUploadMngmtCtrl">
+
+                <form name="sourceManagementUploadForm" class="form-horizontal">
+
+                    <div class="form-group" ng-controller="MngmtSourceUploadCtrl as sourceUploadCtrl">
+
+                        <label for="{{sourceUploadCtrl.uploadId}}" class="col-xs-3 control-label">Upload File: </label>
+
+                        <div class="col-xs-7">
+                            <aw-upload-file elem-id="{{sourceUploadCtrl.uploadId}}" controller="sourceUploadCtrl"></aw-upload-file>
+                        </div>
+
+                    </div>     
+
+                    <div class="form-group">
+
+                        <div class="col-xs-12">
+                            <aw-success-display success="sourceUploadMngmtCtrl.isSuccess"></aw-success-display>
+                        </div>
+
+                    </div>
+
+                    <div class="form-group">
+
+                        <div class="col-xs-12">
+                            <aw-error-display errors="sourceUploadMngmtCtrl.errors"></aw-error-display>
+                        </div>
+
+                    </div>
+                       
+                    <div class="row">
+
+                        <div class="text-center">
+
+                            <button type="button" class="btn btn-lg btn-success" ng-click="sourceUploadMngmtCtrl.uploadSource()" 
+                                    ng-disabled="sourceUploadMngmtCtrl.isFileSelected">
+                                Upload
+                            </button>
+                            <button type="button" class="btn btn-lg btn-danger" ng-click="sourceUploadMngmtCtrl.clearUploadSource()">
+                                Clear
+                            </button>
+
+                        </div>
+
+                    </div>
+
+                </form>
+
             </div>
-        </div>
-        <div class="form-group" ng-controller="MngmtSourceSelectionUpdateCtrl as sourceUpdateCtrl" ng-show="sourceMngmtCtrl.isUpdatingSource">
-            <label for="{{sourceUpdateCtrl.selectId}}" class="col-xs-3 control-label">Update source name: </label>
-            <div ng-class="{'col-xs-7': sourceMngmtCtrl.isNewSource, 'col-xs-6': !sourceMngmtCtrl.isNewSource}">
-                <aw-select2 elem-id="{{sourceUpdateCtrl.selectId}}" controller="sourceUpdateCtrl"></aw-select2>
-            </div>
-            <div ng-click="sourceMngmtCtrl.cancelUpdate()">
-                <button type="button" class="btn btn-default btn-sm">
-                    <i class="glyphicon glyphicon-remove"></i>
-                </button>
-            </div>            
-        </div>
-        <div class="form-group">
-            <div class="col-xs-12">
-                <aw-success-display success="sourceMngmtCtrl.isSuccess"></aw-success-display>
-            </div>
-        </div>
-        <div class="form-group">
-            <div class="col-xs-12">
-                <aw-error-display errors="sourceMngmtCtrl.errors"></aw-error-display>
-            </div>
-        </div>
-        <div class="row">
-            <hr />
-        </div>
-        <div class="row">
-            <div class="text-center">
-                <button type="button" class="btn btn-lg btn-success" ng-click="sourceMngmtCtrl.submitSource()" ng-disabled="!sourceMngmtCtrl.isNewSource">
-                    Create
-                </button>
-                <button type="button" class="btn btn-lg btn-primary" ng-click="sourceMngmtCtrl.updateSource()" ng-disabled="sourceMngmtCtrl.isNewSource">
-                    Update
-                </button>
-                <button type="button" class="btn btn-danger btn-lg" ng-click="sourceMngmtCtrl.clearSource()">
-                    Clear
-                </button>
-            </div>
-        </div>
-    </form>
+
+        </accordion-group>
+
+    </accordion>
+
 </div>

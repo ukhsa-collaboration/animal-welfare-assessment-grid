@@ -1,152 +1,96 @@
-var animalServices = angular.module('animalServices', ['dataServices', 'appConfigModule', 'pagingUtilsModule']);
+var animalServices = angular.module('animalServices', ['appConfigModule', 'pagingUtilsModule', 'webApiConfigModule', 'newDataServices']);
 
-animalServices.factory('animalService', ['dataService', 'appConfig', 'pagingUtils', 
-function(dataService, appConfig, pagingUtils) {
-	var animalServlet = "animal";
+animalServices.factory('animalService', ['appConfig', 'pagingUtils', 'newDataService', 'webApiConfig',
+  function(appConfig, pagingUtils, newDataService, webApiConfig) {
 
-	var getAnimalsLike = function(callback, likeTerm, pagingOptions) {
-		var parameters = {};
-		parameters[appConfig.services.selectAction] = appConfig.services.selectActions.like;
-		parameters[appConfig.services.actionParams.like] = likeTerm;
-		pagingUtils.setPagingParameters(parameters, pagingOptions);
-		dataService.dataConnection({
-			servlet : animalServlet,
-			parameters : parameters,
-			callback : {
-				success : callback
-			}
-		});
-	};
+    var URLS = webApiConfig.webApiUrls.entity.animal;
+    var FEMALE_ANIMAL_FILTER = 'f';
+    var MALE_ANIMAL_FILTER = 'm';
+    var ANIMAL_NUMBER_KEY = 'animalNumber';
+    var ANIMAL_ID_KEY = 'id';
 
-	var getFullAnimalsLike = function(callback, likeTerm, pagingOptions) {
-		var parameters = {};
-		parameters[appConfig.services.selectAction] = appConfig.services.selectActions.like;
-		parameters[appConfig.services.actionParams.like] = likeTerm;
-		parameters[appConfig.services.actionParams.all] = appConfig.services.actionParamsValues.all;
-		pagingUtils.setPagingParameters(parameters, pagingOptions);		
-		dataService.dataConnection({
-			servlet : animalServlet,
-			parameters : parameters,
-			callback : {
-				success : callback
-			}
-		});
-	};
+    var getAnimalsLike = function(successCallback, likeTerm, pagingOptions) {
+      var parameters = {};
+      
+      parameters[webApiConfig.webApiParameters.likeFilter] = likeTerm;
+      pagingUtils.newApiSetPagingParameters(parameters, pagingOptions);
 
-	//TODO : Remove this after reworking assessment form screen to use new awsearchselect2
-	var getAssessedAnimalsLike = function(callback, likeTerm) {
-		getAnimalsLike(callback, likeTerm);
-	};
+      var onSuccess = function(data) {
+        var metadata = pagingUtils.buildPagingMetadata(
+          data[webApiConfig.webApiResponseKeys.pagingInfo], ANIMAL_NUMBER_KEY, ANIMAL_ID_KEY);
+        successCallback(data.animals, metadata);
+      };
 
-	var _getSexFilteredAnimalsLike = function(callback, likeTerm, sex, pagingOptions) {
-		var parameters = {};
-		parameters[appConfig.services.selectAction] = appConfig.services.selectActions.like;
-		parameters[appConfig.services.actionParams.like] = likeTerm;
-		parameters[appConfig.services.actionParams.sex] = sex;
-		pagingUtils.setPagingParameters(parameters, pagingOptions);	
-		dataService.dataConnection({
-			servlet : animalServlet,
-			parameters : parameters,
-			callback : {
-				success : callback
-			}
-		});
-	};
+      newDataService.httpGet(URLS.getLike, parameters, onSuccess);
+    };
 
-	var getFemaleAnimalsLike = function(callback, likeTerm, pagingOptions) {
-		_getSexFilteredAnimalsLike(callback, likeTerm, appConfig.services.actionParamsValues.sex.female, pagingOptions);
-	};
+    var _getSexFilteredAnimalsLike = function(successCallback, likeTerm, sex, pagingOptions) {
+      var parameters = {};
+      
+      parameters[webApiConfig.webApiParameters.likeFilter] = likeTerm;
+      pagingUtils.newApiSetPagingParameters(parameters, pagingOptions);
 
-	var getMaleAnimalsLike = function(callback, likeTerm, pagingOptions) {
-		_getSexFilteredAnimalsLike(callback, likeTerm, appConfig.services.actionParamsValues.sex.male, pagingOptions);
-	};
+      var onSuccess = function(data) {
+        var metadata = pagingUtils.buildPagingMetadata(
+          data[webApiConfig.webApiResponseKeys.pagingInfo], ANIMAL_NUMBER_KEY);
+        successCallback(data.animals, metadata);
+      };
 
-	var getAnimals = function(callback, pagingOptions) {
-		var parameters = {};
-		parameters[appConfig.services.selectAction] = appConfig.services.selectActions.all;
-		pagingUtils.setPagingParameters(parameters, pagingOptions);	
-		dataService.dataConnection({
-			servlet : animalServlet,
-			parameters : parameters,
-			callback : {
-				success : callback
-			}
-		});
-	};
+      var url = sex === FEMALE_ANIMAL_FILTER ? URLS.getFemaleLike : URLS.getMaleLike;
 
-	var getAnimalById = function(callback, animalId) {
-		var parameters = {};
-		parameters[appConfig.services.selectAction] = appConfig.services.selectActions.id;
-		parameters[appConfig.services.actionParams.id] = animalId;
-		dataService.dataConnection({
-			servlet : animalServlet,
-			parameters : parameters,
-			callback : {
-				success : callback
-			}
-		});
+      newDataService.httpGet(url, parameters, onSuccess);
+    };
 
-	};
+    var getFemaleAnimalsLike = function(callback, likeTerm, pagingOptions) {
+      _getSexFilteredAnimalsLike(callback, likeTerm, FEMALE_ANIMAL_FILTER, pagingOptions);
+    };
 
-	var _getStoreDataParameters = function(animal) {
-		return {
-			animal : animal
-		};
-	};
+    var getMaleAnimalsLike = function(callback, likeTerm, pagingOptions) {
+      _getSexFilteredAnimalsLike(callback, likeTerm, MALE_ANIMAL_FILTER, pagingOptions);
+    };
 
-	var saveAnimal = function(animal, successCallback, errCallback) {
-		var parameters = _getStoreDataParameters(animal);
-		dataService.postData({
-			servlet : animalServlet,
-			parameters : parameters,
-			callback : {
-				success : successCallback,
-				error : errCallback
-			}
-		});
-	};
+    var getAnimalById = function(successCallback, animalId) {
+      var parameters = {};
+      var url = URLS.getById + animalId;
+      newDataService.httpGet(url, parameters, successCallback);
+    };
 
-	var updateAnimal = function(animal, successCallback, errCallback) {
-		dataService.putData({
-			servlet : animalServlet,
-			resourceId : animal.id,
-			data : animal,
-			callback : {
-				success : successCallback,
-				error : errCallback
-			}
-		});
-	};
+    var saveAnimal = function(animal, successCallback, errCallback) {
+      newDataService.httpPost(URLS.create, animal, successCallback, errCallback);
+    };
 
-	var removeAnimal = function(animal, successCallback, errCallback) {
-		dataService.deleteData({
-			servlet : animalServlet,
-			resourceId : animal.id,
-			callback : {
-				success : successCallback,
-				error : errCallback
-			}
-		});
-	};
+    var updateAnimal = function(animal, successCallback, errCallback) {
+      var url = URLS.update + animal.id;
+      newDataService.httpPut(url, animal, successCallback, errCallback);
+    };
 
-	var getBasicAnimal = function(id, animalNumber){
-		return {
-			id : id,
-			number : animalNumber
-		};
-	};
+    var uploadAnimal = function(data, successCallback, errCallback) {
+      var url = URLS.upload;
+      newDataService.httpPostWithHeaderContentType(url, data, successCallback, errCallback);
+    };    
 
-	return {
-		getFullAnimalsLike : getFullAnimalsLike,
-		getFemaleAnimalsLike : getFemaleAnimalsLike,
-		getMaleAnimalsLike : getMaleAnimalsLike,
-		getAnimalsLike : getAnimalsLike,
-		getAnimals : getAnimals,
-		getAnimalById : getAnimalById,
-		getAssessedAnimalsLike : getAssessedAnimalsLike,
-		saveAnimal : saveAnimal,
-		updateAnimal : updateAnimal,
-		removeAnimal : removeAnimal, 
-		getBasicAnimal : getBasicAnimal
-	};
-}]);
+    var removeAnimal = function(animal, successCallback, errCallback) {
+      var url = URLS.delete + animal.id;
+      newDataService.httpDelete(url, successCallback, errCallback);      
+    };
+
+    var getBasicAnimal = function(id, animalNumber) {
+      return {
+        id: id,
+        number: animalNumber
+      };
+    };
+
+    return {
+      getFemaleAnimalsLike: getFemaleAnimalsLike,
+      getMaleAnimalsLike: getMaleAnimalsLike,
+      getAnimalsLike: getAnimalsLike,
+      getAnimalById: getAnimalById,
+      saveAnimal: saveAnimal,
+      updateAnimal: updateAnimal,
+      removeAnimal: removeAnimal,
+      getBasicAnimal: getBasicAnimal,
+      uploadAnimal : uploadAnimal
+    };
+  }
+]);

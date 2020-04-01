@@ -1,8 +1,8 @@
 package uk.gov.phe.erdst.sc.awag.dao.assessment;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -22,14 +22,15 @@ import uk.gov.phe.erdst.sc.awag.dao.study.StudyDaoImplTest;
 import uk.gov.phe.erdst.sc.awag.datamodel.Assessment;
 import uk.gov.phe.erdst.sc.awag.datamodel.AssessmentScore;
 import uk.gov.phe.erdst.sc.awag.datamodel.AssessmentTemplate;
-import uk.gov.phe.erdst.sc.awag.exceptions.AWAssessmentCreationException;
 import uk.gov.phe.erdst.sc.awag.exceptions.AWNoSuchEntityException;
+import uk.gov.phe.erdst.sc.awag.exceptions.AWSeriousException;
 import uk.gov.phe.erdst.sc.awag.shared.test.AssessmentProvider;
 import uk.gov.phe.erdst.sc.awag.shared.test.TestConstants;
 import uk.gov.phe.erdst.sc.awag.utils.AssessmentBasedTestsUtils;
 import uk.gov.phe.erdst.sc.awag.utils.GlassfishTestsHelper;
 
-@Test(groups = {TestConstants.TESTNG_CONTAINER_TESTS_GROUP})
+@Test(
+    groups = {TestConstants.TESTNG_CONTAINER_TESTS_GROUP, TestConstants.TESTNG_CONTAINER_ASSESSMENT_IMPORT_TESTS_GROUP})
 public class AssessmentDaoImplTest
 {
     private static final String DATE_C = "2014-08-15T00:00:00.000Z";
@@ -56,8 +57,8 @@ public class AssessmentDaoImplTest
         mAssessmentDao = (AssessmentDao) GlassfishTestsHelper.lookupMultiInterface("AssessmentDaoImpl",
             AssessmentDao.class);
 
-        mAssessmentTemplateDao = (AssessmentTemplateDao) GlassfishTestsHelper.lookupMultiInterface(
-            "AssessmentTemplateDaoImpl", AssessmentTemplateDao.class);
+        mAssessmentTemplateDao = (AssessmentTemplateDao) GlassfishTestsHelper
+            .lookupMultiInterface("AssessmentTemplateDaoImpl", AssessmentTemplateDao.class);
     }
 
     @AfterMethod
@@ -126,26 +127,28 @@ public class AssessmentDaoImplTest
 
         Assert.assertNull(prevAssessment);
 
-        for (int i = 0; i < ASSESSMENTS_IN_GET_PREV_ASSESSMENT_TEST; i++)
-        {
-            Assessment assessment = createDefaultAssessment();
-            mAssessmentDao.store(assessment);
-        }
-        Collection<Assessment> assessments = mAssessmentDao.getAssessments(null, null);
-        Assert.assertEquals(assessments.size(), ASSESSMENTS_IN_GET_PREV_ASSESSMENT_TEST);
+        String dateA = "2014-02-01T00:00:00.000Z";
+        String dateB = "2014-02-02T00:00:00.000Z";
 
-        List<Long> ids = new ArrayList<Long>(ASSESSMENTS_IN_GET_PREV_ASSESSMENT_TEST);
-        for (Assessment a : assessments)
-        {
-            ids.add(a.getId());
-        }
-        Collections.sort(ids);
-        Long expectedId = ids.get(ids.size() - 1);
+        // B is created first, date order matters.
+
+        Assessment assessmentB = createDefaultAssessment();
+        assessmentB.setDate(dateB);
+        mAssessmentDao.store(assessmentB);
+
+        Assessment assessmentA = createDefaultAssessment();
+        assessmentA.setDate(dateA);
+        mAssessmentDao.store(assessmentA);
+
+        Collection<Assessment> testAssessments = Arrays.asList(assessmentA, assessmentB);
+
+        Collection<Assessment> dbAssessments = mAssessmentDao.getAssessments(null, null);
+        Assert.assertEquals(dbAssessments.size(), testAssessments.size());
 
         prevAssessment = mAssessmentDao.getPreviousAssessment(AnimalDaoImplTest.INITIAL_ANIMAL_1_ID);
 
         Assert.assertNotNull(prevAssessment);
-        Assert.assertEquals(prevAssessment.getId(), expectedId);
+        Assert.assertEquals(prevAssessment.getId(), assessmentB.getId());
     }
 
     @Test
@@ -178,14 +181,18 @@ public class AssessmentDaoImplTest
         Assessment assessment = mAssessmentDao.getPreviousAssessmentByDate(animalId, dateC, ids.get(dateC));
         Assert.assertEquals(assessment.getDate(), dateB);
 
-        assessment = createDefaultAssessment();
-        assessment.setDate(dateB);
+        Assessment assessmentWithDateB = createDefaultAssessment();
+        assessmentWithDateB.setDate(dateB);
 
-        mAssessmentDao.store(assessment);
-        final Long expectedId = assessment.getId();
+        mAssessmentDao.store(assessmentWithDateB);
 
-        Assert.assertEquals(mAssessmentDao.getPreviousAssessmentByDate(animalId, dateC, ids.get(dateC)).getId(),
-            expectedId);
+        prevAssessment = mAssessmentDao.getPreviousAssessmentByDate(animalId, dateC, ids.get(dateC));
+
+        // It's not possible to predict which assessment will be returned if they have the same
+        // date. The system currently doesn't fully support multiple assessments per day.
+        List<Long> possibleIds = Arrays.asList(assessmentWithDateB.getId(), ids.get(dateB));
+
+        Assert.assertTrue(possibleIds.contains(prevAssessment.getId()));
     }
 
     @Test
@@ -472,7 +479,20 @@ public class AssessmentDaoImplTest
         // CS:ON
     }
 
-    private Assessment createDefaultAssessment() throws AWNoSuchEntityException, AWAssessmentCreationException
+    @Test
+    public void testUploadAssessmentTemplate() throws AWNoSuchEntityException
+    {
+        final String expectedUploadSuffixHeaders[] = new String[] {"parameter-1-factor-scored", "parameter-1-comment",
+                "parameter-2-factor-scored", "parameter-2-comment"};
+
+        // CS:OFF: MagicNumber
+        final String actualUploadSuffixHeaders[] = mAssessmentTemplateDao
+            .getAssessmentTemplateSuffixUploadHeaders(TestConstants.TEST_ASSESSMENT_TEMPLATE_3_ID);
+        Assert.assertEquals(actualUploadSuffixHeaders, expectedUploadSuffixHeaders);
+        // CS:ON
+    }
+
+    private Assessment createDefaultAssessment() throws AWNoSuchEntityException, AWSeriousException
     {
         AssessmentTemplate template = mAssessmentTemplateDao.getEntityById(TestConstants.TEST_ASSESSMENT_TEMPLATE_ID);
         return mAssessmentProvider.createAssessment(template);

@@ -1,5 +1,7 @@
 package uk.gov.phe.erdst.sc.awag.shared.test;
 
+import java.io.File;
+
 public final class TestConstants
 {
     // TestNG group names correspond to Maven build properties
@@ -9,6 +11,11 @@ public final class TestConstants
     public static final String TESTNG_CONTAINER_STORE_TEST_GROUP = "store";
     public static final String TESTNG_CONTAINER_UPDATE_TEST_GROUP = "update";
     public static final String TESTNG_CONTAINER_REMOVE_TEST_GROUP = "remove";
+
+    public static final String TESTNG_SOURCE_TESTS_GROUP = "container-source-based"; // TODO review names
+    public static final String TESTNG_CONTAINER_UPLOAD_TESTS_GROUP = "container-upload-based";
+    public static final String TESTNG_CONTAINER_ANIMAL_IMPORT_TESTS_GROUP = "container-animal-import-based";
+    public static final String TESTNG_CONTAINER_ASSESSMENT_IMPORT_TESTS_GROUP = "container-assessment-import-based";
 
     public static final int RETRIEVE_PRIORITY = 0;
     public static final int STORE_PRIORITY = 1;
@@ -23,6 +30,11 @@ public final class TestConstants
     public static final String TEST_STUDY_NAME = "Test study";
 
     public static final Long TEST_ASSESSMENT_TEMPLATE_ID = 10000L;
+    public static final Long TEST_ASSESSMENT_TEMPLATE_3_ID = 10002L;
+
+    public static final String INITIAL_USER_1_NAME = "User 1";
+    public static final String INITIAL_USER_2_NAME = "User 2";
+    public static final Long INITIAL_IMPORT_ANIMAL_HEADER_ID = 2L;
 
     // CS:OFF: LineLength
     public static final String DUMMY_ASSESSMENT_RAW_DATA = "{'id':-1,'animalId':10000,'reason':'Reason 1','date':'2014-08-14T00:00:00.000Z','animalHousing':'Housing 1','performedBy':'User 1','score':{'10000':{'10000':{'score':6,'isIgnored':false},'10001':{'score':6,'isIgnored':false},'10002':{'score':6,'isIgnored':false},'10003':{'score':6,'isIgnored':false}}},'averageScores':{'10000':6},'parameterComments':{'10000':'Physical parameter comments'}}";
@@ -72,8 +84,9 @@ public final class TestConstants
     public static final String DUMMY_NEW_PARAMETER_WITH_FACTORS_RAW_DATA = "{'parameterId':10000, 'parameterName':'Parameter 1', 'parameterFactors':[{'factorId': 10000,'factorName':'Factor 1'}]}";
     public static final String DUMMY_NEW_PARAMETER_RAW_DATA = "{'parameterId':10000, 'parameterName':'Parameter 1', 'parameterFactors':[]}";
 
-    // CS:ON
+    public static final String UPLOAD_TEST_DATA_FOLDER = System.getProperty("user.dir") + File.separator + "test-data";
 
+    // CS:ON
     private TestConstants()
     {
     }

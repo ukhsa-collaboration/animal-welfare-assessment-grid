@@ -12,10 +12,10 @@ import org.testng.annotations.BeforeClass;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 
-import uk.gov.phe.erdst.sc.awag.datamodel.client.AnimalClientData;
-import uk.gov.phe.erdst.sc.awag.datamodel.client.StudyClientData;
-import uk.gov.phe.erdst.sc.awag.datamodel.client.StudyGroupClientData;
 import uk.gov.phe.erdst.sc.awag.shared.test.TestConstants;
+import uk.gov.phe.erdst.sc.awag.webapi.request.AnimalClientData;
+import uk.gov.phe.erdst.sc.awag.webapi.request.StudyClientData;
+import uk.gov.phe.erdst.sc.awag.webapi.request.StudyGroupClientData;
 
 @Test(groups = {TestConstants.TESTNG_UNIT_TESTS_GROUP})
 public class StudyValidationTest

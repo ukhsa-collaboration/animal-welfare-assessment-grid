@@ -12,10 +12,8 @@ import org.testng.annotations.Test;
 
 import uk.gov.phe.erdst.sc.awag.dao.ActivityLogDao;
 import uk.gov.phe.erdst.sc.awag.datamodel.ActivityLog;
-import uk.gov.phe.erdst.sc.awag.datamodel.response.ResponsePayload;
 import uk.gov.phe.erdst.sc.awag.exceptions.AWNonUniqueException;
-import uk.gov.phe.erdst.sc.awag.service.logging.ActivityLogger;
-import uk.gov.phe.erdst.sc.awag.service.logging.LoggedUser;
+import uk.gov.phe.erdst.sc.awag.service.activitylogging.LoggedUser;
 import uk.gov.phe.erdst.sc.awag.shared.test.LoggedMethodsClass;
 import uk.gov.phe.erdst.sc.awag.shared.test.TestConstants;
 import uk.gov.phe.erdst.sc.awag.utils.Constants;
@@ -56,16 +54,6 @@ public class LoggedActivityTest
         GlassfishTestsHelper.onTestFinished();
     }
 
-    @Test
-    public void testLoggedMethodNoResponsePayload() throws Exception
-    {
-        final long preMethod = System.currentTimeMillis();
-        mLoggedMethodsInstance.loggedMethodNoResponsePayload(mLoggedUser);
-        final long pastMethod = System.currentTimeMillis();
-
-        assertTest(preMethod, pastMethod, LoggedMethodsClass.LOGGED_METHOD_NO_RESPONSE_PAYLOAD);
-    }
-
     // CS:OFF: IllegalCatch
     @Test(expectedExceptions = {IllegalStateException.class})
     public void testLoggedMethodMissingLoggedUser() throws Throwable
@@ -96,32 +84,13 @@ public class LoggedActivityTest
     // CS:ON
 
     @Test
-    public void testLoggedMethodWithResponsePayloadSuccess() throws Exception
+    public void testLoggedMethodWithResponseSuccess() throws Exception
     {
-        ResponsePayload responsePayload = new ResponsePayload();
-
         final long preMethod = System.currentTimeMillis();
-        mLoggedMethodsInstance.loggedMethodWithResponsePayload(responsePayload, mLoggedUser);
+        mLoggedMethodsInstance.loggedMethodWithResponse(mLoggedUser);
         final long pastMethod = System.currentTimeMillis();
 
-        String expectedMsg = LoggedMethodsClass.LOGGED_METHOD_WITH_RESPONSE_PAYLOAD
-            + ActivityLogger.ACTION_MSG_SEPARATOR + ActivityLogger.ACTION_SUCCESSFUL;
-
-        assertTest(preMethod, pastMethod, expectedMsg);
-    }
-
-    @Test
-    public void testLoggedMethodWithResponsePayloadFailure() throws Exception
-    {
-        ResponsePayload responsePayload = new ResponsePayload();
-        responsePayload.addError("");
-
-        final long preMethod = System.currentTimeMillis();
-        mLoggedMethodsInstance.loggedMethodWithResponsePayload(responsePayload, mLoggedUser);
-        final long pastMethod = System.currentTimeMillis();
-
-        String expectedMsg = LoggedMethodsClass.LOGGED_METHOD_WITH_RESPONSE_PAYLOAD
-            + ActivityLogger.ACTION_MSG_SEPARATOR + ActivityLogger.ACTION_FAILED;
+        String expectedMsg = LoggedMethodsClass.LOGGED_METHOD_WITH_RESPONSE;
 
         assertTest(preMethod, pastMethod, expectedMsg);
     }
@@ -133,8 +102,7 @@ public class LoggedActivityTest
         mLoggedMethodsInstance.loggedMethodThrowsException(mLoggedUser);
         final long pastMethod = System.currentTimeMillis();
 
-        String expectedMsg = LoggedMethodsClass.LOGGED_METHOD_THROWS_EXCEPTION + ActivityLogger.ACTION_MSG_SEPARATOR
-            + LoggedMethodsClass.THROWN_EXCEPTION_MSG;
+        String expectedMsg = LoggedMethodsClass.LOGGED_METHOD_THROWS_EXCEPTION;
 
         assertTest(preMethod, pastMethod, expectedMsg);
     }

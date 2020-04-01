@@ -9,8 +9,12 @@ import uk.gov.phe.erdst.sc.awag.datamodel.AssessmentScore;
 import uk.gov.phe.erdst.sc.awag.datamodel.Factor;
 import uk.gov.phe.erdst.sc.awag.datamodel.FactorScored;
 import uk.gov.phe.erdst.sc.awag.datamodel.ParameterScore;
-import uk.gov.phe.erdst.sc.awag.datamodel.client.AssessmentClientData;
-import uk.gov.phe.erdst.sc.awag.datamodel.client.AssessmentClientFactor;
+import uk.gov.phe.erdst.sc.awag.utils.Constants;
+import uk.gov.phe.erdst.sc.awag.webapi.request.AssessmentClientData;
+import uk.gov.phe.erdst.sc.awag.webapi.request.AssessmentClientFactor;
+import uk.gov.phe.erdst.sc.awag.webapi.response.assessment.AssessmentScoreComparisonResultDto;
+import uk.gov.phe.erdst.sc.awag.webapi.response.assessment.AssessmentScoreComparisonResultDto.FactorComparison;
+import uk.gov.phe.erdst.sc.awag.webapi.response.assessment.AssessmentScoreComparisonResultDto.ParameterComparison;
 
 public final class AssessmentScoreUtils
 {
@@ -18,33 +22,45 @@ public final class AssessmentScoreUtils
     {
     }
 
-    public static boolean isAssessmentScoreEqual(AssessmentScore assessmentScore, AssessmentClientData clientData)
+    public static AssessmentScoreComparisonResultDto isAssessmentScoreEqual(AssessmentScore assessmentScore,
+        AssessmentClientData clientData, ParametersOrdering parametersOrdering)
     {
         Collection<ParameterScore> paramsScored = assessmentScore.getParametersScored();
 
         Map<String, ParameterScore> paramsScoredMap = convertParametersScoredToMap(paramsScored);
 
-        return isParametersScoredEqual(paramsScoredMap, clientData);
+        AssessmentScoreComparisonResultDto result = new AssessmentScoreComparisonResultDto();
+
+        compareParametersScored(paramsScoredMap, clientData, result, parametersOrdering);
+
+        setScoresEqualityFlags(result);
+
+        return result;
     }
 
-    private static boolean isParametersScoredEqual(Map<String, ParameterScore> parametersScoredMap,
-        AssessmentClientData clientData)
+    private static void compareParametersScored(Map<String, ParameterScore> parametersScoredMap,
+        AssessmentClientData clientData, AssessmentScoreComparisonResultDto result,
+        ParametersOrdering parametersOrdering)
     {
+        for (Long parameterId : parametersOrdering.getParameterIdList())
+        {
+            result.addParameter(parameterId, Constants.EMPTY_STRING);
+        }
+
         for (Entry<String, Map<String, AssessmentClientFactor>> clientParameterEntry : clientData.score.entrySet())
         {
             ParameterScore parameterScore = parametersScoredMap.get(clientParameterEntry.getKey());
-            if (!isParameterScoreEqual(parameterScore, clientParameterEntry.getValue()))
-            {
-                return false;
-            }
+            Long parameterId = parameterScore.getParameterScored().getId();
+            String parameterName = parameterScore.getParameterScored().getName();
 
+            result.addParameter(parameterId, parameterName);
+
+            compareParameterScore(parameterScore, clientParameterEntry.getValue(), result);
         }
-
-        return true;
     }
 
-    private static boolean isParameterScoreEqual(ParameterScore parameterScore,
-        Map<String, AssessmentClientFactor> clientFactorsEntry)
+    private static void compareParameterScore(ParameterScore parameterScore,
+        Map<String, AssessmentClientFactor> clientFactorsEntry, AssessmentScoreComparisonResultDto result)
     {
         Map<String, FactorScored> factorsScoredMap = convertFactorsScoredToMap(
             parameterScore.getScoringFactorsScored());
@@ -52,13 +68,15 @@ public final class AssessmentScoreUtils
         for (Entry<String, AssessmentClientFactor> clientFactorEntry : clientFactorsEntry.entrySet())
         {
             FactorScored scoringFactorScored = factorsScoredMap.get(clientFactorEntry.getKey());
-            if (scoringFactorScored.getScore() != clientFactorEntry.getValue().score)
-            {
-                return false;
-            }
-        }
 
-        return true;
+            Long factorId = scoringFactorScored.getScoringFactor().getId();
+            String factorName = scoringFactorScored.getScoringFactor().getName();
+
+            boolean isScoreIdentical = scoringFactorScored.getScore() == clientFactorEntry.getValue().score;
+
+            result.addFactor(parameterScore.getParameterScored().getId(), factorId, factorName,
+                scoringFactorScored.getScore(), clientFactorEntry.getValue().score, isScoreIdentical);
+        }
     }
 
     private static Map<String, ParameterScore> convertParametersScoredToMap(Collection<ParameterScore> parametersScored)
@@ -82,5 +100,27 @@ public final class AssessmentScoreUtils
             factorsScoredMap.put(String.valueOf(scoringFactor.getId()), scoringFactorScored);
         }
         return factorsScoredMap;
+    }
+
+    private static void setScoresEqualityFlags(AssessmentScoreComparisonResultDto comparison)
+    {
+        for (Entry<Long, ParameterComparison> entry : comparison.result.entrySet())
+        {
+            ParameterComparison parameterComparison = entry.getValue();
+            Collection<FactorComparison> factorsComparison = parameterComparison.factorsComparison;
+
+            for (FactorComparison factorComparison : factorsComparison)
+            {
+                if (!factorComparison.isScoreEqual)
+                {
+                    comparison.isAssessmentScoreEqual = false;
+                }
+                else
+                {
+                    parameterComparison.hasAnyEqualFactorScores = true;
+                    comparison.isAnyFactorScoreEqual = true;
+                }
+            }
+        }
     }
 }

@@ -72,6 +72,15 @@ public class AnimalDaoImplTest
         Assert.assertEquals(animal.getId(), INITIAL_ANIMAL_1_ID);
     }
 
+    @Test
+    public void testGetAnimalName() throws AWNoSuchEntityException
+    {
+        Animal animal = mAnimalDao.getAnimal(INITIAL_ANIMAL_1_ID);
+
+        Assert.assertNotNull(animal);
+        Assert.assertEquals(animal.getId(), INITIAL_ANIMAL_1_ID);
+    }
+
     @Test(expectedExceptions = {AWNoSuchEntityException.class})
     public void testGetNonExistentAnimal() throws AWNoSuchEntityException
     {
@@ -135,7 +144,7 @@ public class AnimalDaoImplTest
     }
 
     @Test
-    public void testGetNonDeletedAnimalById()
+    public void testGetNonDeletedAnimalById() throws AWNoSuchEntityException
     {
         Animal animal = mAnimalDao.getNonDeletedAnimalById(INITIAL_ANIMAL_1_ID);
         Assert.assertNotNull(animal);
@@ -143,7 +152,7 @@ public class AnimalDaoImplTest
     }
 
     @Test
-    public void testStoreValidAnimal() throws AWNonUniqueException
+    public void testStoreValidAnimal() throws AWNonUniqueException, AWNoSuchEntityException
     {
         Animal animal = AnimalTestUtils.createAnimal(INITIAL_ANIMAL_5_ID, NEW_ANIMAL_ANIMAL_NUMBER,
             ANIMAL_DATE_OF_BIRTH, new Sex(ANIMAL_SEX_ID), new Source(ANIMAL_SOURCE_ID), new Species(ANIMAL_SPECIES_ID),
@@ -156,9 +165,9 @@ public class AnimalDaoImplTest
     @Test(expectedExceptions = {AWNonUniqueException.class})
     public void testStoreNonUniqueAnimal() throws AWNonUniqueException
     {
-        Animal animal = AnimalTestUtils.createAnimalAutoId(NON_UNIQUE_ANIMAL_NUMBER, ANIMAL_DATE_OF_BIRTH, new Sex(
-            ANIMAL_SEX_ID), new Source(ANIMAL_SOURCE_ID), new Species(ANIMAL_SPECIES_ID), new AssessmentTemplate(
-            ANIMAL_ASSESSMENT_TEMPLATE_ID), null, null, true, true);
+        Animal animal = AnimalTestUtils.createAnimalAutoId(NON_UNIQUE_ANIMAL_NUMBER, ANIMAL_DATE_OF_BIRTH,
+            new Sex(ANIMAL_SEX_ID), new Source(ANIMAL_SOURCE_ID), new Species(ANIMAL_SPECIES_ID),
+            new AssessmentTemplate(ANIMAL_ASSESSMENT_TEMPLATE_ID), null, null, true, true);
         mAnimalDao.store(animal);
     }
 

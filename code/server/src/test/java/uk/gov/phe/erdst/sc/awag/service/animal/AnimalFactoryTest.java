@@ -4,19 +4,22 @@ import org.testng.Assert;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 
+import com.google.inject.Inject;
+
 import uk.gov.phe.erdst.sc.awag.datamodel.Animal;
-import uk.gov.phe.erdst.sc.awag.datamodel.client.AnimalClientData;
+import uk.gov.phe.erdst.sc.awag.datamodel.ImportAnimal;
+import uk.gov.phe.erdst.sc.awag.deprecated.RequestConverter;
 import uk.gov.phe.erdst.sc.awag.service.factory.animal.AnimalFactory;
 import uk.gov.phe.erdst.sc.awag.service.utils.AnimalTestUtils;
-import uk.gov.phe.erdst.sc.awag.servlets.utils.RequestConverter;
 import uk.gov.phe.erdst.sc.awag.shared.test.TestConstants;
 import uk.gov.phe.erdst.sc.awag.utils.GuiceHelper;
-
-import com.google.inject.Inject;
+import uk.gov.phe.erdst.sc.awag.webapi.request.AnimalClientData;
 
 @Test(groups = {TestConstants.TESTNG_UNIT_TESTS_GROUP})
 public class AnimalFactoryTest
 {
+    private static final String TEST_ANIMAL_1 = "Test Animal 1";
+
     @Inject
     private RequestConverter mRequestConverter;
 
@@ -40,9 +43,19 @@ public class AnimalFactoryTest
     }
 
     @Test
+    public void testCreateFromImportAnimal()
+    {
+        // TODO complete test
+        ImportAnimal importAnimal = new ImportAnimal();
+        importAnimal.setAnimalNumber(TEST_ANIMAL_1);
+        Animal animal = mAnimalFactory.create(importAnimal);
+        Assert.assertEquals(animal.getAnimalNumber(), TEST_ANIMAL_1);
+    }
+
+    @Test
     public void testUpdate()
     {
-        Animal blankAnimal = AnimalTestUtils.createAnimal(2L);
+        Animal blankAnimal = AnimalTestUtils.createAnimalWithIdOnly(2L);
 
         AnimalClientData animalDiedClientData = (AnimalClientData) mRequestConverter
             .convert(TestConstants.DUMMY_UPDATE_ANIMAL_RAW_DATA, AnimalClientData.class);

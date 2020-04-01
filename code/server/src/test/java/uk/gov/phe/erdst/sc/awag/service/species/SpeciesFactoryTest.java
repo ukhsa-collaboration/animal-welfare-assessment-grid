@@ -8,11 +8,11 @@ import com.google.inject.Inject;
 
 import uk.gov.phe.erdst.sc.awag.dao.species.SpeciesDaoImplTest;
 import uk.gov.phe.erdst.sc.awag.datamodel.Species;
-import uk.gov.phe.erdst.sc.awag.datamodel.client.SpeciesClientData;
+import uk.gov.phe.erdst.sc.awag.deprecated.RequestConverter;
 import uk.gov.phe.erdst.sc.awag.service.factory.species.SpeciesFactory;
-import uk.gov.phe.erdst.sc.awag.servlets.utils.RequestConverter;
 import uk.gov.phe.erdst.sc.awag.shared.test.TestConstants;
 import uk.gov.phe.erdst.sc.awag.utils.GuiceHelper;
+import uk.gov.phe.erdst.sc.awag.webapi.request.SpeciesClientData;
 
 @Test(groups = {TestConstants.TESTNG_UNIT_TESTS_GROUP})
 public class SpeciesFactoryTest

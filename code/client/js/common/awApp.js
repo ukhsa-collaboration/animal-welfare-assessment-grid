@@ -4,10 +4,10 @@ var awApp = angular.module('awApp', ['ngRoute', 'indexControllers', 'manageUsers
   'assessmentFormControllers', 'existingAssessmentFormControllers', 'graphsControllers', 'exportAssessmentsControllers','manageHousingControllers',
    'manageReasonControllers', 'manageScaleControllers', 'manageStudyControllers', 'manageAnimalControllers', 'aboutControllers', 'activityLogsControllers',
     'manageSpeciesControllers', 'manageSourceControllers', 'manageStudyControllers', 'manageStudyGroupControllers', 'manageAccordionControllers',
-     'dataServices', 'entityServices', 'userAuthServices', 'parameterServices', 'factorServices', 'formServices', 'animalServices', 'reasonServices',
+     'newDataServices', 'userAuthServices', 'parameterServices', 'factorServices', 'formServices', 'animalServices', 'reasonServices',
       'housingServices', 'userServices', 'assessmentServices', 'sexServices', 'speciesServices', 'sourceServices',
        'templateServices', 'studyServices', 'studyGroupServices', 'activityLogServices','ui.bootstrap', 'graphDrawServices', 'formatServices', 'ngTable',
-        'tableServices', 'graphUtilsModule']);
+        'tableServices', 'graphUtilsModule', 'importAssessmentControllers']);
 awApp.config(['$routeProvider',
     function($routeProvider) {
         $routeProvider.when('/main', {
@@ -20,6 +20,8 @@ awApp.config(['$routeProvider',
             templateUrl: 'partials/existing-assessment.html',
         }).when('/graphs', {
             templateUrl: 'partials/graphs.html',
+        }).when('/import-assessments', {
+            templateUrl: 'partials/import-assessments.html',
         }).when('/export-assessments', {
             templateUrl: 'partials/export-assessments.html',
         }).when('/manage-animals', {

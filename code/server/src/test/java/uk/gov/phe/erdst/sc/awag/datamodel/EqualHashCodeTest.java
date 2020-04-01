@@ -5,14 +5,12 @@ import java.util.HashSet;
 import org.testng.Assert;
 import org.testng.annotations.Test;
 
-import uk.gov.phe.erdst.sc.awag.datamodel.Animal;
-import uk.gov.phe.erdst.sc.awag.datamodel.StudyGroup;
-import uk.gov.phe.erdst.sc.awag.datamodel.client.AnimalClientData;
-import uk.gov.phe.erdst.sc.awag.datamodel.client.StudyGroupClientData;
-import uk.gov.phe.erdst.sc.awag.dto.FactorScoredDto;
-import uk.gov.phe.erdst.sc.awag.dto.ParameterScoredDto;
-import uk.gov.phe.erdst.sc.awag.dto.assessment.AssessmentDto;
 import uk.gov.phe.erdst.sc.awag.shared.test.TestConstants;
+import uk.gov.phe.erdst.sc.awag.webapi.request.AnimalClientData;
+import uk.gov.phe.erdst.sc.awag.webapi.request.StudyGroupClientData;
+import uk.gov.phe.erdst.sc.awag.webapi.response.assessment.AssessmentSimpleDto;
+import uk.gov.phe.erdst.sc.awag.webapi.response.factor.FactorScoredDto;
+import uk.gov.phe.erdst.sc.awag.webapi.response.parameter.ParameterScoredDto;
 
 @Test(groups = {TestConstants.TESTNG_UNIT_TESTS_GROUP})
 public class EqualHashCodeTest
@@ -92,9 +90,9 @@ public class EqualHashCodeTest
     @Test
     private void testAssessmentDto()
     {
-        HashSet<AssessmentDto> assessmentDtos = new HashSet<AssessmentDto>();
-        AssessmentDto uniqueAssessmentDto = new AssessmentDto(1L);
-        AssessmentDto nonUniqueAssessmentDto = new AssessmentDto(1L);
+        HashSet<AssessmentSimpleDto> assessmentDtos = new HashSet<AssessmentSimpleDto>();
+        AssessmentSimpleDto uniqueAssessmentDto = new AssessmentSimpleDto(1L);
+        AssessmentSimpleDto nonUniqueAssessmentDto = new AssessmentSimpleDto(1L);
         assessmentDtos.add(uniqueAssessmentDto);
         assessmentDtos.add(nonUniqueAssessmentDto);
         int expectedNoAssessmentDtos = 1;

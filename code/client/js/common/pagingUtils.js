@@ -1,6 +1,6 @@
-var pagingUtilsModule = angular.module('pagingUtilsModule', ['appConfigModule']);
-pagingUtilsModule.factory('pagingUtils', ['appConfig',
-    function(appConfig) {
+var pagingUtilsModule = angular.module('pagingUtilsModule', ['appConfigModule', 'webApiConfigModule']);
+pagingUtilsModule.factory('pagingUtils', ['appConfig', 'webApiConfig',
+    function(appConfig, webApiConfig) {
 
         var that = this;
 
@@ -14,21 +14,35 @@ pagingUtilsModule.factory('pagingUtils', ['appConfig',
             }
         };
 
-
-        this.setOffset = function(parameters, pagingOptions){
-            if(pagingOptions){
-                parameters[appConfig.services.pagingParams.offset] = pagingOptions[appConfig.services.pagingParams.offset];
+        var newApiSetPagingParameters = function(parameters, pagingOptions, pageable) {
+            if(pageable===false){
+                return;
             } else {
-                parameters[appConfig.services.pagingParams.offset] = appConfig.config.defaultPageOffsetStart;
+                that.setOffset(parameters, pagingOptions);
+                that.setLimit(parameters, pagingOptions);
             }
         };
 
+        var buildPagingMetadata = function(pagingInfo, entityNameKey, entityIdKey) {
+            var metadata = pagingInfo;
+            metadata[appConfig.config.entityNameKey] = entityNameKey;
+            metadata[appConfig.config.entityIdKey] = entityIdKey;
+            return metadata;
+        };
+
+        this.setOffset = function(parameters, pagingOptions){
+            if(pagingOptions){
+                parameters[webApiConfig.webApiParameters.paging.offset] = pagingOptions[webApiConfig.webApiParameters.paging.offset];
+            } else {
+                parameters[webApiConfig.webApiParameters.paging.offset] = appConfig.config.defaultPageOffsetStart;
+            }
+        };
 
         this.setLimit = function(parameters, pagingOptions){
             if (pagingOptions) {
-                parameters[appConfig.services.pagingParams.limit] = pagingOptions[appConfig.services.pagingParams.limit];
+                parameters[webApiConfig.webApiParameters.paging.limit] = pagingOptions[webApiConfig.webApiParameters.paging.limit];
             } else {
-                parameters[appConfig.services.pagingParams.limit] = appConfig.config.defaultPageSize;
+                parameters[webApiConfig.webApiParameters.paging.limit] = appConfig.config.defaultPageSize;
             }
         };
 
@@ -41,7 +55,9 @@ pagingUtilsModule.factory('pagingUtils', ['appConfig',
         };
 
         return {
-            setPagingParameters: setPagingParameters
+            setPagingParameters: setPagingParameters,
+            newApiSetPagingParameters: newApiSetPagingParameters,
+            buildPagingMetadata: buildPagingMetadata
         };
     }
 ]);

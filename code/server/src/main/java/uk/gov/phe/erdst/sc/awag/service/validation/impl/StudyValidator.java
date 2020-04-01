@@ -10,12 +10,12 @@ import javax.ejb.Stateless;
 import javax.validation.ConstraintValidator;
 import javax.validation.ConstraintValidatorContext;
 
-import uk.gov.phe.erdst.sc.awag.datamodel.client.AnimalClientData;
-import uk.gov.phe.erdst.sc.awag.datamodel.client.StudyClientData;
-import uk.gov.phe.erdst.sc.awag.datamodel.client.StudyGroupClientData;
 import uk.gov.phe.erdst.sc.awag.service.validation.annotations.ValidStudy;
 import uk.gov.phe.erdst.sc.awag.service.validation.utils.ValidationConstants;
 import uk.gov.phe.erdst.sc.awag.utils.Constants;
+import uk.gov.phe.erdst.sc.awag.webapi.request.AnimalClientData;
+import uk.gov.phe.erdst.sc.awag.webapi.request.StudyClientData;
+import uk.gov.phe.erdst.sc.awag.webapi.request.StudyGroupClientData;
 
 @Stateless
 public class StudyValidator implements ConstraintValidator<ValidStudy, StudyClientData>

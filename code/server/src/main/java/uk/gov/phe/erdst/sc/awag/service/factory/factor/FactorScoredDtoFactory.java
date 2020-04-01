@@ -4,7 +4,7 @@ import javax.ejb.Stateless;
 
 import uk.gov.phe.erdst.sc.awag.datamodel.Factor;
 import uk.gov.phe.erdst.sc.awag.datamodel.FactorScored;
-import uk.gov.phe.erdst.sc.awag.dto.FactorScoredDto;
+import uk.gov.phe.erdst.sc.awag.webapi.response.factor.FactorScoredDto;
 
 @Stateless
 public class FactorScoredDtoFactory

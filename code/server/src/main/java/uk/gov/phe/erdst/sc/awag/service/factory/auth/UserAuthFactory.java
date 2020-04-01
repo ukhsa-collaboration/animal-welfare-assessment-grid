@@ -10,8 +10,8 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import uk.gov.phe.erdst.sc.awag.datamodel.UserAuth;
-import uk.gov.phe.erdst.sc.awag.datamodel.client.UserAuthClientData;
 import uk.gov.phe.erdst.sc.awag.utils.Constants;
+import uk.gov.phe.erdst.sc.awag.webapi.request.UserAuthClientData;
 
 @Stateless
 public class UserAuthFactory

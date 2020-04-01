@@ -27,6 +27,8 @@ import com.google.gson.annotations.SerializedName;
                 + "WHERE s.mIsDeleted = false AND LOWER(s.mName) LIKE :like ORDER BY LENGTH(s.mName) ASC, s.mName ASC"),
         @NamedQuery(name = Species.Q_FIND_COUNT_ALL_NON_DELETED_LIKE_ORDERED,
             query = "SELECT COUNT(s) FROM Species s " + "WHERE s.mIsDeleted = false AND LOWER(s.mName) LIKE :like"),
+        @NamedQuery(name = Species.Q_FIND_SPECIES_BY_NAME,
+            query = "SELECT s FROM Species s WHERE s.mName = :speciesName"),
         @NamedQuery(name = Species.Q_DELETE_SPECIES_BY_ID, query = "DELETE FROM Species s WHERE s.mId = :id")})
 public class Species implements Serializable, EntitySelect
 {
@@ -35,6 +37,7 @@ public class Species implements Serializable, EntitySelect
     public static final String Q_FIND_COUNT_ALL_NON_DELETED = "findCountAllSpeciesNonDeleted";
     public static final String Q_FIND_ALL_NON_DELETED_LIKE_ORDERED = "findAllNonDeletedSpeciesLikeOrdered";
     public static final String Q_FIND_COUNT_ALL_NON_DELETED_LIKE_ORDERED = "findCountAllNonDeletedSpeciesLikeOrdered";
+    public static final String Q_FIND_SPECIES_BY_NAME = "findSpeciesByName";
     public static final String Q_DELETE_SPECIES_BY_ID = "deleteSpeciesById";
     private static final long serialVersionUID = 1L;
 

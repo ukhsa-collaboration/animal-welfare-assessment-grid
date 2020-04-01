@@ -26,11 +26,30 @@
 		<class>uk.gov.phe.erdst.sc.awag.datamodel.Parameter</class>
 		<class>uk.gov.phe.erdst.sc.awag.datamodel.Scale</class>
         <class>uk.gov.phe.erdst.sc.awag.datamodel.ActivityLog</class>
+        <class>uk.gov.phe.erdst.sc.awag.datamodel.ImportAnimal</class>
+        <class>uk.gov.phe.erdst.sc.awag.datamodel.ImportAnimalHousing</class>
+        <class>uk.gov.phe.erdst.sc.awag.datamodel.ImportAssessment</class>
+        <class>uk.gov.phe.erdst.sc.awag.datamodel.ImportAssessmentParameterFactorScore</class>
+        <class>uk.gov.phe.erdst.sc.awag.datamodel.ImportAssessmentReason</class>
+        <class>uk.gov.phe.erdst.sc.awag.datamodel.ImportHeader</class>
+        <class>uk.gov.phe.erdst.sc.awag.datamodel.ImportSource</class>
+        <class>uk.gov.phe.erdst.sc.awag.datamodel.ImportSpecy</class>
+        <class>uk.gov.phe.erdst.sc.awag.datamodel.ImportStudy</class>
+        <class>uk.gov.phe.erdst.sc.awag.datamodel.ImportStudyGroup</class>
+        <class>uk.gov.phe.erdst.sc.awag.datamodel.ImportStudyGroupAnimal</class>
+        <class>uk.gov.phe.erdst.sc.awag.datamodel.ImportStudyStudyGroup</class>
+        <class>uk.gov.phe.erdst.sc.awag.datamodel.ImportFactor</class>
+        <class>uk.gov.phe.erdst.sc.awag.datamodel.ImportParameter</class>
+        <class>uk.gov.phe.erdst.sc.awag.datamodel.AssessmentTemplateParameter</class>
+        <class>uk.gov.phe.erdst.sc.awag.datamodel.AssessmentTemplateParameterPK</class>
+        <class>uk.gov.phe.erdst.sc.awag.datamodel.ImportScale</class>
+        <class>uk.gov.phe.erdst.sc.awag.datamodel.ImportTemplate</class>
+        <class>uk.gov.phe.erdst.sc.awag.datamodel.ImportTemplateParameter</class>
+        <class>uk.gov.phe.erdst.sc.awag.datamodel.ImportTemplateParameterFactor</class>
 		<!-- <properties>
 			<property name="eclipselink.jdbc.batch-writing" value="JDBC" />
-			<property name="eclipselink.ddl-generation.output-mode"
-				value="both" />
-			<property name="eclipselink.logging.level" value="FINEST" /> 
+			<property name="eclipselink.jdbc.batch-writing.size" value="10" />
+			<property name="eclipselink.logging.level" value="FINEST" />
 		</properties> -->
 	</persistence-unit>
 	<persistence-unit name="awauth">

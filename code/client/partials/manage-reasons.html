@@ -1,53 +1,139 @@
-<h1 class="page-header text-center">Reason Management</h1>
-<div class="container-fluid" ng-controller="MngmtReasonManagementCtrl as reasonMngmtCtrl">
-    <form name="reasonManagementForm" class="form-horizontal">
-        <div class="form-group" ng-controller="MngmtReasonSelectionCtrl as reasonCtrl">
-            <label for="{{reasonCtrl.selectId}}" class="col-xs-3 control-label">Reason name: </label>
-            <div ng-class="{'col-xs-7': reasonMngmtCtrl.isNewReason, 'col-xs-6': !reasonMngmtCtrl.isNewReason}">
-                <aw-search-select2 class="form-control" elem-id="{{reasonCtrl.selectId}}" controller="reasonCtrl"></aw-search-select2>
+<h1 class="page-header text-center">
+    Reason Management
+</h1>
+
+<div class="container-fluid">
+
+    <accordion close-others="false">
+
+        <accordion-group is-open="true">
+
+            <accordion-heading>
+                Reason management
+                <i class="pull-right glyphicon" ng-class="{'glyphicon-chevron-down': true, 'glyphicon-chevron-right': !false}"></i>
+            </accordion-heading>
+
+            <div ng-controller="MngmtReasonManagementCtrl as reasonMngmtCtrl">
+
+                <form name="reasonManagementForm" class="form-horizontal">
+
+                    <div class="form-group" ng-controller="MngmtReasonSelectionCtrl as reasonCtrl">
+                        <label for="{{reasonCtrl.selectId}}" class="col-xs-3 control-label">Reason name: </label>
+                        <div ng-class="{'col-xs-7': reasonMngmtCtrl.isNewReason, 'col-xs-6': !reasonMngmtCtrl.isNewReason}">
+                            <aw-search-select2 class="form-control" elem-id="{{reasonCtrl.selectId}}" controller="reasonCtrl"></aw-search-select2>
+                        </div>
+                        <div ng-click="reasonMngmtCtrl.startUpdate()" ng-hide="reasonMngmtCtrl.isNewReason">
+                            <button type="button" class="btn btn-default btn-sm">
+                                <i class="glyphicon glyphicon-edit"></i>
+                            </button>
+                        </div>
+                    </div>
+
+                    <div class="form-group" ng-controller="MngmtReasonSelectionUpdateCtrl as reasonUpdateCtrl" ng-show="reasonMngmtCtrl.isUpdatingReason">
+                        <label for="{{reasonUpdateCtrl.selectId}}" class="col-xs-3 control-label">Update reason name: </label>
+                        <div ng-class="{'col-xs-7': reasonMngmtCtrl.isNewReason, 'col-xs-6': !reasonMngmtCtrl.isNewReason}">
+                            <aw-select2 elem-id="{{reasonUpdateCtrl.selectId}}" controller="reasonUpdateCtrl"></aw-select2>
+                        </div>
+                        <div ng-click="reasonMngmtCtrl.cancelUpdate()">
+                            <button type="button" class="btn btn-default btn-sm">
+                                <i class="glyphicon glyphicon-remove"></i>
+                            </button>
+                        </div>            
+                    </div>    
+
+                    <div class="form-group">
+                        <div class="col-xs-12">
+                            <aw-success-display success="reasonMngmtCtrl.isSuccess"></aw-success-display>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <div class="col-xs-12">
+                            <aw-error-display errors="reasonMngmtCtrl.errors"></aw-error-display>
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <hr />
+                    </div>
+
+                    <div class="row">
+                        <div class="text-center">
+                            <button type="button" class="btn btn-lg btn-success" ng-click="reasonMngmtCtrl.submitReason()" ng-disabled="!reasonMngmtCtrl.isNewReason">
+                                Create
+                            </button>
+                            <button type="button" class="btn btn-lg btn-primary" ng-click="reasonMngmtCtrl.updateReason()" ng-disabled="reasonMngmtCtrl.isNewReason">
+                                Update
+                            </button>
+                            <button type="button" class="btn btn-danger btn-lg" ng-click="reasonMngmtCtrl.clearReason()">
+                                Clear
+                            </button>
+                        </div>
+                    </div>
+                </form>
             </div>
-            <div ng-click="reasonMngmtCtrl.startUpdate()" ng-hide="reasonMngmtCtrl.isNewReason">
-                <button type="button" class="btn btn-default btn-sm">
-                    <i class="glyphicon glyphicon-edit"></i>
-                </button>
+
+        </accordion-group>
+
+        <accordion-group is-open="false">
+
+            <accordion-heading>
+                Upload Reason File management
+                <i class="pull-right glyphicon" ng-class="{'glyphicon-chevron-down': true, 'glyphicon-chevron-right': !false}"></i>
+            </accordion-heading>
+
+            <div ng-controller="MngmtReasonUploadManagementCtrl as reasonUploadMngmtCtrl">
+
+                <form name="reasonManagementUploadForm" class="form-horizontal">
+
+                    <div class="form-group" ng-controller="MngmtReasonUploadCtrl as reasonUploadCtrl">
+
+                        <label for="{{reasonUploadCtrl.uploadId}}" class="col-xs-3 control-label">Upload File: </label>
+
+                        <div class="col-xs-7">
+                            <aw-upload-file elem-id="{{reasonUploadCtrl.uploadId}}" controller="reasonUploadCtrl"></aw-upload-file>
+                        </div>
+
+                    </div>     
+
+                    <div class="form-group">
+
+                        <div class="col-xs-12">
+                            <aw-success-display success="reasonUploadMngmtCtrl.isSuccess"></aw-success-display>
+                        </div>
+
+                    </div>
+
+                    <div class="form-group">
+
+                        <div class="col-xs-12">
+                            <aw-error-display errors="reasonUploadMngmtCtrl.errors"></aw-error-display>
+                        </div>
+
+                    </div>
+                       
+                    <div class="row">
+
+                        <div class="text-center">
+
+                            <button type="button" class="btn btn-lg btn-success" ng-click="reasonUploadMngmtCtrl.uploadReason()" 
+                                    ng-disabled="reasonUploadMngmtCtrl.isFileSelected">
+                                Upload
+                            </button>
+                            <button type="button" class="btn btn-lg btn-danger" ng-click="reasonUploadMngmtCtrl.clearUploadReason()">
+                                Clear
+                            </button>
+
+                        </div>
+
+                    </div>
+
+                </form>
+
             </div>
-        </div>
-        <div class="form-group" ng-controller="MngmtReasonSelectionUpdateCtrl as reasonUpdateCtrl" ng-show="reasonMngmtCtrl.isUpdatingReason">
-            <label for="{{reasonUpdateCtrl.selectId}}" class="col-xs-3 control-label">Update reason name: </label>
-            <div ng-class="{'col-xs-7': reasonMngmtCtrl.isNewReason, 'col-xs-6': !reasonMngmtCtrl.isNewReason}">
-                <aw-select2 elem-id="{{reasonUpdateCtrl.selectId}}" controller="reasonUpdateCtrl"></aw-select2>
-            </div>
-            <div ng-click="reasonMngmtCtrl.cancelUpdate()">
-                <button type="button" class="btn btn-default btn-sm">
-                    <i class="glyphicon glyphicon-remove"></i>
-                </button>
-            </div>            
-        </div>        
-        <div class="form-group">
-            <div class="col-xs-12">
-                <aw-success-display success="reasonMngmtCtrl.isSuccess"></aw-success-display>
-            </div>
-        </div>
-        <div class="form-group">
-            <div class="col-xs-12">
-                <aw-error-display errors="reasonMngmtCtrl.errors"></aw-error-display>
-            </div>
-        </div>
-        <div class="row">
-            <hr />
-        </div>
-        <div class="row">
-            <div class="text-center">
-                <button type="button" class="btn btn-lg btn-success" ng-click="reasonMngmtCtrl.submitReason()" ng-disabled="!reasonMngmtCtrl.isNewReason">
-                    Create
-                </button>
-                <button type="button" class="btn btn-lg btn-primary" ng-click="reasonMngmtCtrl.updateReason()" ng-disabled="reasonMngmtCtrl.isNewReason">
-                    Update
-                </button>
-                <button type="button" class="btn btn-danger btn-lg" ng-click="reasonMngmtCtrl.clearReason()">
-                    Clear
-                </button>
-            </div>
-        </div>
-    </form>
+
+        </accordion-group>        
+
+    </accordion>
+
 </div>

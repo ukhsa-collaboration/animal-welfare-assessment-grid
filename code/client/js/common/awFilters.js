@@ -24,4 +24,8 @@ angular.module('awFilters',[]).filter('orderAbc', function() {
     return function(input) {
         return input ? input : 'UNSPECIFIED';
     };
+}).filter('comparedFactorScoreIgnored', function() {
+    return function(input) {
+        return input > 0 ? input : 'Ignored';
+    };
 });

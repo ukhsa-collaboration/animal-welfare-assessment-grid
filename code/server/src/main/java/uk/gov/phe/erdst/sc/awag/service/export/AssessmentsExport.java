@@ -3,7 +3,7 @@ package uk.gov.phe.erdst.sc.awag.service.export;
 import java.util.ArrayList;
 import java.util.List;
 
-import uk.gov.phe.erdst.sc.awag.dto.assessment.ParametersOrdering;
+import uk.gov.phe.erdst.sc.awag.datamodel.utils.ParametersOrdering;
 
 public class AssessmentsExport
 {

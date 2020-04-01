@@ -13,16 +13,16 @@ import uk.gov.phe.erdst.sc.awag.datamodel.AssessmentTemplate;
 import uk.gov.phe.erdst.sc.awag.datamodel.Factor;
 import uk.gov.phe.erdst.sc.awag.datamodel.Parameter;
 import uk.gov.phe.erdst.sc.awag.datamodel.Scale;
-import uk.gov.phe.erdst.sc.awag.datamodel.client.AssessmentClientData;
-import uk.gov.phe.erdst.sc.awag.datamodel.client.AssessmentClientFactor;
 import uk.gov.phe.erdst.sc.awag.datamodel.utils.AssessmentTemplateUtils;
 import uk.gov.phe.erdst.sc.awag.exceptions.AWNoSuchEntityException;
 import uk.gov.phe.erdst.sc.awag.service.validation.annotations.ValidAssessmentScoreTemplate;
 import uk.gov.phe.erdst.sc.awag.service.validation.utils.ValidationConstants;
+import uk.gov.phe.erdst.sc.awag.webapi.request.AssessmentClientData;
+import uk.gov.phe.erdst.sc.awag.webapi.request.AssessmentClientFactor;
 
 @Stateless
-public class AssessmentScoreTemplateValidator implements
-    ConstraintValidator<ValidAssessmentScoreTemplate, AssessmentClientData>
+public class AssessmentScoreTemplateValidator
+    implements ConstraintValidator<ValidAssessmentScoreTemplate, AssessmentClientData>
 {
     @Inject
     private AssessmentTemplateDao mAssessmentTemplateDao;
@@ -61,13 +61,14 @@ public class AssessmentScoreTemplateValidator implements
     private int validateScoreAgainstTemplate(AssessmentTemplate template, AssessmentClientData clientData,
         ConstraintValidatorContext context, int violations)
     {
-        Map<Parameter, Collection<Factor>> templateData = AssessmentTemplateUtils.getMappedParameterFactors(template
-            .getAssessmentTemplateParameterFactors());
+        Map<Parameter, Collection<Factor>> templateData = AssessmentTemplateUtils
+            .getMappedParameterFactors(template.getAssessmentTemplateParameterFactors());
 
         if (templateData.size() != clientData.score.size())
         {
-            context.buildConstraintViolationWithTemplate(
-                ValidationConstants.ERR_ASSESSMENT_TEMPLATE_PARAMETERS_MISMATCH).addConstraintViolation();
+            context
+                .buildConstraintViolationWithTemplate(ValidationConstants.ERR_ASSESSMENT_TEMPLATE_PARAMETERS_MISMATCH)
+                .addConstraintViolation();
 
             violations++;
             return violations;
@@ -87,13 +88,23 @@ public class AssessmentScoreTemplateValidator implements
                 violations = validateParameterData(entry.getValue(), clientParamData, template.getScale(), context,
                     violations);
             }
+
         }
 
         if (matchedParams != clientData.score.size())
         {
-            context.buildConstraintViolationWithTemplate(
-                ValidationConstants.ERR_ASSESSMENT_TEMPLATE_PARAMETERS_MISMATCH).addConstraintViolation();
+            context
+                .buildConstraintViolationWithTemplate(ValidationConstants.ERR_ASSESSMENT_TEMPLATE_PARAMETERS_MISMATCH)
+                .addConstraintViolation();
 
+            violations++;
+        }
+
+        double sumAverageScores = clientData.averageScores.values().stream().reduce(0D, Double::sum);
+        if (!clientData.isAllowZeroScores && sumAverageScores == 0D)
+        {
+            context.buildConstraintViolationWithTemplate(ValidationConstants.ERR_ASSESSMENT_DISALLOW_AVG_ZERO_SCORING)
+                .addConstraintViolation();
             violations++;
         }
 

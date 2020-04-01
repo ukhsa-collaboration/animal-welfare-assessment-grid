@@ -16,16 +16,17 @@ import com.google.gson.annotations.SerializedName;
 @Entity
 @Table(name = "animal")
 @NamedQueries({@NamedQuery(name = Animal.Q_FIND_ALL, query = "SELECT a FROM Animal a"),
+        @NamedQuery(name = Animal.Q_FIND_ANIMAL_BY_NUMBER,
+            query = "SELECT a FROM Animal a WHERE a.mAnimalNumber = :animalNumber"),
         @NamedQuery(name = Animal.Q_FIND_NON_DELETED_BY_ID,
             query = "SELECT a FROM Animal a WHERE a.mIsDeleted = false AND a.mId = :id"),
-        @NamedQuery(name = Animal.Q_FIND_ALL_DELETED_OR_NOT,
-            query = "SELECT a FROM Animal a WHERE a.mIsDeleted = :isDeleted"),
+        @NamedQuery(name = Animal.Q_FIND_ALL_DELETED_OR_NOT_ORDERED,
+            query = "SELECT a FROM Animal a WHERE a.mIsDeleted = :isDeleted ORDER BY a.mAnimalNumber ASC"),
         @NamedQuery(name = Animal.Q_FIND_COUNT_ALL_DELETED_OR_NOT,
             query = "SELECT COUNT(a) FROM Animal a WHERE a.mIsDeleted = :isDeleted"),
         @NamedQuery(name = Animal.Q_FIND_IN_IDS, query = "SELECT a FROM Animal a WHERE a.mId IN :idList"),
         @NamedQuery(name = Animal.Q_FIND_ANIMAL_ASSESSMENT_TEMPLATE,
             query = "SELECT a.mAssessmentTemplate FROM Animal a WHERE a.mId = :id"),
-        @NamedQuery(name = Animal.Q_DELETE_ANIMAL_BY_ID, query = "DELETE FROM Animal a WHERE a.mId = :id"),
         @NamedQuery(name = Animal.Q_FIND_NON_DELETED_LIKE_ORDERED,
             query = "SELECT a FROM Animal a " + "WHERE a.mIsDeleted = :isDeleted AND LOWER(a.mAnimalNumber)"
                 + " LIKE :like ORDER BY LENGTH(a.mAnimalNumber) ASC, a.mAnimalNumber ASC"),
@@ -40,12 +41,12 @@ import com.google.gson.annotations.SerializedName;
             + "WHERE a.mIsDeleted = :isDeleted AND LOWER(a.mAnimalNumber)" + " LIKE :like AND a.mSex.mName= :sexName")})
 public class Animal implements Serializable, EntitySelect
 {
+    public static final String Q_FIND_ANIMAL_BY_NUMBER = "findAnimalByNumber";
     public static final String Q_FIND_ALL = "findAllAnimals";
-    public static final String Q_FIND_ALL_DELETED_OR_NOT = "findAllDeletedOrNotAnimals";
+    public static final String Q_FIND_ALL_DELETED_OR_NOT_ORDERED = "findAllDeletedOrNotAnimals";
     public static final String Q_FIND_COUNT_ALL_DELETED_OR_NOT = "findCountAllDeletedOrNotAnimals";
     public static final String Q_FIND_IN_IDS = "findAnimalsInIds";
     public static final String Q_FIND_ANIMAL_ASSESSMENT_TEMPLATE = "findAnimalAssessmentTemplate";
-    public static final String Q_DELETE_ANIMAL_BY_ID = "deleteAnimalById";
     public static final String Q_FIND_NON_DELETED_LIKE_ORDERED = "findNonDeletedAnimalsLikeOrdered";
     public static final String Q_FIND_NON_DELETED_BY_ID = "findNonDeletedAnimalById";
     public static final String Q_FIND_COUNT_NON_DELETED_LIKE_ORDERED = "findCountNonDeletedAnimalsLikeOrdered";

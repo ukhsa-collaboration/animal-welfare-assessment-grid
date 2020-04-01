@@ -2,14 +2,13 @@ package uk.gov.phe.erdst.sc.awag.service.validation.utils;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.util.Collection;
+import java.util.List;
 import java.util.Set;
 
-import javax.validation.ConstraintValidatorContext;
 import javax.validation.ConstraintViolation;
-import javax.validation.Validator;
-import javax.ws.rs.HttpMethod;
 
-import uk.gov.phe.erdst.sc.awag.datamodel.response.ResponsePayload;
+import uk.gov.phe.erdst.sc.awag.exceptions.AWInputValidationException;
 import uk.gov.phe.erdst.sc.awag.utils.Constants;
 
 public final class ValidatorUtils
@@ -20,28 +19,101 @@ public final class ValidatorUtils
     {
     }
 
-    // CS:OFF: ReturnCount
-    public static boolean isResourceValid(Long resourceId, String method)
+    public static void validateEntityId(Long id) throws AWInputValidationException
     {
-        if (resourceId == null)
+        if (id == null || id < Constants.MIN_VALID_ID)
         {
-            return false;
-        }
-
-        switch (method)
-        {
-            case HttpMethod.GET:
-            case HttpMethod.PUT:
-            case HttpMethod.DELETE:
-                return resourceId >= Constants.MIN_VALID_ID;
-            case HttpMethod.POST:
-                return resourceId.equals(Constants.UNASSIGNED_ID);
-            default:
-                return false;
+            throw new AWInputValidationException(ValidationConstants.ERR_ID_PARAM);
         }
     }
 
-    // CS:ON
+    public static void validateOptionalEntityId(Long id) throws AWInputValidationException
+    {
+        if (id != null && id < Constants.MIN_VALID_ID)
+        {
+            throw new AWInputValidationException(ValidationConstants.ERR_OPTIONAL_ID_PARAM);
+        }
+    }
+
+    public static void validateDateParameter(String dateParam) throws AWInputValidationException
+    {
+        if (!isDateValid(dateParam))
+        {
+            throw new AWInputValidationException(ValidationConstants.ERR_DATE_PARAM_FORMAT);
+        }
+    }
+
+    public static void validateOptionalDateParameters(String dateFrom, String dateTo) throws AWInputValidationException
+    {
+        if (dateFrom != null && !isDateValid(dateFrom))
+        {
+            throw new AWInputValidationException(ValidationConstants.ERR_DATE_PARAM_FORMAT);
+        }
+
+        if (dateTo != null && !isDateValid(dateTo))
+        {
+            throw new AWInputValidationException(ValidationConstants.ERR_DATE_PARAM_FORMAT);
+        }
+
+        if (dateFrom != null && dateTo != null)
+        {
+            boolean isEqual = dateTo.equals(dateFrom);
+            if (!isEqual && !ValidatorUtils.isFirstDateAfterSecondDate(dateTo, dateFrom))
+            {
+                throw new AWInputValidationException(ValidationConstants.ERR_FROM_TO_DATE_PARAMS);
+            }
+        }
+    }
+
+    public static void validateUpdateId(Long clientDataId, Long pathEntityId, String msgOnError)
+        throws AWInputValidationException
+    {
+        validateEntityId(pathEntityId);
+        if (pathEntityId.compareTo(clientDataId) != 0)
+        {
+            throw new AWInputValidationException(msgOnError);
+        }
+    }
+
+    /**
+     * This method is purely to hide the exception being created in controller classes from JAX-RS Analyzer tool.
+     * When the exception was being created in a method of a controller, the tool would interpret it as the main return
+     * type and specify the exception class instead of actual dto class in generated API document.
+     * @param validationErrors
+     * @throws AWInputValidationException
+     */
+    public static void throwInputValidationExceptionWith(
+        List<Set<? extends ConstraintViolation<? extends Object>>> validationErrors) throws AWInputValidationException
+    {
+        AWInputValidationException e = new AWInputValidationException();
+        for (Set<? extends ConstraintViolation<? extends Object>> errors : validationErrors)
+        {
+            e.addValidationErrors(errors);
+        }
+        throw e;
+    }
+
+    /**
+     * @see throwInputValidationExceptionWith
+     * @param message
+     * @throws AWInputValidationException
+     */
+    public static void throwInputValidationExceptionWith(String message) throws AWInputValidationException
+    {
+        throw new AWInputValidationException(message);
+    }
+
+    /**
+     * @see throwInputValidationExceptionWith
+     * @param messages
+     * @throws AWInputValidationException
+     */
+    public static void throwInputValidationExceptionWith(Collection<String> messages) throws AWInputValidationException
+    {
+        AWInputValidationException ex = new AWInputValidationException();
+        ex.addValidationErrors(messages);
+        throw ex;
+    }
 
     public static boolean isFirstDateAfterSecondDate(String firstDate, String secondDate)
     {
@@ -81,55 +153,5 @@ public final class ValidatorUtils
     public static boolean isKeysIdentical(Set<String> keySetA, Set<String> keySetB)
     {
         return keySetA.hashCode() == keySetB.hashCode();
-    }
-
-    public static <T> void validateRequest(T objectToValidate, ResponsePayload responsePayload,
-        Validator requestValidator)
-    {
-        Set<ConstraintViolation<T>> violations = requestValidator.validate(objectToValidate);
-
-        if (!violations.isEmpty())
-        {
-            responsePayload.addValidationErrors(violations);
-        }
-    }
-
-    public static int validateDateFromToFilter(String dateFrom, String dateTo, ConstraintValidatorContext context)
-    {
-        int errCount = 0;
-        context.disableDefaultConstraintViolation();
-
-        if (dateTo != null && dateFrom != null)
-        {
-            if (ValidatorUtils.isDateValid(dateTo) && ValidatorUtils.isDateValid(dateFrom))
-            {
-                boolean isEqual = dateTo.equals(dateFrom);
-                if (!isEqual && !ValidatorUtils.isFirstDateAfterSecondDate(dateTo, dateFrom))
-                {
-                    context.buildConstraintViolationWithTemplate(ValidationConstants.ERR_FROM_TO_DATE_PARAMS)
-                        .addConstraintViolation();
-                    errCount++;
-                }
-            }
-        }
-
-        if (dateFrom != null && !ValidatorUtils.isDateValid(dateFrom))
-        {
-            context
-                .buildConstraintViolationWithTemplate(
-                    String.format(ValidationConstants.ERR_DATE_FORMAT, ValidationConstants.DATE_FROM))
-                .addConstraintViolation();
-            errCount++;
-        }
-
-        if (dateTo != null && !ValidatorUtils.isDateValid(dateTo))
-        {
-            context
-                .buildConstraintViolationWithTemplate(
-                    String.format(ValidationConstants.ERR_DATE_FORMAT, ValidationConstants.DATE_TO))
-                .addConstraintViolation();
-            errCount++;
-        }
-        return errCount;
     }
 }

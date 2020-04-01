@@ -1,53 +1,174 @@
-<h1 class="page-header text-center">Parameter Management</h1>
-<div class="container-fluid" ng-controller="MngmtParameterManagementCtrl as parameterMngmtCtrl">
-    <form name="parameterManagementForm" class="form-horizontal">
-        <div class="form-group" ng-controller="MngmtParameterSelectionCtrl as parameterCtrl">
-            <label for="{{parameterCtrl.selectId}}" class="col-xs-3 control-label">Parameter name: </label>
-            <div ng-class="{'col-xs-7': parameterMngmtCtrl.isNewParameter, 'col-xs-6': !parameterMngmtCtrl.isNewParameter}">
-                <aw-search-select2 class="form-control" elem-id="{{parameterCtrl.selectId}}" controller="parameterCtrl"></aw-search-select2>
+<h1 class="page-header text-center">
+    Parameter Management
+</h1>
+
+<div class="container-fluid">
+
+    <accordion close-others="false">
+
+        <accordion-group is-open="true">
+
+            <accordion-heading>
+                Parameter management
+                <i class="pull-right glyphicon"
+                    ng-class="{'glyphicon-chevron-down': true, 'glyphicon-chevron-right': !false}"></i>
+            </accordion-heading>
+
+            <div ng-controller="MngmtParameterManagementCtrl as parameterMngmtCtrl">
+
+                <form name="parameterManagementForm" class="form-horizontal">
+
+                    <div class="form-group" ng-controller="MngmtParameterSelectionCtrl as parameterCtrl">
+
+                        <label for="{{parameterCtrl.selectId}}" class="col-xs-3 control-label">Parameter name: </label>
+
+                        <div
+                            ng-class="{'col-xs-7': parameterMngmtCtrl.isNewParameter, 'col-xs-6': !parameterMngmtCtrl.isNewParameter}">
+                            <aw-search-select2 class="form-control" elem-id="{{parameterCtrl.selectId}}"
+                                controller="parameterCtrl">
+                            </aw-search-select2>
+                        </div>
+
+                        <div ng-click="parameterMngmtCtrl.startUpdate()" ng-hide="parameterMngmtCtrl.isNewParameter">
+                            <button type="button" class="btn btn-default btn-sm">
+                                <i class="glyphicon glyphicon-edit"></i>
+                            </button>
+                        </div>
+
+                    </div>
+
+                    <div class="form-group" ng-controller="MngmtParameterSelectionUpdateCtrl as parameterUpdateCtrl"
+                        ng-show="parameterMngmtCtrl.isUpdatingParameter">
+
+                        <label for="{{parameterUpdateCtrl.selectId}}" class="col-xs-3 control-label">Update parameter
+                            name: </label>
+
+                        <div
+                            ng-class="{'col-xs-7': parameterMngmtCtrl.isNewParameter, 'col-xs-6': !parameterMngmtCtrl.isNewParameter}">
+                            <aw-select2 elem-id="{{parameterUpdateCtrl.selectId}}" controller="parameterUpdateCtrl">
+                            </aw-select2>
+                        </div>
+
+                        <div ng-click="parameterMngmtCtrl.cancelUpdate()">
+                            <button type="button" class="btn btn-default btn-sm">
+                                <i class="glyphicon glyphicon-remove"></i>
+                            </button>
+                        </div>
+
+                    </div>
+
+                    <div class="form-group">
+
+                        <div class="col-xs-12">
+                            <aw-success-display success="parameterMngmtCtrl.isSuccess"></aw-success-display>
+                        </div>
+
+                    </div>
+
+                    <div class="form-group">
+
+                        <div class="col-xs-12">
+                            <aw-error-display errors="parameterMngmtCtrl.errors"></aw-error-display>
+                        </div>
+
+                    </div>
+
+                    <div class="row">
+                        <hr />
+                    </div>
+
+                    <div class="row">
+                        <div class="text-center">
+
+                            <button type="button" class="btn btn-lg btn-success"
+                                ng-click="parameterMngmtCtrl.submitParameter()"
+                                ng-disabled="!parameterMngmtCtrl.isNewParameter">
+                                Create
+                            </button>
+                            <button type="button" class="btn btn-lg btn-primary"
+                                ng-click="parameterMngmtCtrl.updateParameter()"
+                                ng-disabled="parameterMngmtCtrl.isNewParameter">
+                                Update
+                            </button>
+                            <button type="button" class="btn btn-danger btn-lg"
+                                ng-click="parameterMngmtCtrl.clearParameter()">
+                                Clear
+                            </button>
+
+                        </div>
+
+                    </div>
+
+                </form>
+
             </div>
-            <div ng-click="parameterMngmtCtrl.startUpdate()" ng-hide="parameterMngmtCtrl.isNewParameter">
-                <button type="button" class="btn btn-default btn-sm">
-                    <i class="glyphicon glyphicon-edit"></i>
-                </button>
-            </div>           
-        </div>
-        <div class="form-group" ng-controller="MngmtParameterSelectionUpdateCtrl as parameterUpdateCtrl" ng-show="parameterMngmtCtrl.isUpdatingParameter">
-            <label for="{{parameterUpdateCtrl.selectId}}" class="col-xs-3 control-label">Update parameter name: </label>
-            <div ng-class="{'col-xs-7': parameterMngmtCtrl.isNewParameter, 'col-xs-6': !parameterMngmtCtrl.isNewParameter}">
-                <aw-select2 elem-id="{{parameterUpdateCtrl.selectId}}" controller="parameterUpdateCtrl"></aw-select2>
+
+        </accordion-group>
+
+        <accordion-group is-open="false">
+
+            <accordion-heading>
+                Upload Parameter File management
+                <i class="pull-right glyphicon"
+                    ng-class="{'glyphicon-chevron-down': true, 'glyphicon-chevron-right': !false}"></i>
+            </accordion-heading>
+
+            <div ng-controller="MngmtParameterUploadManagementCtrl as parameterUploadMngmtCtrl">
+
+                <form name="parameterManagementUploadForm" class="form-horizontal">
+
+                    <div class="form-group" ng-controller="MngmtParameterUploadCtrl as parameterUploadCtrl">
+
+                        <label for="{{parameterUploadCtrl.uploadId}}" class="col-xs-3 control-label">Upload File:
+                        </label>
+
+                        <div class="col-xs-7">
+                            <aw-upload-file elem-id="{{parameterUploadCtrl.uploadId}}" controller="parameterUploadCtrl">
+                            </aw-upload-file>
+                        </div>
+
+                    </div>
+
+                    <div class="form-group">
+
+                        <div class="col-xs-12">
+                            <aw-success-display success="parameterUploadMngmtCtrl.isSuccess"></aw-success-display>
+                        </div>
+
+                    </div>
+
+                    <div class="form-group">
+
+                        <div class="col-xs-12">
+                            <aw-error-display errors="parameterUploadMngmtCtrl.errors"></aw-error-display>
+                        </div>
+
+                    </div>
+
+                    <div class="row">
+
+                        <div class="text-center">
+
+                            <button type="button" class="btn btn-lg btn-success"
+                                ng-click="parameterUploadMngmtCtrl.uploadParameter()"
+                                ng-disabled="parameterUploadMngmtCtrl.isFileSelected">
+                                Upload
+                            </button>
+                            <button type="button" class="btn btn-lg btn-danger"
+                                ng-click="parameterUploadMngmtCtrl.clearUploadParameter()">
+                                Clear
+                            </button>
+
+                        </div>
+
+                    </div>
+
+                </form>
+
             </div>
-            <div ng-click="parameterMngmtCtrl.cancelUpdate()">
-                <button type="button" class="btn btn-default btn-sm">
-                    <i class="glyphicon glyphicon-remove"></i>
-                </button>
-            </div>
-        </div>
-        <div class="form-group">
-            <div class="col-xs-12">
-                <aw-success-display success="parameterMngmtCtrl.isSuccess"></aw-success-display>
-            </div>
-        </div>
-        <div class="form-group">
-            <div class="col-xs-12">
-                <aw-error-display errors="parameterMngmtCtrl.errors"></aw-error-display>
-            </div>
-        </div>
-        <div class="row">
-            <hr />
-        </div>
-        <div class="row">
-            <div class="text-center">
-                <button type="button" class="btn btn-lg btn-success" ng-click="parameterMngmtCtrl.submitParameter()" ng-disabled="!parameterMngmtCtrl.isNewParameter">
-                    Create
-                </button>
-                <button type="button" class="btn btn-lg btn-primary" ng-click="parameterMngmtCtrl.updateParameter()" ng-disabled="parameterMngmtCtrl.isNewParameter">
-                    Update
-                </button>
-                <button type="button" class="btn btn-danger btn-lg" ng-click="parameterMngmtCtrl.clearParameter()">
-                    Clear
-                </button>
-            </div>
-        </div>       
-    </form>
+
+        </accordion-group>
+
+    </accordion>
+
 </div>

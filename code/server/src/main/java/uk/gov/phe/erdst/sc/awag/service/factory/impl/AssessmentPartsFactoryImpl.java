@@ -3,9 +3,6 @@ package uk.gov.phe.erdst.sc.awag.service.factory.impl;
 import javax.ejb.Stateless;
 import javax.inject.Inject;
 
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
-
 import uk.gov.phe.erdst.sc.awag.businesslogic.AnimalController;
 import uk.gov.phe.erdst.sc.awag.businesslogic.AnimalHousingController;
 import uk.gov.phe.erdst.sc.awag.businesslogic.AssessmentReasonController;
@@ -16,17 +13,21 @@ import uk.gov.phe.erdst.sc.awag.datamodel.AnimalHousing;
 import uk.gov.phe.erdst.sc.awag.datamodel.AssessmentReason;
 import uk.gov.phe.erdst.sc.awag.datamodel.Study;
 import uk.gov.phe.erdst.sc.awag.datamodel.User;
-import uk.gov.phe.erdst.sc.awag.datamodel.client.AssessmentClientData;
-import uk.gov.phe.erdst.sc.awag.exceptions.AWAssessmentCreationException;
 import uk.gov.phe.erdst.sc.awag.exceptions.AWMultipleResultException;
 import uk.gov.phe.erdst.sc.awag.exceptions.AWNoSuchEntityException;
+import uk.gov.phe.erdst.sc.awag.exceptions.AWNonUniqueException;
+import uk.gov.phe.erdst.sc.awag.exceptions.AWSeriousException;
+import uk.gov.phe.erdst.sc.awag.service.activitylogging.LoggedUser;
 import uk.gov.phe.erdst.sc.awag.service.factory.assessment.AssessmentPartsFactory;
+import uk.gov.phe.erdst.sc.awag.utils.Constants;
+import uk.gov.phe.erdst.sc.awag.webapi.request.AnimalHousingClientData;
+import uk.gov.phe.erdst.sc.awag.webapi.request.AssessmentClientData;
+import uk.gov.phe.erdst.sc.awag.webapi.request.AssessmentReasonClientData;
+import uk.gov.phe.erdst.sc.awag.webapi.request.UserClientData;
 
 @Stateless
 public class AssessmentPartsFactoryImpl implements AssessmentPartsFactory
 {
-    private static final Logger LOGGER = LogManager.getLogger(AssessmentPartsFactoryImpl.class);
-
     @Inject
     private AnimalController mAnimalController;
 
@@ -43,7 +44,7 @@ public class AssessmentPartsFactoryImpl implements AssessmentPartsFactory
     private StudyController mStudyController;
 
     @Override
-    public AssessmentParts create(AssessmentClientData clientData) throws AWAssessmentCreationException
+    public AssessmentParts create(AssessmentClientData clientData) throws AWNoSuchEntityException, AWSeriousException
     {
         Animal animal = null;
         Study study = null;
@@ -53,18 +54,17 @@ public class AssessmentPartsFactoryImpl implements AssessmentPartsFactory
 
         try
         {
-            animal = mAnimalController.getAnimal(clientData.animalId);
-            study = mStudyController.getStudyWithAnimal(animal.getId());
+            animal = mAnimalController.getAnimalNonApiMethod(clientData.animalId);
+            study = mStudyController.getStudyWithAnimalNonApiMethod(animal.getId());
         }
-        catch (AWNoSuchEntityException | AWMultipleResultException e)
+        catch (AWMultipleResultException e)
         {
-            LOGGER.error(e);
-            throw new AWAssessmentCreationException(e.getMessage());
+            throw new AWSeriousException(e);
         }
 
         try
         {
-            user = mUserController.getUser(clientData.performedBy);
+            user = mUserController.getUserByNameNonApiMethod(clientData.performedBy);
         }
         catch (AWNoSuchEntityException e)
         {
@@ -73,7 +73,7 @@ public class AssessmentPartsFactoryImpl implements AssessmentPartsFactory
 
         try
         {
-            reason = mAssessmentReasonController.getReason(clientData.reason);
+            reason = mAssessmentReasonController.getReasonNonApiMethod(clientData.reason);
         }
         catch (AWNoSuchEntityException e)
         {
@@ -82,7 +82,7 @@ public class AssessmentPartsFactoryImpl implements AssessmentPartsFactory
 
         try
         {
-            housing = mAnimalHousingController.getAnimalHousing(clientData.animalHousing);
+            housing = mAnimalHousingController.getAnimalHousingNonApiMethod(clientData.animalHousing);
         }
         catch (AWNoSuchEntityException e)
         {
@@ -90,6 +90,42 @@ public class AssessmentPartsFactoryImpl implements AssessmentPartsFactory
         }
 
         return new AssessmentParts(animal, study, reason, user, housing);
+    }
+
+    @Override
+    public AssessmentParts create(AssessmentClientData clientData, LoggedUser loggedUser)
+        throws AWNoSuchEntityException, AWSeriousException, AWNonUniqueException
+    {
+        AssessmentParts assessmentParts = create(clientData);
+
+        if (assessmentParts.mUser == null || assessmentParts.mAssessmentReason == null
+            || assessmentParts.mAnimalHousing == null || assessmentParts.mStudy == null)
+        {
+            if (assessmentParts.mAssessmentReason == null)
+            {
+                AssessmentReasonClientData assessmentReasonClientData = new AssessmentReasonClientData(
+                    Constants.UNASSIGNED_ID, clientData.reason);
+                mAssessmentReasonController.createAssessmentReasonNonApi(assessmentReasonClientData, loggedUser);
+            }
+
+            if (assessmentParts.mAnimalHousing == null)
+            {
+                AnimalHousingClientData animalHousingClientData = new AnimalHousingClientData(Constants.UNASSIGNED_ID,
+                    clientData.animalHousing);
+                mAnimalHousingController.createAnimalHousingNonApi(animalHousingClientData, loggedUser);
+            }
+
+            if (assessmentParts.mUser == null)
+            {
+                UserClientData userClientData = new UserClientData(Constants.UNASSIGNED_ID, clientData.performedBy);
+                mUserController.createUserNonApi(userClientData, loggedUser);
+            }
+
+            assessmentParts = create(clientData);
+            return assessmentParts;
+        }
+
+        return assessmentParts;
     }
 
     public static class AssessmentParts
@@ -100,7 +136,6 @@ public class AssessmentPartsFactoryImpl implements AssessmentPartsFactory
         public final AssessmentReason mAssessmentReason;
         public final User mUser;
         public final AnimalHousing mAnimalHousing;
-
         // CS:ON
 
         public AssessmentParts(Animal animal, Study study, AssessmentReason assessmentReason, User user,

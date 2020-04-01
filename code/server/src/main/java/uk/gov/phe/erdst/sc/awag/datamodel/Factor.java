@@ -1,8 +1,17 @@
 package uk.gov.phe.erdst.sc.awag.datamodel;
 
 import java.io.Serializable;
-import javax.persistence.*;
 import java.util.List;
+
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.FetchType;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.NamedQueries;
+import javax.persistence.NamedQuery;
+import javax.persistence.OneToMany;
 
 @Entity
 @NamedQueries({@NamedQuery(name = Factor.Q_FIND_ALL, query = "SELECT f FROM Factor f"),
@@ -26,6 +35,9 @@ public class Factor implements Serializable, EntitySelect
     private Long mId;
 
     private String mName;
+
+    @Column(name = "factor_description")
+    private String factorDescription;
 
     @OneToMany(mappedBy = "mFactor", fetch = FetchType.EAGER)
     private List<AssessmentTemplateParameterFactor> mAssessmentTemplateParameterFactors;
@@ -52,6 +64,16 @@ public class Factor implements Serializable, EntitySelect
     public void setName(String mName)
     {
         this.mName = mName;
+    }
+
+    public String getFactorDescription()
+    {
+        return factorDescription;
+    }
+
+    public void setFactorDescription(String factorDescription)
+    {
+        this.factorDescription = factorDescription;
     }
 
     public List<AssessmentTemplateParameterFactor> getAssessmentTemplateParameterFactors()
@@ -108,19 +130,29 @@ public class Factor implements Serializable, EntitySelect
     public boolean equals(Object obj)
     {
         if (this == obj)
+        {
             return true;
+        }
         if (obj == null)
+        {
             return false;
+        }
         if (getClass() != obj.getClass())
+        {
             return false;
+        }
         Factor other = (Factor) obj;
         if (mId == null)
         {
             if (other.mId != null)
+            {
                 return false;
+            }
         }
         else if (!mId.equals(other.mId))
+        {
             return false;
+        }
         return true;
     }
 }

@@ -4,17 +4,17 @@ var sourceMngmtFormEvents = {
     onExistingSourceSelected : "onExistingSourceSelected",
     onNewSourceSelected : "onNewSourceSelected",
     onSourceClearSelected : "onSourceClearSelected",
-    onSourceRemoved : "onSourceRemoved",
     onSourceRemovedClearUpdate : "onSourceRemovedClearUpdate",
     onSourceUpdateStarted : "onSourceUpdateStarted",
     onSourceUpdateFinished : "onSourceUpdateFinished",
-    onSourceUpdated : "onSourceUpdated"
+    onSourceUpdated : "onSourceUpdated",
+    onSourceUploadSelected : "onSourceUploadSelected",
+    onSourceUploadClearSelected : "onSourceUploadClearSelected"
 };
 
 manageSourceControllers.controller('MngmtSourceSelectionCtrl', ['$scope', 'formService', 'sourceService', 'appConfig',
 function($scope, formService, sourceService, appConfig)
-{
-    this.selectId = "sourceSelect";
+{this.selectId = "sourceSelect";
     this.placeHolder = "Create/Search a source...";
 
     var that = this;
@@ -72,6 +72,8 @@ function($scope, formService)
         $scope.$emit(sourceMngmtFormEvents.onSourceUpdateFinished, val[0]);
         formService.clearSelect2(jQuery("#" + that.selectId));
     };
+
+
 }]);
 
 manageSourceControllers.controller('MngmtSourceManagementCtrl', ['$scope', 'appConfig', 'sourceService', '$timeout',
@@ -88,8 +90,7 @@ function($scope, appConfig, sourceService, $timeout)
     {
         this.source = {
             sourceId : appConfig.config.unassignedId,
-            sourceName : undefined,
-            sourceFactors: []
+            sourceName : undefined
         };
         this.errors = [];
     };
@@ -187,12 +188,12 @@ function($scope, appConfig, sourceService, $timeout)
     {
         sourceService.updateSource(this.source, updateSourceCallback, onErrorCallBack);
     };
-    
+
     var onErrorCallBack = function(errors)
     {
         that.isSuccess = false;
         that.errors = errors;
-    }
+    };
 
     var submitSourceCallback = function(data)
     {
@@ -206,14 +207,6 @@ function($scope, appConfig, sourceService, $timeout)
     {
         that.isSuccess = true;
         that.resetErrors();
-    };
-
-    var removeSourceCallback = function(data)
-    {
-        that.isSuccess = true;
-        that.isNewSource = true;
-        that.resetSourceContainer();
-        $scope.$broadcast(sourceMngmtFormEvents.onSourceRemoved);
     };
 
     $scope.$on(sourceMngmtFormEvents.onNewSourceSelected, function(event, choice)
@@ -237,4 +230,88 @@ function($scope, appConfig, sourceService, $timeout)
     });
 
     this.resetSourceContainer();
+}]);
+
+manageSourceControllers.controller('MngmtSourceUploadCtrl', ['$scope', 'appConfig', 'sourceService', '$timeout',
+function($scope, appConfig, sourceService, $timeout)
+{
+    this.uploadId = "uploadFile";
+    this.uploadElement = null;
+    var that = this;
+
+    this.onFileUploadChange = function(event)
+    {
+        that.uploadElement = event.target;
+        $scope.$emit(sourceMngmtFormEvents.onSourceUploadSelected, event.target.files);
+    };
+
+    $scope.$on(sourceMngmtFormEvents.onSourceUploadClearSelected, function(event)
+    {
+        that.uploadElement.value = null;
+    });    
+
+}]);
+
+manageSourceControllers.controller('MngmtSourceUploadManagementCtrl', ['$scope', 'appConfig', 'sourceService', '$timeout',
+function($scope, appConfig, sourceService, $timeout)
+{
+    this.fileList = {};
+    this.isSuccess = false;
+    this.errors = [];
+    this.isFileSelected = true;
+    var that = this;
+
+    this.resetErrors = function()
+    {
+        this.errors = [];
+    };
+
+    var onErrorCallBack = function(errors)
+    {
+        that.isSuccess = false;
+        that.errors = errors;
+    };
+
+    var uploadSourceCallback = function(data)
+    {
+        that.isSuccess = true;
+        that.resetErrors();
+    };
+
+    this.setDisabled = function(isDisabled)
+    {
+        this.isFileSelected = isDisabled;
+        $timeout(function(){
+            $scope.$apply();
+        });
+    };
+
+
+    this.setUploadFiles = function(fileList) 
+    {
+        Object.assign(this.fileList, fileList);
+        that.setDisabled(false);
+    };
+
+    this.uploadSource = function()
+    {
+        var fd = new FormData();
+        fd.append('file', this.fileList[0]);
+
+        sourceService.uploadSource(fd, uploadSourceCallback, onErrorCallBack);
+    };
+
+    this.clearUploadSource = function()
+    {
+        this.fileList = {};
+        this.setDisabled(true);
+        this.resetErrors();
+        $scope.$broadcast(sourceMngmtFormEvents.onSourceUploadClearSelected);        
+    };
+
+    $scope.$on(sourceMngmtFormEvents.onSourceUploadSelected, function(event, fileList)
+    {
+        that.setUploadFiles(fileList);
+    });
+    
 }]);

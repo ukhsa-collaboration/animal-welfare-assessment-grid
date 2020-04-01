@@ -4,11 +4,12 @@ var speciesMngmtFormEvents = {
     onExistingSpeciesSelected : "onExistingSpeciesSelected",
     onNewSpeciesSelected : "onNewSpeciesSelected",
     onSpeciesClearSelected : "onSpeciesClearSelected",
-    onSpeciesRemoved : "onSpeciesRemoved",
     onSpeciesRemovedClearUpdate : "onSpeciesRemovedClearUpdate",
     onSpeciesUpdateStarted : "onSpeciesUpdateStarted",
     onSpeciesUpdateFinished : "onSpeciesUpdateFinished",
-    onSpeciesUpdated : "onSpeciesUpdated"
+    onSpeciesUpdated : "onSpeciesUpdated",
+    onSpeciesUploadSelected : "onSpeciesUploadSelected",
+    onSpeciesUploadClearSelected : "onSpeciesUploadClearSelected"
 };
 
 manageSpeciesControllers.controller('MngmtSpeciesSelectionCtrl', ['$scope', 'formService', 'speciesService', 'appConfig',
@@ -88,8 +89,7 @@ function($scope, appConfig, speciesService, $timeout)
     {
         this.species = {
             speciesId : appConfig.config.unassignedId,
-            speciesName : undefined,
-            speciesFactors: []
+            speciesName : undefined
         };
         this.errors = [];
     };
@@ -192,7 +192,7 @@ function($scope, appConfig, speciesService, $timeout)
     {
         that.isSuccess = false;
         that.errors = errors;
-    }
+    };
 
     var submitSpeciesCallback = function(data)
     {
@@ -206,14 +206,6 @@ function($scope, appConfig, speciesService, $timeout)
     {
         that.isSuccess = true;
         that.resetErrors();
-    };
-
-    var removeSpeciesCallback = function(data)
-    {
-        that.isSuccess = true;
-        that.isNewSpecies = true;
-        that.resetSpeciesContainer();
-        $scope.$broadcast(speciesMngmtFormEvents.onSpeciesRemoved);
     };
 
     $scope.$on(speciesMngmtFormEvents.onNewSpeciesSelected, function(event, choice)
@@ -237,4 +229,89 @@ function($scope, appConfig, speciesService, $timeout)
     });
 
     this.resetSpeciesContainer();
+}]);
+
+manageSpeciesControllers.controller('MngmtSpeciesUploadCtrl', ['$scope', 'appConfig', 'speciesService', '$timeout',
+function($scope, appConfig, speciesService, $timeout)
+{
+    this.uploadId = "uploadFile";
+    this.uploadElement = null;
+    var that = this;
+
+    this.onFileUploadChange = function(event)
+    {
+        that.uploadElement = event.target;
+        $scope.$emit(speciesMngmtFormEvents.onSpeciesUploadSelected, event.target.files);
+    };
+
+    $scope.$on(speciesMngmtFormEvents.onSpeciesUploadClearSelected, function(event)
+    {
+        that.uploadElement.value = null;
+    });    
+
+}]);
+
+manageSpeciesControllers.controller('MngmtSpeciesUploadManagementCtrl', ['$scope', 'appConfig', 'speciesService', '$timeout',
+function($scope, appConfig, speciesService, $timeout)
+{
+    this.fileList = {};
+    this.isSuccess = false;
+    this.errors = [];
+    this.isFileSelected = true;
+    var that = this;
+
+    this.resetErrors = function()
+    {
+        this.errors = [];
+    };
+
+    var onErrorCallBack = function(errors)
+    {
+        that.isSuccess = false;
+        that.errors = errors;
+    };
+
+    var uploadSpeciesCallback = function(data)
+    {
+        that.isSuccess = true;
+        that.resetErrors();
+
+    };
+
+    this.setDisabled = function(isDisabled)
+    {
+        this.isFileSelected = isDisabled;
+        $timeout(function(){
+            $scope.$apply();
+        });
+    };
+
+
+    this.setUploadFiles = function(fileList) 
+    {
+        Object.assign(this.fileList, fileList);
+        that.setDisabled(false);
+    };
+
+    this.uploadSpecies = function()
+    {
+        var fd = new FormData();
+        fd.append('file', this.fileList[0]);
+
+        speciesService.uploadSpecies(fd, uploadSpeciesCallback, onErrorCallBack);
+    };
+
+    this.clearUploadSpecies = function()
+    {
+        this.fileList = {};
+        this.setDisabled(true);
+        this.resetErrors();
+        $scope.$broadcast(speciesMngmtFormEvents.onSpeciesUploadClearSelected);        
+    };
+
+    $scope.$on(speciesMngmtFormEvents.onSpeciesUploadSelected, function(event, fileList)
+    {
+        that.setUploadFiles(fileList);
+    });
+    
 }]);

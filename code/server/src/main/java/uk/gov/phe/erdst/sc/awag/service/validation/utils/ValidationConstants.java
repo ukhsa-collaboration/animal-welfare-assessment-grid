@@ -5,7 +5,7 @@ import java.util.Map;
 
 import javax.validation.Payload;
 
-import uk.gov.phe.erdst.sc.awag.servlets.utils.ServletConstants;
+import uk.gov.phe.erdst.sc.awag.utils.Constants;
 
 public final class ValidationConstants
 {
@@ -176,23 +176,34 @@ public final class ValidationConstants
     public static final String ERR_ASSESSMENT_SCORE_OUTSIDE_SCALE_FORMAT = "Score for factor is outside "
         + "scale (min: %s, max: %s)";
 
+    public static final String ERR_TEMPLATES_DIFFERENT_ON_SCORES_COMPARE = "To compare assessments they need to "
+        + "be based on the same template";
+
+    public static final String ERR_ASSESSMENT_EQUAL_SCORES_NOT_VERIFIED = "isScoresVerified flag is missing or "
+        + "indicates equal scores have not been compared";
+    public static final String ERR_ASSESSMENT_DISALLOW_AVG_ZERO_SCORING = "Assessment average scoring disallows any score of zero";
+
     public static final String ERR_ASSESSMENT_TEMPLATE_MISMATCH_FORMAT = "%s %s do not match template used";
-    public static final String ERR_ASSESSMENT_TEMPLATE_FACTORS_MISMATCH = String.format(
-        ERR_ASSESSMENT_TEMPLATE_MISMATCH_FORMAT, "Sent", "factors");
-    public static final String ERR_ASSESSMENT_TEMPLATE_PARAMETERS_MISMATCH = String.format(
-        ERR_ASSESSMENT_TEMPLATE_MISMATCH_FORMAT, "Sent", "parameters");
-    public static final String ERR_ASSESSMENT_TEMPLATE_SUBMITTED_FACTORS_MISMATCH = String.format(
-        ERR_ASSESSMENT_TEMPLATE_MISMATCH_FORMAT, "Submitted", "factors");
-    public static final String ERR_ASSESSMENT_TEMPLATE_SUBMITTED_PARAMETERS_MISMATCH = String.format(
-        ERR_ASSESSMENT_TEMPLATE_MISMATCH_FORMAT, "Submitted", "parameters");
+    public static final String ERR_ASSESSMENT_TEMPLATE_FACTORS_MISMATCH = String
+        .format(ERR_ASSESSMENT_TEMPLATE_MISMATCH_FORMAT, "Sent", "factors");
+    public static final String ERR_ASSESSMENT_TEMPLATE_PARAMETERS_MISMATCH = String
+        .format(ERR_ASSESSMENT_TEMPLATE_MISMATCH_FORMAT, "Sent", "parameters");
+    public static final String ERR_ASSESSMENT_TEMPLATE_SUBMITTED_FACTORS_MISMATCH = String
+        .format(ERR_ASSESSMENT_TEMPLATE_MISMATCH_FORMAT, "Submitted", "factors");
+    public static final String ERR_ASSESSMENT_TEMPLATE_SUBMITTED_PARAMETERS_MISMATCH = String
+        .format(ERR_ASSESSMENT_TEMPLATE_MISMATCH_FORMAT, "Submitted", "parameters");
 
     public static final String PAGING_OFFSET_NAME = "Offset";
     public static final String PAGING_LIMIT_NAME = "Limit";
     public static final int MIN_PAGING_OFFSET_VALUE = 0;
     public static final int MIN_PAGING_LIMIT_VALUE = 1;
 
+    public static final String LIKE_QUERY_TERM_PARAM_NAME = "like";
+
     // Date
     public static final String ERR_DATE_FORMAT = "%s must be in the format dd-mm-yyyy.";
+    public static final String ERR_DATE_PARAM_FORMAT = String.format("date parameter must be in the format %s",
+        Constants.DATE_FORMAT);
     public static final String DATE_FROM = "Date from";
     public static final String DATE_TO = "Date to";
 
@@ -200,36 +211,16 @@ public final class ValidationConstants
     public static final String ERR_NO_SUCH_ENTITY = "Could not find entity %s with id %s.";
     public static final String ERR_NO_SUCH_ENTITY_WITH_NAME = "Could not find entity %s with name %s.";
 
-    public static final String ERR_SEX_PARAM = String.format("Sex parameter %s should be set to %s or %s.",
-        ServletConstants.REQ_PARAM_SEX, ServletConstants.REQ_PARAM_SEX_F, ServletConstants.REQ_PARAM_SEX_M);
-    public static final String ERR_CALLBACK_PARAM = String.format(
-        "The callback parameter %s must be provided for GET requests.", ServletConstants.REQ_PARAM_CALLBACK);
-    public static final String ERR_ACTION_PARAM = String.format("The action parameter %s must be provided.",
-        ServletConstants.REQ_PARAM_ACTION);
-    public static final String ERR_LIKE_PARAM = String.format(
-        "The like parameter %s must also be provided if %s is provided.", ServletConstants.REQ_PARAM_LIKE,
-        ServletConstants.REQ_PARAM_SELECT_ACTION_LIKE);
+    public static final String UPDATE_ID_MISMATCH = "Path id must match id in the update data.";
+
     public static final String ERR_RESOURCE_ID_NOT_NUMBER = "The id provided is not a number.";
 
-    public static final String ERR_ID_PARAM = String.format(
-        "The id parameter %s must also be provided if %s is provided.", ServletConstants.REQ_PARAM_ID,
-        ServletConstants.REQ_PARAM_SELECT_ACTION_SEL_ID);
+    public static final String ERR_ID_PARAM = String
+        .format("The id parameter is missing, is less than %d or is not a number.", Constants.MIN_VALID_ID);
 
-    public static final String ERR_USER_PARAM = String.format("The user parameter %s must be provided.",
-        ServletConstants.REQ_PARAM_USER_ID);
-    public static final String ERR_REASON_PARAM = String.format("The reason parameter %s must be provided.",
-        ServletConstants.REQ_PARAM_REASON_ID);
-    public static final String ERR_ANIMAL_ID_PARAM = String.format("The animal id parameter %s must be provided.",
-        ServletConstants.REQ_PARAM_ANIMAL_ID);
+    public static final String ERR_OPTIONAL_ID_PARAM = String.format("The id is less than %d or is not a number.",
+        Constants.MIN_VALID_ID);
 
-    public static final String ERR_HOUSING_PARAM = String.format("The housing parameter %s must be provided.",
-        ServletConstants.REQ_PARAM_HOUSING);
-    public static final String ERR_ALL_PARAM = String.format("The parameter %s if provided must be set to %s.",
-        ServletConstants.REQ_PARAM_ALL, ServletConstants.REQ_PARAM_ALL);
-    public static final String ERR_STUDY_GROUP_PARAM = String.format("The study group parameter %s must be provided.",
-        ServletConstants.REQ_PARAM_STUDY_GROUP);
-    public static final String ERR_TEMPLATE_ID_PARAM = String.format("The template id parameter %s must be provided.",
-        ServletConstants.REQ_PARAM_TEMPLATE_ID);
     public static final String ERR_STUDY_DUP_ANIMALS = "Study groups in this study contain the following duplicate animals: %s.";
 
     public static final String ERR_ASSESSMENTS_GET_DATE_PARAMS = ERR_FROM_TO_DATE_PARAMS;
@@ -254,12 +245,10 @@ public final class ValidationConstants
     public static final String TEXT_SIZE_CHECK_TEMPLATE = "%s length has to be between %s and %s characters long.";
 
     public static final String NAME_REGEX_TEMPLATE = "%s can only contain alpha-numeric, dash, dot, forward slash, comma, bracket or underscore characters.";
-    public static final String ERR_DATE_FROM_PARAM = String.format("The date from parameter %s must be provided.",
-        ServletConstants.REQ_PARAM_DATE_FROM);
-    public static final String ERR_DATE_TO_PARAM = String.format("The date to parameter %s must be provided.",
-        ServletConstants.REQ_PARAM_DATE_TO);
 
     private static final String NOT_NULL_TEMPLATE = "%s must be provided.";
+
+    private static final String REQUIRED_REQUEST_QUERY_PARAMETER = "Request query parameter '%s' must be provided";
 
     private static final String VALID_ID_RANGE_TEMPLATE = "%s id must be " + ENTITY_NEG_ID + " or at least "
         + ENTITY_MIN_ID + ".";
@@ -275,6 +264,7 @@ public final class ValidationConstants
     static
     {
         ANNOTATION_TEMPLATES.put(PropertyMustBeProvided.class, NOT_NULL_TEMPLATE);
+        ANNOTATION_TEMPLATES.put(RequestQueryParameterMustBeProvided.class, REQUIRED_REQUEST_QUERY_PARAMETER);
         ANNOTATION_TEMPLATES.put(ValidIdRange.class, VALID_ID_RANGE_TEMPLATE);
         ANNOTATION_TEMPLATES.put(TextSizeLimits.class, TEXT_SIZE_CHECK_TEMPLATE);
         ANNOTATION_TEMPLATES.put(NameRegex.class, NAME_REGEX_TEMPLATE);
@@ -336,6 +326,11 @@ public final class ValidationConstants
     }
 
     public static class NonZeroPositiveInteger implements Payload
+    {
+
+    }
+
+    public static class RequestQueryParameterMustBeProvided implements Payload
     {
 
     }

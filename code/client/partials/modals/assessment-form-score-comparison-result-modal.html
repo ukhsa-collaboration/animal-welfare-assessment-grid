@@ -1,0 +1,42 @@
+<div class="modal-header">
+    <h3 class="modal-title">Identical scores verification</h3>
+</div>
+<div class="modal-body">
+    <div ng-if="comparisonData.isAssessmentScoreEqual">
+        <p>Assessment you are about to create has identical scoring compared to the previous assessment.</p>
+        <p>Please confirm you want to use the same scoring for the new assessment.</p>
+    </div>
+    <div ng-if="!comparisonData.isAssessmentScoreEqual && comparisonData.isAnyFactorScoreEqual">
+        <p>Assessment you are about to create has identical scores for the following factors compared to the previous
+            assessment.</p>
+        <p>Please review scores and confirm you want to use the same scores for the new assessment.</p>
+        <div class="rows-striped">
+            <tabset>
+                <tab ng-repeat="parameter in comparisonData.result" ng-if="parameter.hasAnyEqualFactorScores"
+                    heading="{{parameter.parameterName}}">
+                    <div class="row striped" ng-repeat="factor in parameter.factorsComparison"
+                        ng-if="factor.isScoreEqual">
+                        <div class="col-xs-6">
+                            <ul class="list-unstyled">
+                                <li>
+                                    <h4>{{factor.factorName}}</h4>
+                                </li>
+                            </ul>
+                        </div>
+                        <div class="col-xs-6">
+                            <ul class="list-unstyled">
+                                <li>
+                                    <h4>{{factor.scoreA | comparedFactorScoreIgnored}}</h4>
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+                </tab>
+            </tabset>
+        </div>
+    </div>
+</div>
+<div class="modal-footer">
+    <button class="btn btn-primary" type="button" ng-click="ok()">It's OK, create assessment</button>
+    <button class="btn btn-warning" type="button" ng-click="cancel()">I forgot to change scoring, cancel</button>
+</div>

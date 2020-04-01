@@ -1,6 +1,6 @@
 package uk.gov.phe.erdst.sc.awag.service.utils;
 
-import uk.gov.phe.erdst.sc.awag.datamodel.client.UserAuthClientData;
+import uk.gov.phe.erdst.sc.awag.webapi.request.UserAuthClientData;
 
 public final class UserAuthTestUtils
 {

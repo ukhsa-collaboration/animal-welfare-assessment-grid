@@ -7,14 +7,14 @@ import javax.validation.ValidatorFactory;
 
 import org.testng.Assert;
 
-import uk.gov.phe.erdst.sc.awag.datamodel.client.AssessmentClientData;
+import uk.gov.phe.erdst.sc.awag.deprecated.RequestConverter;
 import uk.gov.phe.erdst.sc.awag.service.validation.annotations.ValidAssessmentScore;
 import uk.gov.phe.erdst.sc.awag.service.validation.annotations.ValidAssessmentScoreTemplate;
 import uk.gov.phe.erdst.sc.awag.service.validation.groups.SubmittedAssessment;
-import uk.gov.phe.erdst.sc.awag.servlets.utils.RequestConverter;
 import uk.gov.phe.erdst.sc.awag.shared.test.TestConstants;
 import uk.gov.phe.erdst.sc.awag.utils.GlassfishTestsHelper;
 import uk.gov.phe.erdst.sc.awag.validation.utils.ValidationTestHelper;
+import uk.gov.phe.erdst.sc.awag.webapi.request.AssessmentClientData;
 
 public class AssessmentValidationTestCommon
 {
@@ -34,7 +34,7 @@ public class AssessmentValidationTestCommon
 
     protected void setUp(ValidationTestHelper.ValidatorProvider validatorProvider) throws Exception
     {
-        mRequestConverter = (RequestConverter) GlassfishTestsHelper.lookup("RequestConverterImpl");
+        mRequestConverter = (RequestConverter) GlassfishTestsHelper.lookup("RequestConverter");
 
         ValidatorFactory factory = ValidationTestHelper.createValidatorFactory(validatorProvider);
 
@@ -62,8 +62,8 @@ public class AssessmentValidationTestCommon
         Assert.assertEquals(violations, expectedViolations);
     }
 
-    protected static class MockAssessmentScoreValidator implements
-        ConstraintValidator<ValidAssessmentScore, AssessmentClientData>
+    protected static class MockAssessmentScoreValidator
+        implements ConstraintValidator<ValidAssessmentScore, AssessmentClientData>
     {
         public MockAssessmentScoreValidator()
         {
@@ -82,8 +82,8 @@ public class AssessmentValidationTestCommon
 
     }
 
-    protected static class MockAssessmentScoreTemplateValidator implements
-        ConstraintValidator<ValidAssessmentScoreTemplate, AssessmentClientData>
+    protected static class MockAssessmentScoreTemplateValidator
+        implements ConstraintValidator<ValidAssessmentScoreTemplate, AssessmentClientData>
     {
         public MockAssessmentScoreTemplateValidator()
         {

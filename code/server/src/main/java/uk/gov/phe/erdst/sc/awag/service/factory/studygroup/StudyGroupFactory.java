@@ -6,8 +6,8 @@ import java.util.Set;
 
 import uk.gov.phe.erdst.sc.awag.datamodel.Animal;
 import uk.gov.phe.erdst.sc.awag.datamodel.StudyGroup;
-import uk.gov.phe.erdst.sc.awag.datamodel.client.AnimalClientData;
-import uk.gov.phe.erdst.sc.awag.datamodel.client.StudyGroupClientData;
+import uk.gov.phe.erdst.sc.awag.webapi.request.AnimalClientData;
+import uk.gov.phe.erdst.sc.awag.webapi.request.StudyGroupClientData;
 
 public class StudyGroupFactory
 {

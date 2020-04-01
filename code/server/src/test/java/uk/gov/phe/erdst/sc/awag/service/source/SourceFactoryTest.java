@@ -4,17 +4,17 @@ import org.testng.Assert;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 
-import uk.gov.phe.erdst.sc.awag.dao.source.SourceDaoImplTest;
-import uk.gov.phe.erdst.sc.awag.datamodel.Source;
-import uk.gov.phe.erdst.sc.awag.datamodel.client.SourceClientData;
-import uk.gov.phe.erdst.sc.awag.service.factory.source.SourceFactory;
-import uk.gov.phe.erdst.sc.awag.servlets.utils.RequestConverter;
-import uk.gov.phe.erdst.sc.awag.shared.test.TestConstants;
-import uk.gov.phe.erdst.sc.awag.utils.GuiceHelper;
-
 import com.google.inject.Inject;
 
-@Test(groups = {TestConstants.TESTNG_UNIT_TESTS_GROUP})
+import uk.gov.phe.erdst.sc.awag.dao.source.SourceDaoImplTest;
+import uk.gov.phe.erdst.sc.awag.datamodel.Source;
+import uk.gov.phe.erdst.sc.awag.deprecated.RequestConverter;
+import uk.gov.phe.erdst.sc.awag.service.factory.source.SourceFactory;
+import uk.gov.phe.erdst.sc.awag.shared.test.TestConstants;
+import uk.gov.phe.erdst.sc.awag.utils.GuiceHelper;
+import uk.gov.phe.erdst.sc.awag.webapi.request.SourceClientData;
+
+@Test(groups = {TestConstants.TESTNG_UNIT_TESTS_GROUP, TestConstants.TESTNG_SOURCE_TESTS_GROUP})
 public class SourceFactoryTest
 {
     @Inject

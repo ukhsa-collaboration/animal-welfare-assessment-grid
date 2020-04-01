@@ -7,13 +7,13 @@ import org.testng.annotations.BeforeClass;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 
-import uk.gov.phe.erdst.sc.awag.datamodel.client.AssessmentClientData;
-import uk.gov.phe.erdst.sc.awag.datamodel.client.AssessmentClientFactor;
 import uk.gov.phe.erdst.sc.awag.service.validation.impl.AssessmentScoreTemplateValidator;
 import uk.gov.phe.erdst.sc.awag.service.validation.impl.AssessmentScoreValidator;
 import uk.gov.phe.erdst.sc.awag.shared.test.TestConstants;
 import uk.gov.phe.erdst.sc.awag.utils.GlassfishTestsHelper;
 import uk.gov.phe.erdst.sc.awag.validation.utils.ValidationTestHelper;
+import uk.gov.phe.erdst.sc.awag.webapi.request.AssessmentClientData;
+import uk.gov.phe.erdst.sc.awag.webapi.request.AssessmentClientFactor;
 
 @Test(groups = {TestConstants.TESTNG_CONTAINER_TESTS_GROUP})
 public class AssessmentScoreValidatorTest extends AssessmentValidationTestCommon

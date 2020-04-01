@@ -1,53 +1,134 @@
-<h1 class="page-header text-center">Housing Management</h1>
-<div class="container-fluid" ng-controller="MngmtHousingManagementCtrl as housingMngmtCtrl">
-    <form name="housingManagementForm" class="form-horizontal">
-        <div class="form-group" ng-controller="MngmtHousingSelectionCtrl as housingCtrl">
-            <label for="{{housingCtrl.selectId}}" class="col-xs-3 control-label">Housing name: </label>
-            <div ng-class="{'col-xs-7': housingMngmtCtrl.isNewHousing, 'col-xs-6': !housingMngmtCtrl.isNewHousing}">
-                <aw-search-select2 class="form-control" elem-id="{{housingCtrl.selectId}}" controller="housingCtrl"></aw-search-select2>
+<h1 class="page-header text-center">
+    Housing Management
+</h1>
+
+<div class="container-fluid">
+
+    <accordion close-others="false">
+
+        <accordion-group is-open="true">
+
+            <accordion-heading>
+                Housing management
+                <i class="pull-right glyphicon" ng-class="{'glyphicon-chevron-down': true, 'glyphicon-chevron-right': !false}"></i>
+            </accordion-heading>
+
+            <div ng-controller="MngmtHousingManagementCtrl as housingMngmtCtrl">
+
+                <form name="housingManagementForm" class="form-horizontal">
+                    <div class="form-group" ng-controller="MngmtHousingSelectionCtrl as housingCtrl">
+                        <label for="{{housingCtrl.selectId}}" class="col-xs-3 control-label">Housing name: </label>
+                        <div ng-class="{'col-xs-7': housingMngmtCtrl.isNewHousing, 'col-xs-6': !housingMngmtCtrl.isNewHousing}">
+                            <aw-search-select2 class="form-control" elem-id="{{housingCtrl.selectId}}" controller="housingCtrl"></aw-search-select2>
+                        </div>
+                        <div ng-click="housingMngmtCtrl.startUpdate()" ng-hide="housingMngmtCtrl.isNewHousing">
+                            <button type="button" class="btn btn-default btn-sm">
+                                <i class="glyphicon glyphicon-edit"></i>
+                            </button>
+                        </div>            
+                    </div>
+                    <div class="form-group" ng-controller="MngmtHousingSelectionUpdateCtrl as housingUpdateCtrl" ng-show="housingMngmtCtrl.isUpdatingHousing">
+                        <label for="{{housingUpdateCtrl.selectId}}" class="col-xs-3 control-label">Update housing name: </label>
+                        <div ng-class="{'col-xs-7': housingMngmtCtrl.isNewHousing, 'col-xs-6': !housingMngmtCtrl.isNewHousing}">
+                            <aw-select2 elem-id="{{housingUpdateCtrl.selectId}}" controller="housingUpdateCtrl"></aw-select2>
+                        </div>
+                        <div ng-click="housingMngmtCtrl.cancelUpdate()">
+                            <button type="button" class="btn btn-default btn-sm">
+                                <i class="glyphicon glyphicon-remove"></i>
+                            </button>
+                        </div>         
+                    </div>        
+                    <div class="form-group">
+                        <div class="col-xs-12">
+                            <aw-success-display success="housingMngmtCtrl.isSuccess"></aw-success-display>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <div class="col-xs-12">
+                            <aw-error-display errors="housingMngmtCtrl.errors"></aw-error-display>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <hr />
+                    </div>
+                    <div class="row">
+                        <div class="text-center">
+                            <button type="button" class="btn btn-lg btn-success" ng-click="housingMngmtCtrl.submitHousing()" ng-disabled="!housingMngmtCtrl.isNewHousing">
+                                Create
+                            </button>
+                            <button type="button" class="btn btn-lg btn-primary" ng-click="housingMngmtCtrl.updateHousing()" ng-disabled="housingMngmtCtrl.isNewHousing">
+                                Update
+                            </button>
+                            <button type="button" class="btn btn-danger btn-lg" ng-click="housingMngmtCtrl.clearHousing()">
+                                Clear
+                            </button>
+                        </div>
+                    </div>
+                </form>
+
             </div>
-            <div ng-click="housingMngmtCtrl.startUpdate()" ng-hide="housingMngmtCtrl.isNewHousing">
-                <button type="button" class="btn btn-default btn-sm">
-                    <i class="glyphicon glyphicon-edit"></i>
-                </button>
+
+        </accordion-group>
+
+        <accordion-group is-open="false">
+
+            <accordion-heading>
+                Upload Housing File management
+                <i class="pull-right glyphicon" ng-class="{'glyphicon-chevron-down': true, 'glyphicon-chevron-right': !false}"></i>
+            </accordion-heading>
+
+            <div ng-controller="MngmtHousingUploadManagementCtrl as housingUploadMngmtCtrl">
+
+                <form name="housingManagementUploadForm" class="form-horizontal">
+
+                    <div class="form-group" ng-controller="MngmtHousingUploadCtrl as housingUploadCtrl">
+
+                        <label for="{{housingUploadCtrl.uploadId}}" class="col-xs-3 control-label">Upload File: </label>
+
+                        <div class="col-xs-7">
+                            <aw-upload-file elem-id="{{housingUploadCtrl.uploadId}}" controller="housingUploadCtrl"></aw-upload-file>
+                        </div>
+
+                    </div>     
+
+                    <div class="form-group">
+
+                        <div class="col-xs-12">
+                            <aw-success-display success="housingUploadMngmtCtrl.isSuccess"></aw-success-display>
+                        </div>
+
+                    </div>
+
+                    <div class="form-group">
+
+                        <div class="col-xs-12">
+                            <aw-error-display errors="housingUploadMngmtCtrl.errors"></aw-error-display>
+                        </div>
+
+                    </div>
+                       
+                    <div class="row">
+
+                        <div class="text-center">
+
+                            <button type="button" class="btn btn-lg btn-success" ng-click="housingUploadMngmtCtrl.uploadHousing()" 
+                                    ng-disabled="housingUploadMngmtCtrl.isFileSelected">
+                                Upload
+                            </button>
+                            <button type="button" class="btn btn-lg btn-danger" ng-click="housingUploadMngmtCtrl.clearUploadHousing()">
+                                Clear
+                            </button>
+
+                        </div>
+
+                    </div>
+
+                </form>
+
             </div>            
-        </div>
-        <div class="form-group" ng-controller="MngmtHousingSelectionUpdateCtrl as housingUpdateCtrl" ng-show="housingMngmtCtrl.isUpdatingHousing">
-            <label for="{{housingUpdateCtrl.selectId}}" class="col-xs-3 control-label">Update housing name: </label>
-            <div ng-class="{'col-xs-7': housingMngmtCtrl.isNewHousing, 'col-xs-6': !housingMngmtCtrl.isNewHousing}">
-                <aw-select2 elem-id="{{housingUpdateCtrl.selectId}}" controller="housingUpdateCtrl"></aw-select2>
-            </div>
-            <div ng-click="housingMngmtCtrl.cancelUpdate()">
-                <button type="button" class="btn btn-default btn-sm">
-                    <i class="glyphicon glyphicon-remove"></i>
-                </button>
-            </div>         
-        </div>        
-        <div class="form-group">
-            <div class="col-xs-12">
-                <aw-success-display success="housingMngmtCtrl.isSuccess"></aw-success-display>
-            </div>
-        </div>
-        <div class="form-group">
-            <div class="col-xs-12">
-                <aw-error-display errors="housingMngmtCtrl.errors"></aw-error-display>
-            </div>
-        </div>
-        <div class="row">
-            <hr />
-        </div>
-        <div class="row">
-            <div class="text-center">
-                <button type="button" class="btn btn-lg btn-success" ng-click="housingMngmtCtrl.submitHousing()" ng-disabled="!housingMngmtCtrl.isNewHousing">
-                    Create
-                </button>
-                <button type="button" class="btn btn-lg btn-primary" ng-click="housingMngmtCtrl.updateHousing()" ng-disabled="housingMngmtCtrl.isNewHousing">
-                    Update
-                </button>
-                <button type="button" class="btn btn-danger btn-lg" ng-click="housingMngmtCtrl.clearHousing()">
-                    Clear
-                </button>
-            </div>
-        </div>
-    </form>
+
+        </accordion-group>        
+
+    </accordion>
+
 </div>

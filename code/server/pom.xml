@@ -1,22 +1,25 @@
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0
                              http://maven.apache.org/maven-v4_0_0.xsd">
 	<modelVersion>4.0.0</modelVersion>
 
-    <groupId>uk.gov.phe.erdst.sc.awag</groupId>
+	<groupId>uk.gov.phe.erdst.sc.awag</groupId>
 	<artifactId>animal-welfare-system</artifactId>
 	<packaging>war</packaging>
-	<version>5</version>
+	<version>6</version>
 	<name>animal-welfare-system</name>
 
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-		<compilation.target>1.7</compilation.target>
-		<compilation.source>1.7</compilation.source>
-		<extralibs.postgresql>${project.basedir}/glassfish-config/postgresql-9.3-1101.jdbc41.jar</extralibs.postgresql>
+		<compilation.target>1.8</compilation.target>
+		<compilation.source>1.8</compilation.source>
+		<jersey.version>2.27</jersey.version>
+		<postgresql.version>42.2.5</postgresql.version>
+		<extralibs.postgresql>${project.basedir}/glassfish-config/postgresql-${postgresql.version}.jar</extralibs.postgresql>
 		<testng.groups.unit>unit</testng.groups.unit>
 		<testng.groups.containerBased>container-based</testng.groups.containerBased>
-		<container.glassfish.installation.root>C:/glassfish4/glassfish</container.glassfish.installation.root>
+		<container.glassfish.installation.root>C:/payara/payara5</container.glassfish.installation.root>
 		<memory.options.maxPermSize>-XX:MaxPermSize=128m</memory.options.maxPermSize>
 	</properties>
 
@@ -37,6 +40,7 @@
 			<version>2.0</version>
 			<scope>runtime</scope>
 		</dependency>
+
 		<dependency>
 			<groupId>javax.servlet</groupId>
 			<artifactId>javax.servlet-api</artifactId>
@@ -53,10 +57,11 @@
 			<artifactId>commons-lang3</artifactId>
 			<version>3.3.2</version>
 		</dependency>
+
 		<dependency>
 			<groupId>org.testng</groupId>
 			<artifactId>testng</artifactId>
-			<version>6.1.1</version>
+			<version>6.9.9</version>
 			<scope>test</scope>
 		</dependency>
 		<dependency>
@@ -64,21 +69,24 @@
 			<artifactId>gson</artifactId>
 			<version>2.2.4</version>
 		</dependency>
+
 		<dependency>
 			<groupId>javax</groupId>
 			<artifactId>javaee-api</artifactId>
-			<version>7.0</version>
+			<version>8.0</version>
 			<scope>provided</scope>
 		</dependency>
+
 		<dependency>
 			<groupId>joda-time</groupId>
 			<artifactId>joda-time</artifactId>
 			<version>2.3</version>
 		</dependency>
+
 		<dependency>
-			<groupId>org.glassfish.main.extras</groupId>
-			<artifactId>glassfish-embedded-all</artifactId>
-			<version>4.1</version>
+			<groupId>fish.payara.extras</groupId>
+			<artifactId>payara-embedded-all</artifactId>
+			<version>5.194</version>
 			<scope>test</scope>
 		</dependency>
 		<dependency>
@@ -87,10 +95,40 @@
 			<version>3.0</version>
 			<scope>test</scope>
 		</dependency>
+		<dependency>
+			<groupId>com.opencsv</groupId>
+			<artifactId>opencsv</artifactId>
+			<version>3.7</version>
+		</dependency>
+
+		<dependency>
+			<groupId>javax.ws.rs</groupId>
+			<artifactId>javax.ws.rs-api</artifactId>
+			<version>2.1</version>
+			<scope>provided</scope>
+		</dependency>
+
+		<dependency>
+			<groupId>org.glassfish.jersey.media</groupId>
+			<artifactId>jersey-media-json-jackson</artifactId>
+			<version>${jersey.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>org.glassfish.jersey.core</groupId>
+			<artifactId>jersey-server</artifactId>
+			<version>${jersey.version}</version>
+			<scope>provided</scope>
+		</dependency>
+		<dependency>
+		    <groupId>org.glassfish.jersey.media</groupId>
+		    <artifactId>jersey-media-multipart</artifactId>
+		    <version>${jersey.version}</version>
+		</dependency>
         <dependency>
-            <groupId>com.opencsv</groupId>
-            <artifactId>opencsv</artifactId>
-            <version>3.7</version>
+        	<groupId>org.hamcrest</groupId>
+        	<artifactId>hamcrest-core</artifactId>
+        	<version>1.3</version>
+        	<scope>test</scope>
         </dependency>
 
 	</dependencies>
@@ -107,36 +145,27 @@
 						<target>${compilation.target}</target>
 					</configuration>
 				</plugin>
+				<plugin>
+					<groupId>org.apache.maven.plugins</groupId>
+					<artifactId>maven-antrun-plugin</artifactId>
+					<version>1.8</version>
+				</plugin>
 			</plugins>
 		</pluginManagement>
 		<plugins>
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-surefire-plugin</artifactId>
-				<version>2.17</version>
+				<version>2.19.1</version>
 				<configuration>
-					<groups>${testng.groups.unit}</groups>				
+					<!-- Default test group to run -->
+					<groups>${testng.groups.unit}</groups>
 				</configuration>
-				<executions>
-					<execution>
-						<id>release-test</id>
-						<phase>package</phase>
-						<goals>
-							<goal>test</goal>
-						</goals>
-						<configuration>
-							<groups>${testng.groups.unit}, ${testng.groups.containerBased}</groups>
-							<additionalClasspathElements>
-								<additionalClasspathElement>${extralibs.postgresql}</additionalClasspathElement>
-							</additionalClasspathElements>
-							<argLine>${memory.options.maxPermSize}</argLine>
-							<systemPropertyVariables>
-								<glassfishIntallationRoot>${container.glassfish.installation.root}</glassfishIntallationRoot>
-								<awProjectName>${project.name}</awProjectName>
-							</systemPropertyVariables>
-						</configuration>
-					</execution>
-				</executions>
+			</plugin>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-resources-plugin</artifactId>
+				<version>3.1.0</version>
 			</plugin>
 		</plugins>
 	</build>
@@ -150,17 +179,127 @@
 						<groupId>org.apache.maven.plugins</groupId>
 						<artifactId>maven-surefire-plugin</artifactId>
 						<configuration>
-						    <argLine>${memory.options.maxPermSize}</argLine>
-						    <skipAfterFailureCount>1</skipAfterFailureCount>
+							<argLine>${memory.options.maxPermSize}</argLine>
+							<skipAfterFailureCount>1</skipAfterFailureCount>
 							<groups>${testng.groups.containerBased}</groups>
 							<additionalClasspathElements>
 								<additionalClasspathElement>${extralibs.postgresql}</additionalClasspathElement>
 							</additionalClasspathElements>
 							<systemPropertyVariables>
-								<glassfishIntallationRoot>${container.glassfish.installation.root}</glassfishIntallationRoot>
+								<glassfishInstallationRoot>${container.glassfish.installation.root}</glassfishInstallationRoot>
 								<awProjectName>${project.name}</awProjectName>
 							</systemPropertyVariables>
 						</configuration>
+					</plugin>
+				</plugins>
+			</build>
+		</profile>
+
+
+
+		<profile>
+			<id>jax-rs-api-docs-gen</id>
+			<properties>
+				<mvn404ResponseJson>404 { "errors": [ "string" ] }</mvn404ResponseJson>
+				<mvn400ResponseJson>400 { "errors": [ "string" ] }</mvn400ResponseJson>
+				<mvn500ResponseJson>500 Internal Server Error</mvn500ResponseJson>
+				<mvnDateFormatJavaDoc>field format: yyyy-MM-dd'T'HH:mm:ss.SSS'Z'</mvnDateFormatJavaDoc>
+				<mvnPagingOffsetValidValueJavaDoc>page number >= 0</mvnPagingOffsetValidValueJavaDoc>
+				<mvnPagingLimitValidValueJavaDoc>number of entities per page > 0</mvnPagingLimitValidValueJavaDoc>
+
+				<originalSrcTmpDir>${basedir}/target/original-sources</originalSrcTmpDir>
+				<jaxRsResourceSrcDir>src/main/java/uk/gov/phe/erdst/sc/awag/webapi/resource/</jaxRsResourceSrcDir>
+			</properties>
+			<build>
+				<plugins>
+					<plugin>
+						<groupId>com.sebastian-daschner</groupId>
+						<artifactId>jaxrs-analyzer-maven-plugin</artifactId>
+						<version>0.17</version>
+						<executions>
+							<execution>
+								<phase>compile</phase>
+								<goals>
+									<goal>analyze-jaxrs</goal>
+								</goals>
+								<configuration>
+									<backend>swagger</backend>
+									<deployedDomain>example.com</deployedDomain>
+								</configuration>
+							</execution>
+						</executions>
+					</plugin>
+					<plugin>
+						<groupId>org.apache.maven.plugins</groupId>
+						<artifactId>maven-antrun-plugin</artifactId>
+						<executions>
+							<execution>
+								<id>copy-to-tmp-and-replace-source</id>
+								<phase>process-resources</phase>
+								<configuration>
+									<target>
+										<copy todir="${originalSrcTmpDir}" verbose="false"
+											overwrite="true">
+											<fileset dir="${jaxRsResourceSrcDir}">
+												<exclude name="GlobalResource.java" />
+												<exclude name="MyJacksonObjectMapper.java" />
+											</fileset>
+										</copy>
+										<replace token="mvn404ResponseJson"
+											value="${mvn404ResponseJson}"
+											dir="${jaxRsResourceSrcDir}" summary="yes">
+											<include name="**/*.java" />
+										</replace>
+                                        <replace token="mvn400ResponseJson"
+                                            value="${mvn400ResponseJson}"
+                                            dir="${jaxRsResourceSrcDir}" summary="yes">
+                                            <include name="**/*.java" />
+                                        </replace>
+                                        <replace token="mvn500ResponseJson"
+                                            value="${mvn500ResponseJson}"
+                                            dir="${jaxRsResourceSrcDir}" summary="yes">
+                                            <include name="**/*.java" />
+                                        </replace>
+                                        <replace token="mvnDateFormatJavaDoc"
+                                            value="${mvnDateFormatJavaDoc}"
+                                            dir="${jaxRsResourceSrcDir}" summary="yes">
+                                            <include name="**/*.java" />
+                                        </replace>
+                                        <replace token="mvnPagingOffsetValidValueJavaDoc"
+                                            value="${mvnPagingOffsetValidValueJavaDoc}"
+                                            dir="${jaxRsResourceSrcDir}" summary="yes">
+                                            <include name="**/*.java" />
+                                        </replace>
+                                        <replace token="mvnPagingLimitValidValueJavaDoc"
+                                            value="${mvnPagingLimitValidValueJavaDoc}"
+                                            dir="${jaxRsResourceSrcDir}" summary="yes">
+                                            <include name="**/*.java" />
+                                        </replace>
+									</target>
+								</configuration>
+								<goals>
+									<goal>run</goal>
+								</goals>
+							</execution>
+							<execution>
+								<id>revert-source-from-tmp</id>
+								<phase>compile</phase>
+								<configuration>
+									<target>
+										<copy todir="${jaxRsResourceSrcDir}" verbose="false"
+											overwrite="true">
+											<fileset dir="${originalSrcTmpDir}">
+												<exclude name="GlobalResource.java" />
+												<exclude name="MyJacksonObjectMapper.java" />
+											</fileset>
+										</copy>
+									</target>
+								</configuration>
+								<goals>
+									<goal>run</goal>
+								</goals>
+							</execution>
+						</executions>
 					</plugin>
 				</plugins>
 			</build>

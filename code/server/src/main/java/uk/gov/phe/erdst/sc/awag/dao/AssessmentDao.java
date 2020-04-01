@@ -6,8 +6,9 @@ import java.util.List;
 import uk.gov.phe.erdst.sc.awag.datamodel.Assessment;
 import uk.gov.phe.erdst.sc.awag.datamodel.AssessmentScore;
 import uk.gov.phe.erdst.sc.awag.exceptions.AWNoSuchEntityException;
+import uk.gov.phe.erdst.sc.awag.exceptions.AWNonUniqueException;
 
-public interface AssessmentDao
+public interface AssessmentDao extends UniqueDao
 {
     Collection<Assessment> getAssessments(Integer offset, Integer limit);
 
@@ -31,7 +32,7 @@ public interface AssessmentDao
     List<Assessment> getAnimalAssessmentsBetween(String dateFrom, String dateTo, Long animalId, boolean isComplete,
         Integer offset, Integer limit);
 
-    Long getCountAnimalAssessmentsBetween(String dateFrom, String dateTo, Long animalId);
+    Long getCountAnimalAssessmentsBetween(String dateFrom, String dateTo, Long animalId, boolean isComplete);
 
     Collection<Assessment> getAssessments(Long animalId, String dateFrom, String dateTo, Long userId, Long reasonId,
         Long studyId, Boolean isComplete, Integer offset, Integer limit);
@@ -59,4 +60,7 @@ public interface AssessmentDao
     Long getAssessmentsByCompleteness(boolean isComplete);
 
     Collection<Assessment> getAssessmentsByIds(Long... ids);
+
+    void upload(Collection<Assessment> assessments) throws AWNonUniqueException;
+
 }

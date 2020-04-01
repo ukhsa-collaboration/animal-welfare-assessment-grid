@@ -6,9 +6,11 @@ import java.util.List;
 
 import javax.ejb.Stateless;
 import javax.persistence.EntityManager;
+import javax.persistence.NoResultException;
 import javax.persistence.PersistenceContext;
 import javax.persistence.PersistenceException;
 import javax.persistence.Query;
+import javax.persistence.TypedQuery;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -31,9 +33,9 @@ public class AnimalDaoImpl implements AnimalDao
 
     @SuppressWarnings("unchecked")
     @Override
-    public Collection<Animal> getNonDeletedAnimals(Integer offset, Integer limit)
+    public List<Animal> getNonDeletedAnimals(Integer offset, Integer limit)
     {
-        Query getAnimalsQuery = mEntityManager.createNamedQuery(Animal.Q_FIND_ALL_DELETED_OR_NOT, Animal.class)
+        Query getAnimalsQuery = mEntityManager.createNamedQuery(Animal.Q_FIND_ALL_DELETED_OR_NOT_ORDERED, Animal.class)
             .setParameter("isDeleted", false);
         DaoUtils.setOffset(getAnimalsQuery, offset);
         DaoUtils.setLimit(getAnimalsQuery, limit);
@@ -46,11 +48,25 @@ public class AnimalDaoImpl implements AnimalDao
         Animal animal = mEntityManager.find(Animal.class, animalId);
         if (animal == null)
         {
-            String errMsg = getNoSuchAnimalMessage(animalId);
-            LOGGER.error(errMsg);
-            throw new AWNoSuchEntityException(errMsg);
+            throw handleNoSuchAnimalResult(animalId);
         }
         return animal;
+    }
+
+    @Override
+    public Animal getAnimal(String animalNumber) throws AWNoSuchEntityException // TODO integration test
+    {
+        TypedQuery<Animal> query = mEntityManager.createNamedQuery(Animal.Q_FIND_ANIMAL_BY_NUMBER, Animal.class)
+            .setParameter("animalNumber", animalNumber);
+
+        try
+        {
+            return query.getSingleResult();
+        }
+        catch (NoResultException e)
+        {
+            throw handleNoSuchAnimalResult(0L); // TODO what to do?
+        }
     }
 
     @Override
@@ -67,7 +83,12 @@ public class AnimalDaoImpl implements AnimalDao
             if (DaoUtils.isUniqueConstraintViolation(ex))
             {
                 String errMsg = getNonUniqueAnimalNoMessage(animal);
-                LOGGER.error(errMsg);
+
+                if (LOGGER.isDebugEnabled())
+                {
+                    LOGGER.debug(errMsg);
+                }
+
                 throw new AWNonUniqueException(errMsg);
             }
             else
@@ -92,22 +113,27 @@ public class AnimalDaoImpl implements AnimalDao
     }
 
     @Override
-    public void realDelete(Long animalId)
-    {
-        mEntityManager.createNamedQuery(Animal.Q_DELETE_ANIMAL_BY_ID).setParameter("id", animalId).executeUpdate();
-    }
-
-    @Override
-    public void updateIsDeleted(Long animalId, boolean isDeleted) throws AWNoSuchEntityException
+    public void realDelete(Long animalId) throws AWNoSuchEntityException
     {
         Animal animal = mEntityManager.find(Animal.class, animalId);
         if (animal == null)
         {
-            String errMsg = getNoSuchAnimalMessage(animalId);
-            LOGGER.error(errMsg);
-            throw new AWNoSuchEntityException(errMsg);
+            throw handleNoSuchAnimalResult(animalId);
+        }
+
+        mEntityManager.remove(animal);
+    }
+
+    @Override
+    public Animal updateIsDeleted(Long animalId, boolean isDeleted) throws AWNoSuchEntityException
+    {
+        Animal animal = mEntityManager.find(Animal.class, animalId);
+        if (animal == null)
+        {
+            throw handleNoSuchAnimalResult(animalId);
         }
         animal.setIsDeleted(isDeleted);
+        return animal;
     }
 
     @Override
@@ -116,9 +142,7 @@ public class AnimalDaoImpl implements AnimalDao
         Animal animal = mEntityManager.find(Animal.class, animalId);
         if (animal == null)
         {
-            String errMsg = getNoSuchAnimalMessage(animalId);
-            LOGGER.error(errMsg);
-            throw new AWNoSuchEntityException(errMsg);
+            throw handleNoSuchAnimalResult(animalId);
         }
         animal.setIsAlive(isAlive);
     }
@@ -129,9 +153,7 @@ public class AnimalDaoImpl implements AnimalDao
         Animal animal = mEntityManager.find(Animal.class, animalId);
         if (animal == null)
         {
-            String errMsg = getNoSuchAnimalMessage(animalId);
-            LOGGER.error(errMsg);
-            throw new AWNoSuchEntityException(errMsg);
+            throw handleNoSuchAnimalResult(animalId);
         }
         animal.setIsAssessed(isAssessed);
     }
@@ -164,10 +186,19 @@ public class AnimalDaoImpl implements AnimalDao
     }
 
     @Override
-    public Animal getNonDeletedAnimalById(Long animalId)
+    public Animal getNonDeletedAnimalById(Long animalId) throws AWNoSuchEntityException
     {
-        return mEntityManager.createNamedQuery(Animal.Q_FIND_NON_DELETED_BY_ID, Animal.class)
-            .setParameter("id", animalId).getSingleResult();
+        TypedQuery<Animal> query = mEntityManager.createNamedQuery(Animal.Q_FIND_NON_DELETED_BY_ID, Animal.class)
+            .setParameter("id", animalId);
+
+        try
+        {
+            return query.getSingleResult();
+        }
+        catch (NoResultException e)
+        {
+            throw handleNoSuchAnimalResult(animalId);
+        }
     }
 
     private static String getNoSuchAnimalMessage(Long animalId)
@@ -178,6 +209,16 @@ public class AnimalDaoImpl implements AnimalDao
     private static String getNonUniqueAnimalNoMessage(Animal animal)
     {
         return DaoUtils.getUniqueConstraintViolationMessage(DaoConstants.PROP_ANIMAL_NUMBER, animal.getAnimalNumber());
+    }
+
+    private static AWNoSuchEntityException handleNoSuchAnimalResult(Long animalId)
+    {
+        String errMsg = getNoSuchAnimalMessage(animalId);
+        if (LOGGER.isDebugEnabled())
+        {
+            LOGGER.debug(errMsg);
+        }
+        return new AWNoSuchEntityException(errMsg);
     }
 
     @SuppressWarnings("unchecked")
@@ -204,6 +245,17 @@ public class AnimalDaoImpl implements AnimalDao
         return (Long) getCountQuery.getResultList().get(0);
     }
 
+    @SuppressWarnings("unchecked")
+    @Override
+    public List<Animal> getDeletedAnimals(Integer offset, Integer limit)
+    {
+        Query getAnimalsQuery = mEntityManager.createNamedQuery(Animal.Q_FIND_ALL_DELETED_OR_NOT_ORDERED, Animal.class)
+            .setParameter("isDeleted", true);
+        DaoUtils.setOffset(getAnimalsQuery, offset);
+        DaoUtils.setLimit(getAnimalsQuery, limit);
+        return getAnimalsQuery.getResultList();
+    }
+
     @Override
     public Long getCountNonDeletedAnimals()
     {
@@ -211,4 +263,50 @@ public class AnimalDaoImpl implements AnimalDao
             .setParameter("isDeleted", false);
         return (Long) getCountQuery.getResultList().get(0);
     }
+
+    @Override
+    public Long getCountDeletedAnimals()
+    {
+        Query getCountQuery = mEntityManager.createNamedQuery(Animal.Q_FIND_COUNT_ALL_DELETED_OR_NOT, Long.class)
+            .setParameter("isDeleted", true);
+        return (Long) getCountQuery.getResultList().get(0);
+    }
+
+    @Override
+    public void upload(Collection<Animal> animals) throws AWNonUniqueException
+    {
+        Animal lastAnimal = null;
+        try
+        {
+            for (Animal animal : animals)
+            {
+                lastAnimal = animal;
+                mEntityManager.persist(animal);
+            }
+            if (!animals.isEmpty())
+            {
+                mEntityManager.flush();
+            }
+        }
+        catch (PersistenceException ex)
+        {
+            if (DaoUtils.isUniqueConstraintViolation(ex))
+            {
+                String errMsg = getNonUniqueAnimalMessage(lastAnimal);
+                LOGGER.error(errMsg);
+                throw new AWNonUniqueException(errMsg);
+            }
+            else
+            {
+                LOGGER.error(ex.getMessage());
+                throw ex;
+            }
+        }
+    }
+
+    private static String getNonUniqueAnimalMessage(Animal animal)
+    {
+        return DaoUtils.getUniqueConstraintViolationMessage(DaoConstants.PROP_SOURCE_NAME, animal.getAnimalNumber());
+    }
+
 }

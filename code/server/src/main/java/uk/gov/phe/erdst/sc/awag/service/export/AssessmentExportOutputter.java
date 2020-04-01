@@ -13,13 +13,14 @@ import java.util.Set;
 import javax.ejb.Stateless;
 import javax.servlet.http.HttpServletResponse;
 
-import uk.gov.phe.erdst.sc.awag.dto.FactorScoredDto;
-import uk.gov.phe.erdst.sc.awag.dto.ParameterScoredDto;
-import uk.gov.phe.erdst.sc.awag.dto.assessment.ParametersOrdering;
-import uk.gov.phe.erdst.sc.awag.servlets.utils.ServletUtils;
-import uk.gov.phe.erdst.sc.awag.utils.Constants;
-
 import com.opencsv.CSVWriter;
+
+import uk.gov.phe.erdst.sc.awag.datamodel.utils.ParametersOrdering;
+import uk.gov.phe.erdst.sc.awag.service.CwasCalculator;
+import uk.gov.phe.erdst.sc.awag.utils.Constants;
+import uk.gov.phe.erdst.sc.awag.utils.WebApiUtils;
+import uk.gov.phe.erdst.sc.awag.webapi.response.factor.FactorScoredDto;
+import uk.gov.phe.erdst.sc.awag.webapi.response.parameter.ParameterScoredDto;
 
 @Stateless
 public class AssessmentExportOutputter
@@ -36,8 +37,8 @@ public class AssessmentExportOutputter
     {
         String fileName = getCsvFileName();
 
-        ServletUtils.setContentTypeToCsv(response);
-        ServletUtils.setContentDispositionHeader(response, fileName);
+        WebApiUtils.setContentTypeToCsv(response);
+        WebApiUtils.setContentDispositionHeader(response, fileName);
 
         writeCsv(export, fileName, response.getOutputStream());
     }
@@ -91,7 +92,7 @@ public class AssessmentExportOutputter
         row.performedBy = exportEntry.getPerformedBy();
         row.housing = exportEntry.getHousing();
 
-        row.cwas = ExportUtils.formatNumericalValues(exportEntry.cwas);
+        row.cwas = ExportUtils.formatNumericalValues(CwasCalculator.roundCwas(exportEntry.cwas));
 
         Set<ParameterScoredDto> scoresDto = exportEntry.getScores();
         List<ParameterScoredDto> scores = new ArrayList<>(scoresDto.size());
@@ -166,14 +167,14 @@ public class AssessmentExportOutputter
         List<String> headers = new ArrayList<>();
 
         headers.add("Animal number");
-        headers.add("DoB");
+        headers.add("Date of Birth"); // TODO changed
         headers.add("Sex");
         headers.add("Species");
         headers.add("Source");
         headers.add("Dam");
         headers.add("Father");
-        headers.add("Study name");
-        headers.add("Stud group name");
+        headers.add("Study name"); // TODO changed
+        headers.add("Study group name");
         headers.add("Assessment Template used");
         headers.add("Assessment date");
         headers.add("Assessment reason");

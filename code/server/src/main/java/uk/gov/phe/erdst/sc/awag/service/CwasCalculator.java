@@ -3,18 +3,19 @@ package uk.gov.phe.erdst.sc.awag.service;
 import java.util.ArrayList;
 import java.util.List;
 
-import javax.ejb.Stateless;
+import uk.gov.phe.erdst.sc.awag.webapi.response.assessment.AssessmentFullDto;
+import uk.gov.phe.erdst.sc.awag.webapi.response.parameter.ParameterScoredDto;
 
-import uk.gov.phe.erdst.sc.awag.dto.ParameterScoredDto;
-import uk.gov.phe.erdst.sc.awag.dto.assessment.AssessmentFullDto;
-
-@Stateless
-public class CwasCalculator
+public final class CwasCalculator
 {
     private static final double FULL_CIRCLE_DEGREES = 360d;
 
+    private CwasCalculator()
+    {
+    }
+
     // CWAS - Cumulative Welfare Assessment Score
-    public double calculateCwas(AssessmentFullDto dto)
+    public static double calculateCwas(AssessmentFullDto dto)
     {
         final double radians = Math.toRadians(FULL_CIRCLE_DEGREES / dto.assessmentParameters.size());
         List<ParameterScoredDto> scoreList = new ArrayList<>(dto.assessmentParameters);
@@ -38,7 +39,16 @@ public class CwasCalculator
         return sum;
     }
 
-    private double calculateTriangleArea(double radians, double adjacentSide1, double adjacentSide2)
+    // CS:OFF: MagicNumber
+    public static double roundCwas(double cwas)
+    {
+        double denominator = 100d;
+        return Math.round(cwas * 100) / denominator;
+    }
+
+    // CS:ON
+
+    private static double calculateTriangleArea(double radians, double adjacentSide1, double adjacentSide2)
     {
         // CS:OFF: MagicNumber
         return 0.5d * Math.sin(radians) * adjacentSide1 * adjacentSide2;

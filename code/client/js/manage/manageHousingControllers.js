@@ -8,7 +8,9 @@ var housingMngmtFormEvents = {
     onHousingRemovedClearUpdate : "onHousingRemovedClearUpdate",
     onHousingUpdateStarted : "onHousingUpdateStarted",
     onHousingUpdateFinished : "onHousingUpdateFinished",
-    onHousingUpdated : "onHousingUpdated"
+    onHousingUpdated : "onHousingUpdated",
+    onHousingUploadSelected : "onHousingUploadSelected",
+    onHousingUploadClearSelected : "onHousingUploadClearSelected"
 };
 
 manageHousingControllers.controller('MngmtHousingSelectionCtrl', ['$scope', 'formService', 'housingService', 'appConfig',
@@ -88,8 +90,7 @@ function($scope, appConfig, housingService, $timeout)
     {
         this.housing = {
             housingId : appConfig.config.unassignedId,
-            housingName : undefined,
-            housingFactors: []
+            housingName : undefined
         };
         this.errors = [];
     };
@@ -192,7 +193,7 @@ function($scope, appConfig, housingService, $timeout)
     {
         that.isSuccess = false;
         that.errors = errors;
-    }
+    };
 
     var submitHousingCallback = function(data)
     {
@@ -237,4 +238,89 @@ function($scope, appConfig, housingService, $timeout)
     });
 
     this.resetHousingContainer();
+}]);
+
+manageHousingControllers.controller('MngmtHousingUploadCtrl', ['$scope', 'appConfig', 'housingService', '$timeout',
+function($scope, appConfig, housingService, $timeout)
+{
+    this.uploadId = "uploadFile";
+    this.uploadElement = null;
+    var that = this;
+
+    this.onFileUploadChange = function(event)
+    {
+        that.uploadElement = event.target;
+        $scope.$emit(housingMngmtFormEvents.onHousingUploadSelected, event.target.files);
+    };
+
+    $scope.$on(housingMngmtFormEvents.onHousingUploadClearSelected, function(event)
+    {
+        that.uploadElement.value = null;
+    });    
+
+}]);
+
+manageHousingControllers.controller('MngmtHousingUploadManagementCtrl', ['$scope', 'appConfig', 'housingService', '$timeout',
+function($scope, appConfig, housingService, $timeout)
+{
+    this.fileList = {};
+    this.isSuccess = false;
+    this.errors = [];
+    this.isFileSelected = true;
+    var that = this;
+
+    this.resetErrors = function()
+    {
+        this.errors = [];
+    };
+
+    var onErrorCallBack = function(errors)
+    {
+        that.isSuccess = false;
+        that.errors = errors;
+    };
+
+    var uploadHousingCallback = function(data)
+    {
+        that.isSuccess = true;
+        that.resetErrors();
+
+    };
+
+    this.setDisabled = function(isDisabled)
+    {
+        this.isFileSelected = isDisabled;
+        $timeout(function(){
+            $scope.$apply();
+        });
+    };
+
+
+    this.setUploadFiles = function(fileList) 
+    {
+        Object.assign(this.fileList, fileList);
+        that.setDisabled(false);
+    };
+
+    this.uploadHousing = function()
+    {
+        var fd = new FormData();
+        fd.append('file', this.fileList[0]);
+
+        housingService.uploadHousing(fd, uploadHousingCallback, onErrorCallBack);
+    };
+
+    this.clearUploadHousing = function()
+    {
+        this.fileList = {};
+        this.setDisabled(true);
+        this.resetErrors();
+        $scope.$broadcast(housingMngmtFormEvents.onHousingUploadClearSelected);        
+    };
+
+    $scope.$on(housingMngmtFormEvents.onHousingUploadSelected, function(event, fileList)
+    {
+        that.setUploadFiles(fileList);
+    });
+    
 }]);

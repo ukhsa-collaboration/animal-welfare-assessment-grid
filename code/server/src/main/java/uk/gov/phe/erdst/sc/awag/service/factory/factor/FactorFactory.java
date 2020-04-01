@@ -3,8 +3,9 @@ package uk.gov.phe.erdst.sc.awag.service.factory.factor;
 import javax.ejb.Stateless;
 
 import uk.gov.phe.erdst.sc.awag.datamodel.Factor;
-import uk.gov.phe.erdst.sc.awag.datamodel.client.FactorClientData;
+import uk.gov.phe.erdst.sc.awag.datamodel.ImportFactor;
 import uk.gov.phe.erdst.sc.awag.utils.Constants;
+import uk.gov.phe.erdst.sc.awag.webapi.request.FactorClientData;
 
 @Stateless
 public class FactorFactory
@@ -17,6 +18,15 @@ public class FactorFactory
             scoringFactor.setId(clientData.factorId);
         }
         scoringFactor.setName(clientData.factorName);
+        scoringFactor.setFactorDescription(clientData.factorDescription);
+        return scoringFactor;
+    }
+
+    public Factor create(ImportFactor importFactor)
+    {
+        Factor scoringFactor = new Factor();
+        scoringFactor.setName(importFactor.getFactorName());
+        scoringFactor.setFactorDescription(importFactor.getFactorDescription());
         return scoringFactor;
     }
 
@@ -26,6 +36,7 @@ public class FactorFactory
         {
             scoringFactor.setId(clientData.factorId);
             scoringFactor.setName(clientData.factorName);
+            scoringFactor.setFactorDescription(clientData.factorDescription);
         }
     }
 }

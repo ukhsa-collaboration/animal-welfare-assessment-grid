@@ -12,10 +12,10 @@ import org.testng.annotations.BeforeClass;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 
-import uk.gov.phe.erdst.sc.awag.datamodel.client.AssessmentReasonClientData;
 import uk.gov.phe.erdst.sc.awag.shared.test.TestConstants;
 import uk.gov.phe.erdst.sc.awag.utils.GuiceHelper;
 import uk.gov.phe.erdst.sc.awag.utils.StringHelper;
+import uk.gov.phe.erdst.sc.awag.webapi.request.AssessmentReasonClientData;
 
 @Test(groups = {TestConstants.TESTNG_UNIT_TESTS_GROUP})
 public class ReasonValidationTest

@@ -1,14 +1,17 @@
 package uk.gov.phe.erdst.sc.awag.dao.impl;
 
+import java.util.Collection;
 import java.util.HashSet;
 import java.util.LinkedHashSet;
 import java.util.Set;
 
 import javax.ejb.Stateless;
 import javax.persistence.EntityManager;
+import javax.persistence.NoResultException;
 import javax.persistence.PersistenceContext;
 import javax.persistence.PersistenceException;
 import javax.persistence.Query;
+import javax.persistence.TypedQuery;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -95,6 +98,27 @@ public class StudyGroupDaoImpl implements StudyGroupDao
         return studyGroup;
     }
 
+    @Override
+    public StudyGroup getStudyGroup(String studyGroupNumber) throws AWNoSuchEntityException // TODO integration test
+    {
+        TypedQuery<StudyGroup> query = mEntityManager
+            .createNamedQuery(StudyGroup.Q_FIND_STUDY_GROUP_BY_NUMBER, StudyGroup.class)
+            .setParameter("studyGroupNumber", studyGroupNumber);
+
+        try
+        {
+            return query.getSingleResult();
+        }
+        catch (NoResultException e)
+        {
+            String errMsg = getNoSuchStudyGroupMessage(0L); // TODO to complete
+            LOGGER.error(errMsg);
+            throw new AWNoSuchEntityException(errMsg);
+
+        }
+
+    }
+
     @SuppressWarnings("unchecked")
     @Override
     public Set<StudyGroup> getStudyGroupsLike(String like, Integer offset, Integer limit)
@@ -135,4 +159,35 @@ public class StudyGroupDaoImpl implements StudyGroupDao
     {
         return mEntityManager.createNamedQuery(StudyGroup.Q_FIND_COUNT_ALL, Long.class).getResultList().get(0);
     }
+
+    @Override
+    public void upload(Collection<StudyGroup> studyGroups) throws AWNonUniqueException
+    {
+        StudyGroup lastStudyGroup = null;
+        try
+        {
+            for (StudyGroup studyGroup : studyGroups)
+            {
+                lastStudyGroup = studyGroup;
+                mEntityManager.persist(studyGroup);
+            }
+            mEntityManager.flush();
+        }
+        catch (PersistenceException ex)
+        {
+            if (DaoUtils.isUniqueConstraintViolation(ex))
+            {
+                String errMsg = DaoUtils.getNoSuchEntityMessage(StudyGroup.class.getName(), lastStudyGroup);
+                LOGGER.error(errMsg);
+                throw new AWNonUniqueException(errMsg);
+            }
+            else
+            {
+                LOGGER.error(ex.getMessage());
+                throw ex;
+            }
+        }
+
+    }
+
 }

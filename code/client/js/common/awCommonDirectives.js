@@ -1,8 +1,8 @@
 var awCommonDirectivesModule = angular.module('awCommonDirectives', ['graphDrawServices','formatServices', 'graphUtilsModule']);
 
-awCommonDirectivesModule.directive('awErrorDisplay', function(){
+awCommonDirectivesModule.directive('awErrorDisplay', function() {
     return{
-        templateUrl: 'partials/error.html',     
+        templateUrl: 'partials/common/error.html',
         restrict: 'E',
         replace : true,
         scope : {
@@ -11,9 +11,9 @@ awCommonDirectivesModule.directive('awErrorDisplay', function(){
     };
 });
 
-awCommonDirectivesModule.directive('awSuccessDisplay', function($timeout){
+awCommonDirectivesModule.directive('awSuccessDisplay', function($timeout) {
     return{
-        templateUrl: 'partials/success.html',
+        templateUrl: 'partials/common/success.html',
         restrict: 'E',
         replace : true,
         scope : {
@@ -25,15 +25,14 @@ awCommonDirectivesModule.directive('awSuccessDisplay', function($timeout){
                     $timeout(function(){
                         $scope.success = false;
                     }, 2000)
-                }                
+                }
             });
         }
     };
 });
 
 
-awCommonDirectivesModule.directive('awDatePicker', function()
-{
+awCommonDirectivesModule.directive('awDatePicker', function() {
     return {
         restrict : 'E',
         replace : true,
@@ -42,7 +41,7 @@ awCommonDirectivesModule.directive('awDatePicker', function()
             todayHighlight : '=?',
             controller : '='
         },
-        template : '<div class="input-group"><input type="text" class="form-control datepicker input-sm" placeholder="Select a date..."">' +
+        template : '<div class="input-group"><input type="text" autocomplete="nope" class="form-control datepicker input-sm" placeholder="Select a date..."">' +
             '<span class="input-group-addon"><span class="glyphicon glyphicon-calendar"></span></span></div>',
         link : function($scope, $element)
         {
@@ -62,8 +61,32 @@ awCommonDirectivesModule.directive('awDatePicker', function()
     };
 });
 
-awCommonDirectivesModule.directive('awSelect2', function()
-{
+
+awCommonDirectivesModule.directive('awUploadFile', function() {
+    return {
+        //templateUrl: 'partials/common/file-upload.html',
+        restrict: 'E',
+        template : '<input type="file" class="form-control">',
+        scope : {
+            elemId : '@',
+            controller : '='
+        },
+        link: function($scope, $element) {
+
+            $element.attr('id', $scope.elemId);
+                //$element.children('input').attr('id', $scope.elemId);    //    TODO
+
+            $element.on('change', function(e) {
+                $scope.controller.onFileUploadChange(e);
+            });
+
+        }
+    };
+
+});
+
+
+awCommonDirectivesModule.directive('awSelect2', function() {
     return {
         restrict : 'E',
         replace : true,
@@ -86,8 +109,7 @@ awCommonDirectivesModule.directive('awSelect2', function()
     };
 });
 
-awCommonDirectivesModule.directive('awSearchSelect2', function()
-{
+awCommonDirectivesModule.directive('awSearchSelect2', function() {
 	return {
         restrict : 'E',
         replace : true,
@@ -115,9 +137,9 @@ awCommonDirectivesModule.directive('awSearchSelect2', function()
     };
 });
 
-awCommonDirectivesModule.directive('awLineGraph', ['graphDrawService', 'graphUtils', '$window', function(graphDrawService, graphUtils, $window){
+awCommonDirectivesModule.directive('awLineGraph', ['graphDrawService', 'graphUtils', '$window', function(graphDrawService, graphUtils, $window) {
     return {
-        restrict : 'E',        
+        restrict : 'E',
         template : '<div class="col-md-12"></div>',
         replace : true,
         scope : {
@@ -149,9 +171,9 @@ awCommonDirectivesModule.directive('awLineGraph', ['graphDrawService', 'graphUti
                         options.dimension = graphUtils.getContainerDimension(container);
                         if(options.dimension.height >0 && options.dimension.width >0){
                             graphDrawService.drawTimeline(elem, data, options, click, hover);
-                        }                            
-                    }                    
-                }                                
+                        }
+                    }
+                }
             };
 
             $scope.$watch('data', function(newValue, oldValue) {
@@ -165,7 +187,7 @@ awCommonDirectivesModule.directive('awLineGraph', ['graphDrawService', 'graphUti
             jQuery($window).on('resize', function(){
                 var svgElem = $element[0].childNodes[0];
                 if(angular.isDefined(svgElem)) {
-                    graphDrawService.removeSvg(svgElem);                   
+                    graphDrawService.removeSvg(svgElem);
                 }
                 __drawTimeline($element[0], $scope.data, options, $scope.click, $scope.hover);
             });
@@ -176,7 +198,7 @@ awCommonDirectivesModule.directive('awLineGraph', ['graphDrawService', 'graphUti
                 if(newValue){
                     if(angular.isDefined(svgElem)) {
                         graphDrawService.removeSvg(svgElem);
-                    }                        
+                    }
                     __drawTimeline($element[0], $scope.data, options, $scope.click, $scope.hover);
                 }
             });
@@ -184,7 +206,7 @@ awCommonDirectivesModule.directive('awLineGraph', ['graphDrawService', 'graphUti
     };
 }]);
 
-awCommonDirectivesModule.directive('awRadarChart', ['graphDrawService','formatService', '$window', 'graphUtils', function(graphDrawService, formatService, $window, graphUtils){
+awCommonDirectivesModule.directive('awRadarChart', ['graphDrawService','formatService', '$window', 'graphUtils', function(graphDrawService, formatService, $window, graphUtils) {
     return {
         restrict : 'E',
         template : '<div class="col-md-12"></div>',
@@ -203,14 +225,14 @@ awCommonDirectivesModule.directive('awRadarChart', ['graphDrawService','formatSe
             var __drawRadarChart = function(elem, data, options, click){
                 options.dimension = graphUtils.getContainerDimension(container);
                 if(options.dimension.width > 0 && data.length > 0){
-                    graphDrawService.drawRadarChart(elem, data, options, click);          
+                    graphDrawService.drawRadarChart(elem, data, options, click);
                 }
             }
 
             $scope.$watch('data', function(newValue, oldValue) {
                 if(newValue.length >0){
                      __drawRadarChart($element[0], $scope.data, options, $scope.click);
-                 }           
+                 }
             }, true);
 
            jQuery($window).on('resize', function(){
@@ -222,7 +244,7 @@ awCommonDirectivesModule.directive('awRadarChart', ['graphDrawService','formatSe
            $scope.$watch('refresh', function(newValue, oldValue) {
                 var svgElem = $element[0].childNodes[0];
                 if(newValue){
-                    graphDrawService.removeSvg(svgElem);  
+                    graphDrawService.removeSvg(svgElem);
                     __drawRadarChart($element[0], $scope.data, options, $scope.click);
                 }
            },true);
@@ -244,3 +266,4 @@ awCommonDirectivesModule.directive('awAnimalAssessmentForm', function(){
         }
     };
 });
+

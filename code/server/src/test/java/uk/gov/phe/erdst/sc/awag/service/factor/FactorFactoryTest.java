@@ -4,14 +4,14 @@ import org.testng.Assert;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 
+import com.google.inject.Inject;
+
 import uk.gov.phe.erdst.sc.awag.datamodel.Factor;
-import uk.gov.phe.erdst.sc.awag.datamodel.client.FactorClientData;
+import uk.gov.phe.erdst.sc.awag.deprecated.RequestConverter;
 import uk.gov.phe.erdst.sc.awag.service.factory.factor.FactorFactory;
-import uk.gov.phe.erdst.sc.awag.servlets.utils.RequestConverter;
 import uk.gov.phe.erdst.sc.awag.shared.test.TestConstants;
 import uk.gov.phe.erdst.sc.awag.utils.GuiceHelper;
-
-import com.google.inject.Inject;
+import uk.gov.phe.erdst.sc.awag.webapi.request.FactorClientData;
 
 @Test(groups = {TestConstants.TESTNG_UNIT_TESTS_GROUP})
 public class FactorFactoryTest
@@ -59,4 +59,5 @@ public class FactorFactoryTest
         Assert.assertEquals(factorToUpdate.getId(), FACTOR_ID_NEW);
         Assert.assertEquals(factorToUpdate.getName(), FACTOR_NAME_NEW);
     }
+
 }

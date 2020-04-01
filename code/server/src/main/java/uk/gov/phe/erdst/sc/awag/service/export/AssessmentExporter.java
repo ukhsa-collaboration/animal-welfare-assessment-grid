@@ -1,6 +1,7 @@
 package uk.gov.phe.erdst.sc.awag.service.export;
 
 import java.io.IOException;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.LinkedHashSet;
 import java.util.List;
@@ -8,9 +9,11 @@ import java.util.Set;
 
 import javax.enterprise.context.RequestScoped;
 import javax.inject.Inject;
-import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.validation.ConstraintViolation;
 import javax.validation.Validator;
+
+import com.google.gson.Gson;
 
 import uk.gov.phe.erdst.sc.awag.businesslogic.AssessmentController;
 import uk.gov.phe.erdst.sc.awag.businesslogic.StudyGroupController;
@@ -20,26 +23,21 @@ import uk.gov.phe.erdst.sc.awag.datamodel.AssessmentTemplate;
 import uk.gov.phe.erdst.sc.awag.datamodel.AssessmentTemplateParameterFactor;
 import uk.gov.phe.erdst.sc.awag.datamodel.Study;
 import uk.gov.phe.erdst.sc.awag.datamodel.StudyGroup;
-import uk.gov.phe.erdst.sc.awag.datamodel.client.AssessmentsExportClientData;
-import uk.gov.phe.erdst.sc.awag.datamodel.response.ResponsePayload;
-import uk.gov.phe.erdst.sc.awag.dto.assessment.AssessmentFullDto;
-import uk.gov.phe.erdst.sc.awag.dto.assessment.ParametersOrdering;
-import uk.gov.phe.erdst.sc.awag.exceptions.AWInvalidParameterException;
+import uk.gov.phe.erdst.sc.awag.datamodel.utils.ParametersOrdering;
+import uk.gov.phe.erdst.sc.awag.exceptions.AWInputValidationException;
+import uk.gov.phe.erdst.sc.awag.service.activitylogging.LoggedActions;
+import uk.gov.phe.erdst.sc.awag.service.activitylogging.LoggedActivity;
+import uk.gov.phe.erdst.sc.awag.service.activitylogging.LoggedUser;
 import uk.gov.phe.erdst.sc.awag.service.factory.assessment.AssessmentDtoFactory;
-import uk.gov.phe.erdst.sc.awag.service.logging.LoggedActions;
-import uk.gov.phe.erdst.sc.awag.service.logging.LoggedActivity;
-import uk.gov.phe.erdst.sc.awag.service.logging.LoggedUser;
 import uk.gov.phe.erdst.sc.awag.service.validation.utils.ValidatorUtils;
-import uk.gov.phe.erdst.sc.awag.servlets.utils.RequestConverter;
-import uk.gov.phe.erdst.sc.awag.servlets.utils.ServletConstants;
+import uk.gov.phe.erdst.sc.awag.utils.Constants;
+import uk.gov.phe.erdst.sc.awag.webapi.request.AssessmentsExportClientData;
+import uk.gov.phe.erdst.sc.awag.webapi.response.assessment.AssessmentFullDto;
 
 @RequestScoped
-public class AssessmentExporter implements Exporter
+public class AssessmentExporter
 {
     private static final String DOWNLOAD_STATUS_COOKIE_NAME = "assessmentsExportDownloadStatus";
-
-    @Inject
-    private RequestConverter mRequestConverter;
 
     @Inject
     private AssessmentController mAssessmentController;
@@ -56,81 +54,84 @@ public class AssessmentExporter implements Exporter
     @Inject
     private AssessmentExportOutputter mAssessmentExportOutputter;
 
-    private AssessmentsExportClientData mClientData;
-
-    @Override
-    public void processParameters(HttpServletRequest request, ResponsePayload responsePayload)
-        throws AWInvalidParameterException
-    {
-        String exportData = request.getParameter(ServletConstants.REQ_PARAM_EXPORT_DATA);
-        mClientData = (AssessmentsExportClientData) mRequestConverter.convert(exportData,
-            AssessmentsExportClientData.class);
-
-        ValidatorUtils.validateRequest(mClientData, responsePayload, mRequestValidator);
-    }
-
-    @Override
     @LoggedActivity(actionName = LoggedActions.EXPORT_ASSESSMENTS)
-    public void export(HttpServletResponse response, ResponsePayload responsePayload, LoggedUser loggedUser)
-        throws IOException
+    public void exportData(String rawAssessmentIds, HttpServletResponse response, LoggedUser newApiLoggedUser)
+        throws AWInputValidationException, IOException
     {
-        Collection<Assessment> assessments = mAssessmentController.getAssessments(mClientData.ids);
+        Gson gson = new Gson();
+        Long[] idsParsed = gson.fromJson(rawAssessmentIds, Long[].class);
 
-        AssessmentsExport export = new AssessmentsExport(assessments.size());
+        AssessmentsExportClientData exportRequest = new AssessmentsExportClientData();
+        exportRequest.ids = idsParsed;
 
-        Long prevTemplateId = null;
-        ParametersOrdering parametersOrdering = null;
+        Set<ConstraintViolation<AssessmentsExportClientData>> validationViolations = mRequestValidator
+            .validate(exportRequest);
 
-        for (Assessment assessment : assessments)
+        if (validationViolations.isEmpty())
         {
-            Animal animal = assessment.getAnimal();
-            AssessmentTemplate template = animal.getAssessmentTemplate();
-            Long templateId = template.getId();
+            Collection<Assessment> assessments = mAssessmentController.getAssessments(exportRequest.ids);
 
-            if (prevTemplateId != null)
+            AssessmentsExport export = new AssessmentsExport(assessments.size());
+
+            Long prevTemplateId = null;
+            ParametersOrdering parametersOrdering = null;
+
+            for (Assessment assessment : assessments)
             {
-                if (!prevTemplateId.equals(templateId))
+                Animal animal = assessment.getAnimal();
+                AssessmentTemplate template = animal.getAssessmentTemplate();
+                Long templateId = template.getId();
+
+                if (prevTemplateId != null)
                 {
-                    String errorMsg = "Encountered different assessment templates during export."
-                        + " Such exports are currently not supported.";
-                    responsePayload.addError(errorMsg
-                        + " Please choose a dataset that is based on a single assessment template and try again.");
+                    if (!prevTemplateId.equals(templateId))
+                    {
+                        String errorMsg = "Encountered different assessment templates during export."
+                            + " Such exports are currently not supported. Please choose a dataset that is based on"
+                            + " a single assessment template and try again.";
 
-                    throw new IllegalArgumentException(errorMsg);
+                        ValidatorUtils.throwInputValidationExceptionWith(errorMsg);
+                    }
                 }
+                else
+                {
+                    prevTemplateId = templateId;
+                }
+
+                if (parametersOrdering == null)
+                {
+                    parametersOrdering = getParameterOrdering(template);
+                    export.parametersOrdering = parametersOrdering;
+                }
+
+                AssessmentFullDto dto = mAssessmentDtoFactory.createAssessmentFullDto(assessment,
+                    parametersOrdering);
+
+                StudyGroup group = null;
+                Study study = assessment.getStudy();
+
+                if (study != null)
+                {
+                    group = mStudyGroupController.getStudyGroupWithAnimalNonApiMethod(animal, study);
+                }
+
+                double cwas = mAssessmentController.getCwasForAssessment(dto);
+
+                AssessmentsExportEntry entry = new AssessmentsExportEntry();
+                entry.dto = dto;
+                entry.studyGroup = group;
+                entry.cwas = cwas;
+
+                export.add(entry);
             }
-            else
-            {
-                prevTemplateId = templateId;
-            }
 
-            if (parametersOrdering == null)
-            {
-                parametersOrdering = getParameterOrdering(template);
-                export.parametersOrdering = parametersOrdering;
-            }
-
-            AssessmentFullDto dto = mAssessmentDtoFactory.createAssessmentFullDto(assessment, parametersOrdering);
-
-            StudyGroup group = null;
-            Study study = assessment.getStudy();
-
-            if (study != null)
-            {
-                group = mStudyGroupController.getStudyGroup(animal, study);
-            }
-
-            double cwas = mAssessmentController.getCwasForAssessment(dto);
-
-            AssessmentsExportEntry entry = new AssessmentsExportEntry();
-            entry.dto = dto;
-            entry.studyGroup = group;
-            entry.cwas = cwas;
-
-            export.add(entry);
+            mAssessmentExportOutputter.outputExport(response, export);
         }
-
-        mAssessmentExportOutputter.outputExport(response, export);
+        else
+        {
+            ValidatorUtils.throwInputValidationExceptionWith(Arrays.asList(validationViolations));
+            return;
+        }
     }
 
     private ParametersOrdering getParameterOrdering(AssessmentTemplate template)
@@ -155,21 +156,18 @@ public class AssessmentExporter implements Exporter
         return ordering;
     }
 
-    @Override
     public String getDownloadStatusCookieName()
     {
         return DOWNLOAD_STATUS_COOKIE_NAME;
     }
 
-    @Override
     public String getDownloadStatusCookieValue()
     {
-        return ServletConstants.DEFAULT_DOWNLOAD_STATUS_COOKIE_VALUE;
+        return Constants.WebApi.DEFAULT_DOWNLOAD_STATUS_COOKIE_VALUE;
     }
 
-    @Override
     public int getDownloadStatusCookieExpirationTimeSeconds()
     {
-        return ServletConstants.DEFAULT_DOWNLOAD_STATUS_COOKIE_EXPIRATION_TIME_SEC;
+        return Constants.WebApi.DEFAULT_DOWNLOAD_STATUS_COOKIE_EXPIRATION_TIME_SEC;
     }
 }

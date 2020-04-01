@@ -16,17 +16,16 @@ import com.google.gson.annotations.SerializedName;
 
 @Entity
 @Table(name = "assessment")
-@NamedQueries({
-        @NamedQuery(name = Assessment.Q_FIND_ALL, query = "SELECT a FROM Assessment a"),
-        @NamedQuery(name = Assessment.Q_COUNT_FIND_ALL, query = "SELECT Count(a) FROM Assessment a"),
+@NamedQueries({@NamedQuery(name = Assessment.Q_FIND_ALL, query = "SELECT a FROM Assessment a"),
+        @NamedQuery(name = Assessment.Q_COUNT_FIND_ALL, query = "SELECT COUNT(a) FROM Assessment a"),
         @NamedQuery(name = Assessment.Q_FIND_PREV_ANIMAL_ASSESSMENT,
-            query = "SELECT a FROM Assessment a WHERE a.mAnimal.mId = :animalId ORDER BY a.mId DESC"),
+            query = "SELECT a FROM Assessment a WHERE a.mAnimal.mId = :animalId ORDER BY a.mDate DESC"),
         @NamedQuery(name = Assessment.Q_ANIMAL_ASSESSMENT_BETWEEN,
             query = "SELECT a FROM Assessment a WHERE a.mAnimal.mId = :animalId AND a.mIsComplete = :isComplete"
                 + " AND a.mDate BETWEEN :fromDate AND :toDate ORDER BY a.mDate ASC"),
         @NamedQuery(name = Assessment.Q_COUNT_ANIMAL_ASSESSMENT_BETWEEN,
-            query = "SELECT COUNT(a) FROM Assessment a WHERE a.mAnimal.mId = :animalId AND a.mDate "
-                + "BETWEEN :fromDate AND :toDate"),
+            query = "SELECT COUNT(a) FROM Assessment a WHERE a.mAnimal.mId = :animalId AND a.mIsComplete = :isComplete"
+                + " AND a.mDate BETWEEN :fromDate AND :toDate"),
         @NamedQuery(name = Assessment.Q_COUNT_ANIMAL_ASSESSMENTS,
             query = "SELECT COUNT(a) FROM Assessment a WHERE a.mAnimal.mId = :animalId"),
         @NamedQuery(name = Assessment.Q_COUNT_TEMPLATE_ASSESSMENTS,

@@ -12,10 +12,13 @@ import com.google.gson.annotations.SerializedName;
 
 @Entity
 @Table(name = "sex")
-@NamedQueries({@NamedQuery(name = Sex.Q_FIND_ALL, query = "SELECT s FROM Sex s")})
+@NamedQueries({@NamedQuery(name = Sex.Q_FIND_ALL, query = "SELECT s FROM Sex s"),
+        @NamedQuery(name = Sex.Q_FIND_SEX_BY_NAME, query = "SELECT s FROM Sex s WHERE s.mName = :name")})
 public class Sex implements Serializable
 {
     public static final String Q_FIND_ALL = "findAllSexes";
+    public static final String Q_FIND_SEX_BY_NAME = "findSexByName"; // TODO getEntityByNameField
+
     public static final String FEMALE = "Female";
     public static final String MALE = "Male";
 

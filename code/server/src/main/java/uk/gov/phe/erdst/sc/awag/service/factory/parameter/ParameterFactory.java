@@ -1,8 +1,9 @@
 package uk.gov.phe.erdst.sc.awag.service.factory.parameter;
 
+import uk.gov.phe.erdst.sc.awag.datamodel.ImportParameter;
 import uk.gov.phe.erdst.sc.awag.datamodel.Parameter;
-import uk.gov.phe.erdst.sc.awag.datamodel.client.ParameterClientData;
 import uk.gov.phe.erdst.sc.awag.utils.Constants;
+import uk.gov.phe.erdst.sc.awag.webapi.request.ParameterClientData;
 
 public class ParameterFactory
 {
@@ -20,6 +21,14 @@ public class ParameterFactory
             parameter.setId(clientData.parameterId);
         }
         setNonIdProperties(parameter, clientData);
+        return parameter;
+    }
+
+    // TODO unit test
+    public Parameter create(ImportParameter importParameter)
+    {
+        Parameter parameter = new Parameter();
+        parameter.setName(importParameter.getParameterName());
         return parameter;
     }
 

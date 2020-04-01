@@ -1,53 +1,54 @@
-var userAuthServices = angular.module('userAuthServices', ['dataServices', 'entityServices']);
+var userAuthServices = angular.module('userAuthServices', ['pagingUtilsModule', 'webApiConfigModule', 'newDataServices']);
 
-userAuthServices.factory('userAuthService', ['dataService', 'entityService',
-function(dataService, entityService) {
+userAuthServices.factory('userAuthService', ['pagingUtils', 'webApiConfig', 'newDataService',
+function(pagingUtils, webApiConfig, newDataService) {
 
-    var userAuthServlet = "user-auth";
+    var URLS = webApiConfig.webApiUrls.entity.userAuth;
+    var USER_NAME_KEY = 'userName';
+    var USER_ID_KEY = 'userName';
 
     var getAuthUsersLike = function(callback, likeTerm, pagingOptions) {
-        entityService.getEntityLike(userAuthServlet, callback, likeTerm, pagingOptions);
+      var parameters = {};
+
+      parameters[webApiConfig.webApiParameters.likeFilter] = likeTerm;
+      pagingUtils.newApiSetPagingParameters(parameters, pagingOptions);
+
+      var onSuccess = function(data) {
+        var metadata = pagingUtils.buildPagingMetadata(
+          data[webApiConfig.webApiResponseKeys.pagingInfo], USER_NAME_KEY, USER_ID_KEY);
+        callback(data.userAuths, metadata);
+      };
+
+      newDataService.httpGet(URLS.getLike, parameters, onSuccess);        
     };
 
-   var saveAuthUser = function(user, successCallback, errorCallback){
-        var parameters = _getStoreDataParameters(user);
-        entityService.saveEntity(userAuthServlet, parameters, successCallback, errorCallback);
+   var saveAuthUser = function(user, successCallback, errCallback){
+      var onSuccess = function(data) {
+        var response = {};
+        response[USER_NAME_KEY] = data.value;
+        response[USER_ID_KEY] = data.id;
+        successCallback(response);
+      }
+
+      newDataService.httpPost(URLS.create, user, onSuccess, errCallback);
     };
 
-    var updateAuthUser = function(user, successCallback, errorCallback){
-        dataService.putData({
-            servlet : userAuthServlet,
-            resourceId : user.userName,
-            data : user,
-            callback : {
-                success : successCallback,
-                error : errorCallback
-            }
-        });
+    var updateAuthUser = function(user, successCallback, errCallback) {
+      var url = URLS.update + user.userName;
+      newDataService.httpPut(url, user, successCallback, errCallback);        
     };
 
-    var getAuthUserById = function(id, successCallback, errorCallback)
+    var getAuthUserById = function(id, successCallback, errCallback)
     {
-        entityService.getEntityById(userAuthServlet, successCallback, errorCallback, id);
+      var parameters = {};
+      var url = URLS.getById + id;
+      newDataService.httpGet(url, parameters, successCallback, errCallback);        
     };
 
-    var deleteAuthUser = function(user, successCallback, errorCallback)
+    var deleteAuthUser = function(user, successCallback, errCallback)
     {
-        dataService.deleteData({
-            servlet : userAuthServlet,
-            resourceId : user.userName,
-            data : undefined,
-            callback : {
-                success : successCallback,
-                error : errorCallback
-            }
-        });
-    };
-
-    var _getStoreDataParameters = function(user) {
-        return {
-            "user-auth" : user
-        };
+      var url = URLS.delete + user.userName;
+      newDataService.httpDelete(url, successCallback, errCallback);        
     };
 
     return {

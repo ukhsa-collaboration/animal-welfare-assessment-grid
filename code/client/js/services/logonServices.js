@@ -1,14 +1,11 @@
-var logonServices = angular.module('logonServices', ['dataServices']);
+var logonServices = angular.module('logonServices', ['newDataServices']);
 
-logonServices.factory('logonService', ['dataService',
-function(dataService) {
+logonServices.factory('logonService', ['newDataService',
+function(newDataService) {
 	var getLogonDetails = function(callback) {
-		dataService.dataConnection({
-			servlet : "logondetails",
-			callback : {
-				success : callback
-			}
-		});
+      var parameters = {};
+      var url = window.awconfig.systemApi.getLogonDetails;
+      newDataService.httpGet(url, parameters, callback);
 	};
 
 	return {

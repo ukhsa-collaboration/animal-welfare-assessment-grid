@@ -12,10 +12,10 @@ import org.testng.annotations.BeforeClass;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 
-import uk.gov.phe.erdst.sc.awag.datamodel.client.FactorClientData;
 import uk.gov.phe.erdst.sc.awag.shared.test.TestConstants;
 import uk.gov.phe.erdst.sc.awag.utils.GuiceHelper;
 import uk.gov.phe.erdst.sc.awag.utils.StringHelper;
+import uk.gov.phe.erdst.sc.awag.webapi.request.FactorClientData;
 
 @Test(groups = {TestConstants.TESTNG_UNIT_TESTS_GROUP})
 public class FactorValidationTest
@@ -25,6 +25,8 @@ public class FactorValidationTest
     private static final String INVALID_MIN_FACTOR_NAME = "F";
     private static final String INVALID_MAX_FACTOR_NAME;
     private static final String INVALID_NULL_FACTOR_NAME = null;
+    private static final String VALID_FACTOR_DESCRIPTION = "Factor Description";
+    private static final String VALID_NULL_FACTOR_DESCRIPTION = null;
     private Validator mValidator;
     private FactorClientData mFactorClientData;
 
@@ -44,7 +46,7 @@ public class FactorValidationTest
     @BeforeMethod
     private void resetValidFactorClientData()
     {
-        mFactorClientData = new FactorClientData(-1L, VALID_FACTOR_NAME);
+        mFactorClientData = new FactorClientData(-1L, VALID_FACTOR_NAME, VALID_FACTOR_DESCRIPTION);
         GuiceHelper.injectTestDependencies(this);
     }
 
@@ -91,4 +93,15 @@ public class FactorValidationTest
         Set<ConstraintViolation<FactorClientData>> constraintViolations = mValidator.validate(mFactorClientData);
         Assert.assertEquals(constraintViolations.size(), expectedNoViolations);
     }
+
+    @Test
+    private void testNullInvalidFactorDescriptionClientData()
+    {
+        int expectedNoViolations = 1;
+        mFactorClientData.factorName = INVALID_NULL_FACTOR_NAME;
+        mFactorClientData.factorDescription = VALID_NULL_FACTOR_DESCRIPTION;
+        Set<ConstraintViolation<FactorClientData>> constraintViolations = mValidator.validate(mFactorClientData);
+        Assert.assertEquals(constraintViolations.size(), expectedNoViolations);
+    }
+
 }

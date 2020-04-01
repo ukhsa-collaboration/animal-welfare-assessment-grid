@@ -29,24 +29,37 @@ public class AssessmentTemplateDaoImplTest
     @BeforeMethod
     public void setUp() throws Exception
     {
-        mAssessmentTemplateDao = (AssessmentTemplateDao) GlassfishTestsHelper.lookupMultiInterface(
-            "AssessmentTemplateDaoImpl", AssessmentTemplateDao.class);
+        mAssessmentTemplateDao = (AssessmentTemplateDao) GlassfishTestsHelper
+            .lookupMultiInterface("AssessmentTemplateDaoImpl", AssessmentTemplateDao.class);
     }
 
     @Test
     private void testGetTemplateById() throws AWNoSuchEntityException
     {
+        // CS:OFF: MagicNumber
         Long templateId = 10000L;
         AssessmentTemplate template = mAssessmentTemplateDao.getEntityById(templateId);
         Assert.assertNotNull(template);
         Assert.assertEquals(template.getId(), templateId);
+        // CS:ON
     }
 
     @Test
     private void testGetTemplates()
     {
+        // CS:OFF: MagicNumber
         Collection<AssessmentTemplate> templates = mAssessmentTemplateDao.getEntities(0, 10);
         Assert.assertEquals(templates.size(), 3);
+        // CS:ON
+    }
+
+    @Test
+    public void testGetCountAssessmentsByAnimalId()
+    {
+        // CS:OFF: MagicNumber
+        long assessmentTemplateCount = mAssessmentTemplateDao.getCountAssessmentTemplates();
+        Assert.assertEquals(assessmentTemplateCount, 3);
+        // CS:ON
     }
 
     @AfterClass

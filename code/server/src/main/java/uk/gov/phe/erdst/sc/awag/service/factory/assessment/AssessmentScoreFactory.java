@@ -13,9 +13,9 @@ import uk.gov.phe.erdst.sc.awag.datamodel.Factor;
 import uk.gov.phe.erdst.sc.awag.datamodel.FactorScored;
 import uk.gov.phe.erdst.sc.awag.datamodel.Parameter;
 import uk.gov.phe.erdst.sc.awag.datamodel.ParameterScore;
-import uk.gov.phe.erdst.sc.awag.datamodel.client.AssessmentClientData;
-import uk.gov.phe.erdst.sc.awag.datamodel.client.AssessmentClientFactor;
 import uk.gov.phe.erdst.sc.awag.datamodel.utils.AssessmentTemplateUtils;
+import uk.gov.phe.erdst.sc.awag.webapi.request.AssessmentClientData;
+import uk.gov.phe.erdst.sc.awag.webapi.request.AssessmentClientFactor;
 
 @Stateless
 public class AssessmentScoreFactory

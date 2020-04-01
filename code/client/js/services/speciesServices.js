@@ -1,83 +1,53 @@
-var speciesServices = angular.module('speciesServices', ['dataServices', 'appConfigModule', 'pagingUtilsModule']);
+var speciesServices = angular.module('speciesServices', ['appConfigModule', 'pagingUtilsModule', 'webApiConfigModule', 'newDataServices']);
 
-speciesServices.factory('speciesService', ['dataService', 'appConfig', 'pagingUtils',
-function(dataService, appConfig, pagingUtils) {
-	var speciesServlet = "species";
+speciesServices.factory('speciesService', ['appConfig', 'pagingUtils', 'newDataService', 'webApiConfig',
+  function(appConfig, pagingUtils, newDataService, webApiConfig) {
 
-	var getSpeciesLike = function(callback, likeTerm, pagingOptions) {
-		var parameters = {};
-		parameters[appConfig.services.selectAction] = appConfig.services.selectActions.like;
-		parameters[appConfig.services.actionParams.like] = likeTerm;
-		pagingUtils.setPagingParameters(parameters, pagingOptions);	
-		dataService.dataConnection({
-			servlet : speciesServlet,
-			parameters : parameters,
-			callback : {
-				success : callback
-			}
-		});
-	};
+    var URLS = webApiConfig.webApiUrls.entity.species;
+    var SPECIES_NAME_KEY = 'speciesName';
+    var SPECIES_ID_KEY = 'speciesId';
 
-	var getSpecies = function(callback, pagingOptions) {
-		var parameters = {};
-		parameters[appConfig.services.selectAction] = appConfig.services.selectActions.all;
-		pagingUtils.setPagingParameters(parameters, pagingOptions);	
-		dataService.dataConnection({
-			servlet : speciesServlet,
-			parameters : parameters,
-			callback : {
-				success : callback
-			}
-		});
-	};
+    var getSpeciesLike = function(callback, likeTerm, pagingOptions) {
+      var parameters = {};
 
-	var _getStoreDataParameters = function(species) {
-		return {
-			species : species
-		};
-	};
+      parameters[webApiConfig.webApiParameters.likeFilter] = likeTerm;
+      pagingUtils.newApiSetPagingParameters(parameters, pagingOptions);
 
-	var saveSpecies = function(species, successCallback, errCallback) {
-		var parameters = _getStoreDataParameters(species);
-		dataService.postData({
-			servlet : speciesServlet,
-			parameters : parameters,
-			callback : {
-				success : successCallback,
-				error : errCallback
-			}
-		});
-	};
+      var onSuccess = function(data) {
+        var metadata = pagingUtils.buildPagingMetadata(
+          data[webApiConfig.webApiResponseKeys.pagingInfo], SPECIES_NAME_KEY, SPECIES_ID_KEY);
+        callback(data.species, metadata);
+      };
 
-	var updateSpecies = function(species, successCallback, errCallback) {
-		dataService.putData({
-			servlet : speciesServlet,
-			resourceId : species.speciesId,
-			data : species,
-			callback : {
-				success : successCallback,
-				error : errCallback
-			}
-		});
-	};
+      newDataService.httpGet(URLS.getLike, parameters, onSuccess);
+    };
 
-	var removeSpecies = function(species, successCallback, errCallback) {
-		dataService.deleteData({
-			servlet : speciesServlet,
-			resourceId : species.speciesId,
-			callback : {
-				success : successCallback,
-				error : errCallback
-			}
-		});
+    var saveSpecies = function(species, successCallback, errCallback) {
+      var onSuccess = function(data) {
+        var response = {};
+        response[SPECIES_NAME_KEY] = data.value;
+        response[SPECIES_ID_KEY] = data.id;
+        successCallback(response);
+      }
 
-	};
+      newDataService.httpPost(URLS.create, species, onSuccess, errCallback);
+    };
 
-	return {
-		getSpeciesLike : getSpeciesLike,
-		getSpecies : getSpecies,
-		saveSpecies : saveSpecies,
-		updateSpecies : updateSpecies,
-		removeSpecies : removeSpecies
-	};
-}]);
+    var updateSpecies = function(species, successCallback, errCallback) {
+      var url = URLS.update + species.speciesId;
+      newDataService.httpPut(url, species, successCallback, errCallback);
+    };
+
+    var uploadSpecies = function(data, successCallback, errCallback) {
+      var url = URLS.upload;
+      newDataService.httpPostWithHeaderContentType(url, data, successCallback, errCallback);
+    };    
+
+    return {
+      getSpeciesLike: getSpeciesLike,
+      saveSpecies: saveSpecies,
+      updateSpecies: updateSpecies,
+      uploadSpecies : uploadSpecies
+    };
+  }
+]);

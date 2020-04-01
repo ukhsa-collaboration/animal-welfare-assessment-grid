@@ -81,7 +81,7 @@ public class ScaleDaoImplTest
     @Test(expectedExceptions = {AWNoSuchEntityException.class})
     public void testGetNonExistentScale() throws AWNoSuchEntityException
     {
-        Scale scale = mScaleDao.getEntityById(NON_EXISTENT_SCALE_ID);
+        mScaleDao.getEntityById(NON_EXISTENT_SCALE_ID);
     }
 
     @Test

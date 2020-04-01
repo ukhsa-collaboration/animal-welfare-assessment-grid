@@ -4,7 +4,7 @@ import uk.gov.phe.erdst.sc.awag.datamodel.Animal;
 import uk.gov.phe.erdst.sc.awag.datamodel.Study;
 import uk.gov.phe.erdst.sc.awag.exceptions.AWMultipleResultException;
 
-public interface StudyDao extends CommonDao<Study>
+public interface StudyDao extends UploadCommonDao<Study>
 {
     /**
      * Retrieves a study an animal is assigned to.

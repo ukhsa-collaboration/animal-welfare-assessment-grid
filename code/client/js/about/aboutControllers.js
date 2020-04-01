@@ -1,17 +1,20 @@
-var aboutControllers = angular.module('aboutControllers', []);
+var aboutControllers = angular.module('aboutControllers', ['newDataServices']);
 
-aboutControllers.controller('AboutCtrl', ['$scope', '$http',
-function($scope, $http)
+aboutControllers.controller('AboutCtrl', ['$scope', 'newDataService',
+function($scope, newDataService)
 {
     this.version = "UNKNOWN";
     var that = this;
     var url = window.awconfig.resourcesUrl + 'version.json';
+    var parameters = {};
 
-    $http.get(url).
-      success(function(data) {
-        that.version = data.v;
-      }).
-      error(function() {
-        that.version = "Problem retrieving version number";
-      });
+    var successCallback = function(data) {
+      that.version = data.v;
+    };
+
+    var errCallback = function() {
+      that.version = "Problem retrieving version number";
+    };
+
+    newDataService.httpGet(url, parameters, successCallback, errCallback);
 }]);

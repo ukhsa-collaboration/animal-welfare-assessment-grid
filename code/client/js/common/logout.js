@@ -1,16 +1,16 @@
 function logout()
 {
-    $.jsonp({
-        url : window.awconfig.serverUrl + "logout?callback=?", // ?callback=?
-
-        success : function(data)
-        {
-            window.location.assign(window.awconfig.serverUrl + "index.html");
+    var redirectUrl = window.awconfig.serverUrl + "index.html";
+    $.ajax({
+        url: window.awconfig.systemApi.logout,
+        method: 'GET',
+        success: function(data) {
+            window.location.assign(redirectUrl);
         },
-
-        error : function(xOptions, textStatus)
-        {
-            window.location.assign(window.awconfig.serverUrl + "index.html");
-        }
-    });
+        dataType: 'json',
+        cache: false
+        })
+      .fail(function() {
+        window.location.assign(redirectUrl);
+      });
 }

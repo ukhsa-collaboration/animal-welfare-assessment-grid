@@ -19,6 +19,7 @@ import com.google.gson.annotations.SerializedName;
         @NamedQuery(name = Source.Q_FIND_COUNT_ALL, query = "SELECT COUNT(s) FROM Source s"),
         @NamedQuery(name = Source.Q_FIND_ALL_SOURCES_LIKE,
             query = "SELECT s FROM Source s WHERE LOWER(s.mName) LIKE :like ORDER BY LENGTH(s.mName), s.mName ASC"),
+        @NamedQuery(name = Source.Q_FIND_SOURCE_BY_NAME, query = "SELECT s FROM Source s WHERE s.mName = :sourceName"),
         @NamedQuery(name = Source.Q_FIND_COUNT_ALL_SOURCES_LIKE,
             query = "SELECT COUNT(s) FROM Source s WHERE LOWER(s.mName) LIKE :like"),
         @NamedQuery(name = Source.Q_DELETE_SOURCE_BY_ID, query = "DELETE FROM Source s WHERE s.mId = :id")})
@@ -28,6 +29,7 @@ public class Source implements Serializable, EntitySelect
     public static final String Q_FIND_COUNT_ALL = "findCountAllSources";
     public static final String Q_FIND_ALL_SOURCES_LIKE = "findAllSourcesLike";
     public static final String Q_FIND_COUNT_ALL_SOURCES_LIKE = "findCountAllSourcesLike";
+    public static final String Q_FIND_SOURCE_BY_NAME = "findSourceByName";
     public static final String Q_DELETE_SOURCE_BY_ID = "deleteSourceById";
     private static final long serialVersionUID = 1L;
 

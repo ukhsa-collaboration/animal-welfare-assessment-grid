@@ -8,7 +8,9 @@ var reasonMngmtFormEvents = {
     onReasonRemovedClearUpdate : "onReasonRemovedClearUpdate",
     onReasonUpdateStarted : "onReasonUpdateStarted",
     onReasonUpdateFinished : "onReasonUpdateFinished",
-    onReasonUpdated : "onReasonUpdated"
+    onReasonUpdated : "onReasonUpdated",
+    onReasonUploadSelected : "onReasonUploadSelected",
+    onReasonUploadClearSelected : "onReasonUploadClearSelected"
 };
 
 manageReasonControllers.controller('MngmtReasonSelectionCtrl', ['$scope', 'formService', 'reasonService', 'appConfig',
@@ -88,8 +90,7 @@ function($scope, appConfig, reasonService, $timeout)
     {
         this.reason = {
             reasonId : appConfig.config.unassignedId,
-            reasonName : undefined,
-            reasonFactors: []
+            reasonName : undefined
         };
         this.errors = [];
     };
@@ -192,7 +193,7 @@ function($scope, appConfig, reasonService, $timeout)
     {
         that.isSuccess = false;
         that.errors = errors;
-    }
+    };
 
     var submitReasonCallback = function(data)
     {
@@ -237,4 +238,89 @@ function($scope, appConfig, reasonService, $timeout)
     });
 
     this.resetReasonContainer();
+}]);
+
+manageReasonControllers.controller('MngmtReasonUploadCtrl', ['$scope', 'appConfig', 'reasonService', '$timeout',
+function($scope, appConfig, reasonService, $timeout)
+{
+    this.uploadId = "uploadFile";
+    this.uploadElement = null;
+    var that = this;
+
+    this.onFileUploadChange = function(event)
+    {
+        that.uploadElement = event.target;
+        $scope.$emit(reasonMngmtFormEvents.onReasonUploadSelected, event.target.files);
+    };
+
+    $scope.$on(reasonMngmtFormEvents.onReasonUploadClearSelected, function(event)
+    {
+        that.uploadElement.value = null;
+    });    
+
+}]);
+
+manageReasonControllers.controller('MngmtReasonUploadManagementCtrl', ['$scope', 'appConfig', 'reasonService', '$timeout',
+function($scope, appConfig, reasonService, $timeout)
+{
+    this.fileList = {};
+    this.isSuccess = false;
+    this.errors = [];
+    this.isFileSelected = true;
+    var that = this;
+
+    this.resetErrors = function()
+    {
+        this.errors = [];
+    };
+
+    var onErrorCallBack = function(errors)
+    {
+        that.isSuccess = false;
+        that.errors = errors;
+    };
+
+    var uploadReasonCallback = function(data)
+    {
+        that.isSuccess = true;
+        that.resetErrors();
+
+    };
+
+    this.setDisabled = function(isDisabled)
+    {
+        this.isFileSelected = isDisabled;
+        $timeout(function(){
+            $scope.$apply();
+        });
+    };
+
+
+    this.setUploadFiles = function(fileList) 
+    {
+        Object.assign(this.fileList, fileList);
+        that.setDisabled(false);
+    };
+
+    this.uploadReason = function()
+    {
+        var fd = new FormData();
+        fd.append('file', this.fileList[0]);
+
+        reasonService.uploadReason(fd, uploadReasonCallback, onErrorCallBack);
+    };
+
+    this.clearUploadReason = function()
+    {
+        this.fileList = {};
+        this.setDisabled(true);
+        this.resetErrors();
+        $scope.$broadcast(reasonMngmtFormEvents.onReasonUploadClearSelected);        
+    };
+
+    $scope.$on(reasonMngmtFormEvents.onReasonUploadSelected, function(event, fileList)
+    {
+        that.setUploadFiles(fileList);
+    });
+    
 }]);

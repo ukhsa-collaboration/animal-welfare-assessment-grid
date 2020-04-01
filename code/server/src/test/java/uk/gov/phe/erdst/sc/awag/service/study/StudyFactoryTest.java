@@ -6,13 +6,13 @@ import org.testng.annotations.Test;
 
 import uk.gov.phe.erdst.sc.awag.datamodel.Study;
 import uk.gov.phe.erdst.sc.awag.datamodel.StudyGroup;
-import uk.gov.phe.erdst.sc.awag.datamodel.client.StudyClientData;
-import uk.gov.phe.erdst.sc.awag.datamodel.client.StudyGroupClientData;
+import uk.gov.phe.erdst.sc.awag.deprecated.RequestConverter;
 import uk.gov.phe.erdst.sc.awag.service.factory.study.StudyFactory;
 import uk.gov.phe.erdst.sc.awag.service.utils.StudyTestUtils;
-import uk.gov.phe.erdst.sc.awag.servlets.utils.RequestConverter;
 import uk.gov.phe.erdst.sc.awag.shared.test.TestConstants;
 import uk.gov.phe.erdst.sc.awag.utils.GuiceHelper;
+import uk.gov.phe.erdst.sc.awag.webapi.request.StudyClientData;
+import uk.gov.phe.erdst.sc.awag.webapi.request.StudyGroupClientData;
 
 import com.google.inject.Inject;
 
