@@ -265,6 +265,7 @@ ALTER TABLE awag_schema.import_study_group OWNER to awag;
 ALTER TABLE awag_schema.import_study_group_animal OWNER to awag;
 ALTER TABLE awag_schema.import_assessment OWNER to awag;
 ALTER TABLE awag_schema.import_assessment_parameter_factor_scores OWNER to awag;
+ALTER TABLE awag_schema.assessment_template_parameter OWNER to awag;
 
 -- Fix the display order for older imports
 INSERT INTO awag_schema.assessment_template_parameter(assessment_template_id, parameter_id)

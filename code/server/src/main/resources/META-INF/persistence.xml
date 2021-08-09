@@ -46,6 +46,7 @@
         <class>uk.gov.phe.erdst.sc.awag.datamodel.ImportTemplate</class>
         <class>uk.gov.phe.erdst.sc.awag.datamodel.ImportTemplateParameter</class>
         <class>uk.gov.phe.erdst.sc.awag.datamodel.ImportTemplateParameterFactor</class>
+		<!-- BUILD_TOKEN: Persistence -->
 		<!-- <properties>
 			<property name="eclipselink.jdbc.batch-writing" value="JDBC" />
 			<property name="eclipselink.jdbc.batch-writing.size" value="10" />
@@ -60,11 +61,12 @@
 		<class>uk.gov.phe.erdst.sc.awag.datamodel.GroupAuth</class>
 		<class>uk.gov.phe.erdst.sc.awag.datamodel.UserGroupAuth</class>
 		<class>uk.gov.phe.erdst.sc.awag.datamodel.UserGroupAuthPK</class>
+		<!-- BUILD_TOKEN: Persistence -->
 		<!-- <properties>
 			<property name="eclipselink.jdbc.batch-writing" value="JDBC" />
 			<property name="eclipselink.ddl-generation.output-mode"
 				value="both" />
-			<property name="eclipselink.logging.level" value="FINEST" /> 
+			<property name="eclipselink.logging.level" value="FINEST" />
 		</properties> -->
 	</persistence-unit>
 </persistence>

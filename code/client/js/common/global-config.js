@@ -1,9 +1,9 @@
 window.awconfig = {
     // Reverse proxy maps the two URLs below
     // serverUrl : 'http://localhost:8080/animal-welfare-system/'
-    // Replace_Token_Start
+    // BUILD_START_TOKEN: serverUrl
     serverUrl: 'http://localhost/animal-welfare-system-client/server/',
-    // Replace_Token_End
+    // BUILD_END_TOKEN: serverUrl
 };
 
 (function () {

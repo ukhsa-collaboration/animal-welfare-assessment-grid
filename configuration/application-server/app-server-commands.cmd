@@ -1,0 +1,7 @@
+call C:\awag\payara5\bin\asadmin start-domain dev
+call C:\awag\payara5\bin\asadmin create-jdbc-connection-pool --ping=true --datasourceclassname=org.postgresql.xa.PGXADataSource --restype=javax.sql.XADataSource --property="User=awag:Password=changeit:URL=jdbc\:postgresql\://localhost\:5432/awdatabase" awDatabase
+call C:\awag\payara5\bin\asadmin create-jdbc-resource --connectionpoolid awDatabase jdbc/awDatabase
+call C:\awag\payara5\bin\asadmin create-jdbc-connection-pool --ping=true --datasourceclassname=org.postgresql.xa.PGXADataSource --restype=javax.sql.XADataSource --property="User=awag:Password=changeit:URL=jdbc\:postgresql\://localhost\:5432/awauth" awAuth
+call C:\awag\payara5\bin\asadmin create-jdbc-resource --connectionpoolid awAuth jdbc/awAuth
+call C:\awag\payara5\bin\asadmin create-auth-realm --classname com.sun.enterprise.security.auth.realm.jdbc.JDBCRealm --property="jaas-context=jdbcRealm:encoding=HEX:password-column=password:datasource-jndi=jdbc/awAuth:group-table=users_groups:group-name-column=group_name:user-table=users:user-name-column=user_name:group-table-user-name-column=user_name:charset=UTF-8:digestrealm-password-enc-algorithm=AES:digest-algorithm=SHA-256" jdbcRealm
+call C:\awag\payara5\bin\asadmin stop-domain dev
