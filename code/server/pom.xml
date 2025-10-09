@@ -80,7 +80,7 @@
 		<dependency>
 			<groupId>joda-time</groupId>
 			<artifactId>joda-time</artifactId>
-			<version>2.3</version>
+			<version>2.14.0</version>
 		</dependency>
 
 		<dependency>
@@ -204,8 +204,8 @@
 				<mvn400ResponseJson>400 { "errors": [ "string" ] }</mvn400ResponseJson>
 				<mvn500ResponseJson>500 Internal Server Error</mvn500ResponseJson>
 				<mvnDateFormatJavaDoc>field format: yyyy-MM-dd'T'HH:mm:ss.SSS'Z'</mvnDateFormatJavaDoc>
-				<mvnPagingOffsetValidValueJavaDoc>page number >= 0</mvnPagingOffsetValidValueJavaDoc>
-				<mvnPagingLimitValidValueJavaDoc>number of entities per page > 0</mvnPagingLimitValidValueJavaDoc>
+				<mvnPagingOffsetValidValueJavaDoc>page number &gt;= 0</mvnPagingOffsetValidValueJavaDoc>
+				<mvnPagingLimitValidValueJavaDoc>number of entities per page &gt; 0</mvnPagingLimitValidValueJavaDoc>
 
 				<originalSrcTmpDir>${basedir}/target/original-sources</originalSrcTmpDir>
 				<jaxRsResourceSrcDir>src/main/java/uk/gov/phe/erdst/sc/awag/webapi/resource/</jaxRsResourceSrcDir>
@@ -238,42 +238,29 @@
 								<phase>process-resources</phase>
 								<configuration>
 									<target>
-										<copy todir="${originalSrcTmpDir}" verbose="false"
-											overwrite="true">
+										<copy todir="${originalSrcTmpDir}" verbose="false" overwrite="true">
 											<fileset dir="${jaxRsResourceSrcDir}">
-												<exclude name="GlobalResource.java" />
-												<exclude name="MyJacksonObjectMapper.java" />
+												<exclude name="GlobalResource.java"/>
+												<exclude name="MyJacksonObjectMapper.java"/>
 											</fileset>
 										</copy>
-										<replace token="mvn404ResponseJson"
-											value="${mvn404ResponseJson}"
-											dir="${jaxRsResourceSrcDir}" summary="yes">
-											<include name="**/*.java" />
+										<replace token="mvn404ResponseJson" value="${mvn404ResponseJson}" dir="${jaxRsResourceSrcDir}" summary="yes">
+											<include name="**/*.java"/>
 										</replace>
-                                        <replace token="mvn400ResponseJson"
-                                            value="${mvn400ResponseJson}"
-                                            dir="${jaxRsResourceSrcDir}" summary="yes">
-                                            <include name="**/*.java" />
+                                        <replace token="mvn400ResponseJson" value="${mvn400ResponseJson}" dir="${jaxRsResourceSrcDir}" summary="yes">
+                                            <include name="**/*.java"/>
                                         </replace>
-                                        <replace token="mvn500ResponseJson"
-                                            value="${mvn500ResponseJson}"
-                                            dir="${jaxRsResourceSrcDir}" summary="yes">
-                                            <include name="**/*.java" />
+                                        <replace token="mvn500ResponseJson" value="${mvn500ResponseJson}" dir="${jaxRsResourceSrcDir}" summary="yes">
+                                            <include name="**/*.java"/>
                                         </replace>
-                                        <replace token="mvnDateFormatJavaDoc"
-                                            value="${mvnDateFormatJavaDoc}"
-                                            dir="${jaxRsResourceSrcDir}" summary="yes">
-                                            <include name="**/*.java" />
+                                        <replace token="mvnDateFormatJavaDoc" value="${mvnDateFormatJavaDoc}" dir="${jaxRsResourceSrcDir}" summary="yes">
+                                            <include name="**/*.java"/>
                                         </replace>
-                                        <replace token="mvnPagingOffsetValidValueJavaDoc"
-                                            value="${mvnPagingOffsetValidValueJavaDoc}"
-                                            dir="${jaxRsResourceSrcDir}" summary="yes">
-                                            <include name="**/*.java" />
+                                        <replace token="mvnPagingOffsetValidValueJavaDoc" value="${mvnPagingOffsetValidValueJavaDoc}" dir="${jaxRsResourceSrcDir}" summary="yes">
+                                            <include name="**/*.java"/>
                                         </replace>
-                                        <replace token="mvnPagingLimitValidValueJavaDoc"
-                                            value="${mvnPagingLimitValidValueJavaDoc}"
-                                            dir="${jaxRsResourceSrcDir}" summary="yes">
-                                            <include name="**/*.java" />
+                                        <replace token="mvnPagingLimitValidValueJavaDoc" value="${mvnPagingLimitValidValueJavaDoc}" dir="${jaxRsResourceSrcDir}" summary="yes">
+                                            <include name="**/*.java"/>
                                         </replace>
 									</target>
 								</configuration>
@@ -286,11 +273,10 @@
 								<phase>compile</phase>
 								<configuration>
 									<target>
-										<copy todir="${jaxRsResourceSrcDir}" verbose="false"
-											overwrite="true">
+										<copy todir="${jaxRsResourceSrcDir}" verbose="false" overwrite="true">
 											<fileset dir="${originalSrcTmpDir}">
-												<exclude name="GlobalResource.java" />
-												<exclude name="MyJacksonObjectMapper.java" />
+												<exclude name="GlobalResource.java"/>
+												<exclude name="MyJacksonObjectMapper.java"/>
 											</fileset>
 										</copy>
 									</target>
